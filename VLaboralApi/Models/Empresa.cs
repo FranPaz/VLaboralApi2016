@@ -16,5 +16,9 @@ namespace VLaboralApi.Models
         public string Telefono { get; set; }
         public string SitioWeb { get; set; }
        
+        //iafar: relacion 1 a m con empresa (m)
+        public virtual ICollection<Oferta> Ofertas { get; set; }
+
+
     }
 }

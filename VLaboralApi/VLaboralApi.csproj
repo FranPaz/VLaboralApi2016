@@ -246,8 +246,16 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
+    <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\ModelFactory.cs" />
+    <Compile Include="Models\Oferta.cs" />
+    <Compile Include="Models\OfertaEstado.cs" />
+    <Compile Include="Models\Puesto.cs" />
+    <Compile Include="Models\Requisito.cs" />
     <Compile Include="Models\RoleBindingModels.cs" />
+    <Compile Include="Models\Rubro.cs" />
+    <Compile Include="Models\SubRubro.cs" />
+    <Compile Include="Models\TipoEstadoOferta.cs" />
     <Compile Include="Models\VLaboral_Context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\BlobStorageUploadProvider.cs" />

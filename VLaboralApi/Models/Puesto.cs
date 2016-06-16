@@ -13,6 +13,12 @@ namespace VLaboralApi.Models
         public string Ubicacion { get; set; }
         public ICollection<string> Habilidades { get; set; }
         public string Remuneracion { get; set; }
-        public SubRubro Subrubro { get; set; }
+
+        //iafar: Relacion 1 a M con Oferta (1)
+        public int OfertaId { get; set; }
+        public Oferta Oferta { get; set; }
+
+        
+       
     }
 }
