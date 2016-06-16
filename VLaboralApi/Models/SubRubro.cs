@@ -5,7 +5,7 @@ using System.Web;
 
 namespace VLaboralApi.Models
 {
-    public class Subrubro
+    public class SubRubro
     {
         public int Id { get; set; }
         public string Nombre { get; set; }

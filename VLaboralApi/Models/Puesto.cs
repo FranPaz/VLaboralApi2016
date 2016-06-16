@@ -13,6 +13,6 @@ namespace VLaboralApi.Models
         public string Ubicacion { get; set; }
         public ICollection<string> Habilidades { get; set; }
         public string Remuneracion { get; set; }
-        public Subrubro Subrubro { get; set; }
+        public SubRubro Subrubro { get; set; }
     }
 }
