@@ -11,5 +11,9 @@ namespace VLaboralApi.Models
         public string Valor { get; set; }
         public bool Excluyente { get; set; }
 
+        //fpaz: relacion 1 a M con puesto (uno)
+        public int PuestoId { get; set; }
+        public virtual Puesto Puesto { get; set; }
+
     }
 }
