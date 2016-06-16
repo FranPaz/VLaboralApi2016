@@ -16,7 +16,7 @@ namespace VLaboralApi.Models
 
         //iafar:relacion 1 a m con Oferta (1)
         public int OfertaId { get; set; }
-        public Oferta Ofertas { get; set; }
+        public virtual Oferta Ofertas { get; set; }
 
     }
 }

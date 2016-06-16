@@ -22,7 +22,7 @@ namespace VLaboralApi.Models
 
         //iafar: Relacion 1 a M con Oferta (1)
         public int OfertaId { get; set; }
-        public Oferta Oferta { get; set; }
+        public virtual Oferta Oferta { get; set; }
 
         //fpaz: relacion M a M con Subrubros
         public virtual ICollection<SubRubro> Subrubros { get; set; }
