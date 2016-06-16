@@ -236,7 +236,11 @@
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
+    <Compile Include="Controllers\OfertasController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\RubrosController.cs" />
+    <Compile Include="Controllers\TipoContratosController.cs" />
+    <Compile Include="Controllers\TipoDisponibilidadsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
