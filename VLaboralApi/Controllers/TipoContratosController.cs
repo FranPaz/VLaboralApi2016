@@ -17,9 +17,24 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/TipoContratos
-        public IQueryable<TipoContrato> GetTipoContratoes()
+        public IHttpActionResult GetTipoContratoes()
         {
-            return db.TipoContratoes;
+            try
+            {
+                var listTiposContratos = db.TipoContratoes.ToList();
+                if (listTiposContratos == null)
+                {
+                    return BadRequest("No existen Tipos de Contratos Cargados");
+                }
+                else
+                {
+                    return Ok(listTiposContratos);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/TipoContratos/5

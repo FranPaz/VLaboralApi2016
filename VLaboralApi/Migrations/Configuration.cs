@@ -52,6 +52,45 @@ namespace VLaboralApi.Migrations
             manager.AddToRoles(adminUser.Id, new string[] { "SuperAdmin", "Admin" });
             #endregion
 
+            #region fpaz: Semilla para Tipos de Disponibilidad
+            var listTiposList = new List<TipoDisponibilidad>{
+                new TipoDisponibilidad {Nombre="Full-time", Descripcion="Disponibilidad a Tiempo Completo"},
+                new TipoDisponibilidad {Nombre="Part-Time", Descripcion="Disponibilidad a Tiempo Parcial"}
+                
+            };
+            context.TipoDisponibilidads.AddRange(listTiposList);
+            #endregion
+
+            #region fpaz: Semilla para Tipos de Contratos
+            var listTiposContratos = new List<TipoContrato>{
+                new TipoContrato {Nombre="Tiempo Indeterminado", Descripcion="Contrato por tiempo indeterminado"},
+                new TipoContrato {Nombre="Tiempo Parcial", Descripcion="Contrato de trabajo a tiempo parcial"},                
+                new TipoContrato {Nombre="Eventual", Descripcion="Contrato de trabajo eventual"},
+                new TipoContrato {Nombre="Por Temporada", Descripcion="Contrato de trabajo de temporada"}
+                
+            };
+            context.TipoContratoes.AddRange(listTiposContratos);
+            #endregion
+
+            #region fpaz: Semilla para Tipos de Identificacion de Profesionales
+            var listTiposIdProf = new List<TipoIdentificacionProfesional>{
+                new TipoIdentificacionProfesional {Nombre="DNI", Descripcion="Documento Nacional de Identidad"},
+                new TipoIdentificacionProfesional {Nombre="CUIT", Descripcion=" Clave Única de Identificación Tributaria "},                
+                new TipoIdentificacionProfesional {Nombre="Pasaporte", Descripcion="Pasaporte Internacional"}                
+                
+            };
+            context.TiposIdentificacionesProfesionales.AddRange(listTiposIdProf);
+            #endregion
+
+            #region fpaz: Semilla para Cargar un Profesional por defecto (Solo Para Desarrollo)
+            var prof = new Profesional
+            {
+                Nombre = "Nombre Profesional 1",
+                Apellido = "Apellidod Profesional 1"                
+            };
+            context.Profesionals.Add(prof);
+            #endregion
+
             base.Seed(context);
         }
     }

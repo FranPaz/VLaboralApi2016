@@ -17,9 +17,24 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/TipoDisponibilidads
-        public IQueryable<TipoDisponibilidad> GetTipoDisponibilidads()
+        public IHttpActionResult GetTipoDisponibilidads() //fpaz: devuelve todos los tipos de Disponibilidad Cargados en la Bd
         {
-            return db.TipoDisponibilidads;
+            try
+            {
+                var listTiposDisponibilidad = db.TipoDisponibilidads.ToList();
+                if (listTiposDisponibilidad == null)
+                {
+                    return BadRequest("No existen Tipos de Disponibilidad Cargadas");
+                }
+                else
+                {
+                    return Ok(listTiposDisponibilidad);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/TipoDisponibilidads/5

@@ -22,14 +22,6 @@ namespace VLaboralApi.Models
 
         #region Definicion de Tablas DbSet
         public System.Data.Entity.DbSet<VLaboralApi.Models.BlobUploadModel> BlobUploadModels { get; set; }
-      
-        #endregion
-
-        public static VLaboral_Context Create()
-        {
-            return new VLaboral_Context();
-        }
-
         public System.Data.Entity.DbSet<VLaboralApi.Models.Oferta> Ofertas { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Rubro> Rubroes { get; set; }
@@ -38,6 +30,15 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoContrato> TipoContratoes { get; set; }
 
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionProfesional> TiposIdentificacionesProfesionales { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Profesional> Profesionals { get; set; }      
+        #endregion
+
+        public static VLaboral_Context Create()
+        {
+            return new VLaboral_Context();
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -14,9 +15,9 @@ namespace VLaboralApi.Models
 
         public int Id { get; set; }
         public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public string Nacionalidad { get; set; }
-        public DateTime FechaNac { get; set; }
+        public string Apellido { get; set; }        
+        public string Nacionalidad { get; set; }        
+        public DateTime? FechaNac { get; set; }
         public string Domicilio { get; set; }
         public string ObjetivoProfesional { get; set; }
         public string DescripcionCurricular { get; set; }
@@ -26,5 +27,10 @@ namespace VLaboralApi.Models
 
         //fpaz: relacion M a M con Subrubros
         public virtual ICollection<SubRubro> Subrubros { get; set; }
+
+        public override string ToString()
+        {
+            return Nombre + " " + Apellido;
+        }
     }
 }
