@@ -91,6 +91,26 @@ namespace VLaboralApi.Migrations
             context.Profesionals.Add(prof);
             #endregion
 
+            #region SLuna: Semilla para Rubros y SubRubros
+            var listRubros = new List<Rubro>{
+                    new Rubro {Nombre="Informática", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
+                        new SubRubro { Nombre = "Analista Programador", Descripcion =""},
+                        new SubRubro { Nombre = "Administrador IT", Descripcion =""}                        
+                    }},
+                    new Rubro {Nombre="Construcción", Descripcion="Servicios relaciones con el area de la construcción", Subrubros = new List<SubRubro>{
+                        new SubRubro { Nombre = "Albañilería", Descripcion =""},
+                        new SubRubro { Nombre = "Mampostería", Descripcion =""}                        
+                    }},
+                    new Rubro {Nombre="Mecánica del Automotor", Descripcion="Servicios relaciones con el area de la mecánica del automotor", Subrubros = new List<SubRubro>{
+                        new SubRubro { Nombre = "Tren delantero", Descripcion =""},
+                        new SubRubro { Nombre = "Frenos y Embrague", Descripcion =""}    
+                    
+                    }}
+            };
+            context.Rubroes.AddRange(listRubros);
+            #endregion
+
+
             base.Seed(context);
         }
     }
