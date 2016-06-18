@@ -40,7 +40,7 @@ namespace VLaboralApi.Controllers
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                return NotFound();
             }
                
         }
