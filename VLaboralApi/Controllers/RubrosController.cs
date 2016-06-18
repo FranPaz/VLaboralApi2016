@@ -26,13 +26,23 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Rubro))]
         public IHttpActionResult GetRubro(int id)
         {
-            Rubro rubro = db.Rubroes.Find(id);
-            if (rubro == null)
+            try
             {
-                return NotFound();
-            }
+                var rubro = db.Rubroes
+                                    .Include(r => r.Subrubros)
+                                    .First(r => r.Id == id);
+                if (rubro == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(rubro);
+                return Ok(rubro);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+               
         }
 
         // PUT: api/Rubros/5
