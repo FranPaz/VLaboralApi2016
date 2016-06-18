@@ -15,5 +15,9 @@ namespace VLaboralApi.Models
         public int PuestoId { get; set; }
         public virtual Puesto Puesto { get; set; }
 
+        //kikexp: relacion 1 a M con TipoRequisito
+        public int TipoRequisitoId { get; set; }
+        public virtual TipoRequisito TipoRequisito { get; set; }
+
     }
 }

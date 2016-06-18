@@ -91,6 +91,23 @@ namespace VLaboralApi.Migrations
             context.Profesionals.Add(prof);
             #endregion
 
+            #region kikexp: Semilla para Cargar una Habilidad por Defecto
+            var Habilidad = new Habilidad
+            {
+                Nombre = "Habilidad Prueba",
+                Descripcion = "Descripcion Habilidad Prueba"
+            };
+            context.Habilidads.Add(Habilidad);
+            #endregion
+
+            #region kikexp: Semilla para Tipo de Requisito
+            var TipoRequisito = new TipoRequisito
+            {
+                Nombre = "Tipo de requisito Prueba"
+            };
+            context.TipoRequisitoes.Add(TipoRequisito);
+            #endregion
+
             base.Seed(context);
         }
     }

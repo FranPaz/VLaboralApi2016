@@ -32,13 +32,19 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionProfesional> TiposIdentificacionesProfesionales { get; set; }
 
-        public System.Data.Entity.DbSet<VLaboralApi.Models.Profesional> Profesionals { get; set; }      
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Profesional> Profesionals { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Habilidad> Habilidads { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoRequisito> TipoRequisitoes { get; set; }
         #endregion
 
         public static VLaboral_Context Create()
         {
             return new VLaboral_Context();
         }
+
+
     }
 
 }
