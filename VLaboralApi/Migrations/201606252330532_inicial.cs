@@ -19,6 +19,91 @@ namespace VLaboralApi.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
+                "dbo.Habilidads",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Nombre = c.String(),
+                        Descripcion = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.IdentificacionProfesionals",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Valor = c.String(),
+                        TipoIdentificacionProfesionalId = c.Int(nullable: false),
+                        ProfesionalId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Profesionals", t => t.ProfesionalId, cascadeDelete: true)
+                .ForeignKey("dbo.TipoIdentificacionProfesionals", t => t.TipoIdentificacionProfesionalId, cascadeDelete: true)
+                .Index(t => t.TipoIdentificacionProfesionalId)
+                .Index(t => t.ProfesionalId);
+            
+            CreateTable(
+                "dbo.Profesionals",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Nombre = c.String(),
+                        Apellido = c.String(),
+                        Nacionalidad = c.String(),
+                        FechaNac = c.DateTime(),
+                        Domicilio = c.String(),
+                        ObjetivoProfesional = c.String(),
+                        DescripcionCurricular = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.SubRubroes",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Nombre = c.String(),
+                        Descripcion = c.String(),
+                        RubroId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Rubroes", t => t.RubroId, cascadeDelete: true)
+                .Index(t => t.RubroId);
+            
+            CreateTable(
+                "dbo.Puestoes",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Nombre = c.String(),
+                        Descripcion = c.String(),
+                        Ubicacion = c.String(),
+                        Remuneracion = c.String(),
+                        Vacantes = c.Int(nullable: false),
+                        OfertaId = c.Int(nullable: false),
+                        TipoContratoId = c.Int(nullable: false),
+                        TipoDisponibilidadId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.TipoDisponibilidads", t => t.TipoDisponibilidadId, cascadeDelete: true)
+                .ForeignKey("dbo.Ofertas", t => t.OfertaId, cascadeDelete: true)
+                .ForeignKey("dbo.TipoContratoes", t => t.TipoContratoId, cascadeDelete: true)
+                .Index(t => t.OfertaId)
+                .Index(t => t.TipoContratoId)
+                .Index(t => t.TipoDisponibilidadId);
+            
+            CreateTable(
+                "dbo.TipoDisponibilidads",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Nombre = c.String(),
+                        Descripcion = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.Ofertas",
                 c => new
                     {
@@ -74,38 +159,6 @@ namespace VLaboralApi.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.Puestoes",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Nombre = c.String(),
-                        Descripcion = c.String(),
-                        Ubicacion = c.String(),
-                        Remuneracion = c.String(),
-                        Vacantes = c.Int(nullable: false),
-                        OfertaId = c.Int(nullable: false),
-                        TipoContratoId = c.Int(nullable: false),
-                        TipoDisponibilidadId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.TipoDisponibilidads", t => t.TipoDisponibilidadId, cascadeDelete: true)
-                .ForeignKey("dbo.Ofertas", t => t.OfertaId, cascadeDelete: true)
-                .ForeignKey("dbo.TipoContratoes", t => t.TipoContratoId, cascadeDelete: true)
-                .Index(t => t.OfertaId)
-                .Index(t => t.TipoContratoId)
-                .Index(t => t.TipoDisponibilidadId);
-            
-            CreateTable(
-                "dbo.TipoDisponibilidads",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Nombre = c.String(),
-                        Descripcion = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
                 "dbo.Requisitoes",
                 c => new
                     {
@@ -113,56 +166,25 @@ namespace VLaboralApi.Migrations
                         Valor = c.String(),
                         Excluyente = c.Boolean(nullable: false),
                         PuestoId = c.Int(nullable: false),
+                        TipoRequisitoId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Puestoes", t => t.PuestoId, cascadeDelete: true)
-                .Index(t => t.PuestoId);
+                .ForeignKey("dbo.TipoRequisitoes", t => t.TipoRequisitoId, cascadeDelete: true)
+                .Index(t => t.PuestoId)
+                .Index(t => t.TipoRequisitoId);
             
             CreateTable(
-                "dbo.SubRubroes",
+                "dbo.TipoRequisitoes",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Nombre = c.String(),
-                        Descripcion = c.String(),
-                        RubroId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Rubroes", t => t.RubroId, cascadeDelete: true)
-                .Index(t => t.RubroId);
-            
-            CreateTable(
-                "dbo.Profesionals",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Nombre = c.String(),
-                        Apellido = c.String(),
-                        Nacionalidad = c.String(),
-                        FechaNac = c.DateTime(),
-                        Domicilio = c.String(),
-                        ObjetivoProfesional = c.String(),
-                        DescripcionCurricular = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.IdentificacionProfesionals",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Valor = c.String(),
-                        TipoIdentificacionProfesionalId = c.Int(nullable: false),
-                        ProfesionalId = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Profesionals", t => t.ProfesionalId, cascadeDelete: true)
-                .ForeignKey("dbo.TipoIdentificacionProfesionals", t => t.TipoIdentificacionProfesionalId, cascadeDelete: true)
-                .Index(t => t.TipoIdentificacionProfesionalId)
-                .Index(t => t.ProfesionalId);
-            
-            CreateTable(
-                "dbo.TipoIdentificacionProfesionals",
+                "dbo.TipoContratoes",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -182,7 +204,7 @@ namespace VLaboralApi.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.TipoContratoes",
+                "dbo.TipoIdentificacionProfesionals",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -264,30 +286,30 @@ namespace VLaboralApi.Migrations
                 .Index(t => t.UserId);
             
             CreateTable(
-                "dbo.ProfesionalSubRubroes",
+                "dbo.SubRubroProfesionals",
                 c => new
                     {
-                        Profesional_Id = c.Int(nullable: false),
                         SubRubro_Id = c.Int(nullable: false),
+                        Profesional_Id = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => new { t.Profesional_Id, t.SubRubro_Id })
-                .ForeignKey("dbo.Profesionals", t => t.Profesional_Id, cascadeDelete: true)
+                .PrimaryKey(t => new { t.SubRubro_Id, t.Profesional_Id })
                 .ForeignKey("dbo.SubRubroes", t => t.SubRubro_Id, cascadeDelete: true)
-                .Index(t => t.Profesional_Id)
-                .Index(t => t.SubRubro_Id);
+                .ForeignKey("dbo.Profesionals", t => t.Profesional_Id, cascadeDelete: true)
+                .Index(t => t.SubRubro_Id)
+                .Index(t => t.Profesional_Id);
             
             CreateTable(
-                "dbo.SubRubroPuestoes",
+                "dbo.PuestoSubRubroes",
                 c => new
                     {
-                        SubRubro_Id = c.Int(nullable: false),
                         Puesto_Id = c.Int(nullable: false),
+                        SubRubro_Id = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => new { t.SubRubro_Id, t.Puesto_Id })
-                .ForeignKey("dbo.SubRubroes", t => t.SubRubro_Id, cascadeDelete: true)
+                .PrimaryKey(t => new { t.Puesto_Id, t.SubRubro_Id })
                 .ForeignKey("dbo.Puestoes", t => t.Puesto_Id, cascadeDelete: true)
-                .Index(t => t.SubRubro_Id)
-                .Index(t => t.Puesto_Id);
+                .ForeignKey("dbo.SubRubroes", t => t.SubRubro_Id, cascadeDelete: true)
+                .Index(t => t.Puesto_Id)
+                .Index(t => t.SubRubro_Id);
             
         }
         
@@ -297,60 +319,64 @@ namespace VLaboralApi.Migrations
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
-            DropForeignKey("dbo.Puestoes", "TipoContratoId", "dbo.TipoContratoes");
-            DropForeignKey("dbo.SubRubroes", "RubroId", "dbo.Rubroes");
-            DropForeignKey("dbo.SubRubroPuestoes", "Puesto_Id", "dbo.Puestoes");
-            DropForeignKey("dbo.SubRubroPuestoes", "SubRubro_Id", "dbo.SubRubroes");
-            DropForeignKey("dbo.ProfesionalSubRubroes", "SubRubro_Id", "dbo.SubRubroes");
-            DropForeignKey("dbo.ProfesionalSubRubroes", "Profesional_Id", "dbo.Profesionals");
             DropForeignKey("dbo.IdentificacionProfesionals", "TipoIdentificacionProfesionalId", "dbo.TipoIdentificacionProfesionals");
-            DropForeignKey("dbo.IdentificacionProfesionals", "ProfesionalId", "dbo.Profesionals");
+            DropForeignKey("dbo.SubRubroes", "RubroId", "dbo.Rubroes");
+            DropForeignKey("dbo.Puestoes", "TipoContratoId", "dbo.TipoContratoes");
+            DropForeignKey("dbo.PuestoSubRubroes", "SubRubro_Id", "dbo.SubRubroes");
+            DropForeignKey("dbo.PuestoSubRubroes", "Puesto_Id", "dbo.Puestoes");
+            DropForeignKey("dbo.Requisitoes", "TipoRequisitoId", "dbo.TipoRequisitoes");
             DropForeignKey("dbo.Requisitoes", "PuestoId", "dbo.Puestoes");
             DropForeignKey("dbo.Puestoes", "OfertaId", "dbo.Ofertas");
-            DropForeignKey("dbo.Puestoes", "TipoDisponibilidadId", "dbo.TipoDisponibilidads");
             DropForeignKey("dbo.OfertaEstadoes", "TipoEstadoOfertaId", "dbo.TipoEstadoOfertas");
             DropForeignKey("dbo.OfertaEstadoes", "OfertaId", "dbo.Ofertas");
             DropForeignKey("dbo.Ofertas", "EmpresaId", "dbo.Empresas");
-            DropIndex("dbo.SubRubroPuestoes", new[] { "Puesto_Id" });
-            DropIndex("dbo.SubRubroPuestoes", new[] { "SubRubro_Id" });
-            DropIndex("dbo.ProfesionalSubRubroes", new[] { "SubRubro_Id" });
-            DropIndex("dbo.ProfesionalSubRubroes", new[] { "Profesional_Id" });
+            DropForeignKey("dbo.Puestoes", "TipoDisponibilidadId", "dbo.TipoDisponibilidads");
+            DropForeignKey("dbo.SubRubroProfesionals", "Profesional_Id", "dbo.Profesionals");
+            DropForeignKey("dbo.SubRubroProfesionals", "SubRubro_Id", "dbo.SubRubroes");
+            DropForeignKey("dbo.IdentificacionProfesionals", "ProfesionalId", "dbo.Profesionals");
+            DropIndex("dbo.PuestoSubRubroes", new[] { "SubRubro_Id" });
+            DropIndex("dbo.PuestoSubRubroes", new[] { "Puesto_Id" });
+            DropIndex("dbo.SubRubroProfesionals", new[] { "Profesional_Id" });
+            DropIndex("dbo.SubRubroProfesionals", new[] { "SubRubro_Id" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
-            DropIndex("dbo.IdentificacionProfesionals", new[] { "ProfesionalId" });
-            DropIndex("dbo.IdentificacionProfesionals", new[] { "TipoIdentificacionProfesionalId" });
-            DropIndex("dbo.SubRubroes", new[] { "RubroId" });
+            DropIndex("dbo.Requisitoes", new[] { "TipoRequisitoId" });
             DropIndex("dbo.Requisitoes", new[] { "PuestoId" });
-            DropIndex("dbo.Puestoes", new[] { "TipoDisponibilidadId" });
-            DropIndex("dbo.Puestoes", new[] { "TipoContratoId" });
-            DropIndex("dbo.Puestoes", new[] { "OfertaId" });
             DropIndex("dbo.OfertaEstadoes", new[] { "OfertaId" });
             DropIndex("dbo.OfertaEstadoes", new[] { "TipoEstadoOfertaId" });
             DropIndex("dbo.Ofertas", new[] { "EmpresaId" });
-            DropTable("dbo.SubRubroPuestoes");
-            DropTable("dbo.ProfesionalSubRubroes");
+            DropIndex("dbo.Puestoes", new[] { "TipoDisponibilidadId" });
+            DropIndex("dbo.Puestoes", new[] { "TipoContratoId" });
+            DropIndex("dbo.Puestoes", new[] { "OfertaId" });
+            DropIndex("dbo.SubRubroes", new[] { "RubroId" });
+            DropIndex("dbo.IdentificacionProfesionals", new[] { "ProfesionalId" });
+            DropIndex("dbo.IdentificacionProfesionals", new[] { "TipoIdentificacionProfesionalId" });
+            DropTable("dbo.PuestoSubRubroes");
+            DropTable("dbo.SubRubroProfesionals");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetRoles");
-            DropTable("dbo.TipoContratoes");
-            DropTable("dbo.Rubroes");
             DropTable("dbo.TipoIdentificacionProfesionals");
-            DropTable("dbo.IdentificacionProfesionals");
-            DropTable("dbo.Profesionals");
-            DropTable("dbo.SubRubroes");
+            DropTable("dbo.Rubroes");
+            DropTable("dbo.TipoContratoes");
+            DropTable("dbo.TipoRequisitoes");
             DropTable("dbo.Requisitoes");
-            DropTable("dbo.TipoDisponibilidads");
-            DropTable("dbo.Puestoes");
             DropTable("dbo.TipoEstadoOfertas");
             DropTable("dbo.OfertaEstadoes");
             DropTable("dbo.Empresas");
             DropTable("dbo.Ofertas");
+            DropTable("dbo.TipoDisponibilidads");
+            DropTable("dbo.Puestoes");
+            DropTable("dbo.SubRubroes");
+            DropTable("dbo.Profesionals");
+            DropTable("dbo.IdentificacionProfesionals");
+            DropTable("dbo.Habilidads");
             DropTable("dbo.BlobUploadModels");
         }
     }

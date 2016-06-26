@@ -26,11 +26,14 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Rubro> Rubroes { get; set; }
 
+        public System.Data.Entity.DbSet<VLaboralApi.Models.SubRubro> SubRubros { get; set; }
+
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoDisponibilidad> TipoDisponibilidads { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoContrato> TipoContratoes { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionProfesional> TiposIdentificacionesProfesionales { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.IdentificacionProfesional> IdentificacionesProfesional { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Profesional> Profesionals { get; set; }
 
