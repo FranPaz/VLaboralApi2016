@@ -26,48 +26,118 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Profesional))]
         public IHttpActionResult GetProfesional(int id)
         {
-            Profesional profesional = db.Profesionals.Find(id);
-            if (profesional == null)
+            try
             {
-                return NotFound();
-            }
+                var profesional = db.Profesionals
+                    .Where(p => p.Id == id)
+                    .Include(s => s.Subrubros.Select(r => r.Rubro))
+                    .Include(i => i.IdentificacionesProfesional.Select(ti => ti.TipoIdentificacionProfesional))
+                    .FirstOrDefault();
 
-            return Ok(profesional);
+                if (profesional == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(profesional);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT: api/Profesionals/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutProfesional(int id, Profesional profesional)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != profesional.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(profesional).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProfesionalExists(id))
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (id != profesional.Id)
+                {
+                    return BadRequest();
+                }
+
+                //fpaz: obtengo la entidad profesional original guardada en la bd
+                var profDb = db.Profesionals
+                    .Where(p => p.Id == id)
+                    .Include(s => s.Subrubros)  
+                    .Include(i => i.IdentificacionesProfesional)
+                    .FirstOrDefault();
+
+                
+                //fpaz: actualizo las propiedades escalares del objeto profesional que recibo como parametro
+                db.Entry(profDb).CurrentValues.SetValues(profesional);
+
+                #region fpaz: update de subrubros
+                //fpaz: elimino los subrubros que ya no se hayan enviado en el array de subrubros modificados
+                foreach (var dbSubRubro in profDb.Subrubros.ToList())
+                {
+                    //fpaz: para cada subrubro asociado actualmente al profesional en la bd
+                    if (!profesional.Subrubros.Any(s => s.Id == dbSubRubro.Id)) //busco si en el array de subrubros enviados como parametros, alguno de los objetos subrubros coincide con el de la base de datos
+                    {
+                        //si no encuentro al subrubro de la bd en el array ingresado como parametro, elimino la relacion entre ese subrubro y el profesional
+                        profDb.Subrubros.Remove(dbSubRubro);
+                    }
+                }
+
+                //fpaz: agrego los nuevos subrubros enviados en el array de subrubros del profesional
+                foreach (var prmSubRubro in profesional.Subrubros)
+                {
+                    //fpaz: para cada subrubro ingresado como parametro
+                    if (!profDb.Subrubros.Any(s => s.Id == prmSubRubro.Id)) //busco si el subrubro ingresado como parametro en el cliente esta actualmente en el array de subrubros asociados al profesional
+                    {
+                        //si el subrubro no esta relacionado
+                        var a = db.SubRubros.Find(prmSubRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
+                        profDb.Subrubros.Add(a); //agrego el subrubro al array de subrubros del profesional
+                    }
+                }
+                #endregion
+
+                #region fpaz: update identificaciones del profesional
+                //fpaz: elimino las identificaciones del profesional que no se hayan enviado en el array de identificaciones modificadas
+                foreach (var dbIdent in profDb.IdentificacionesProfesional.ToList())
+                {
+                    //fpaz: para cada identificacion asociado actualmente al profesional en la bd
+                    if (!profesional.IdentificacionesProfesional.Any(s => s.Id == dbIdent.Id)) //busco si en el array de identificaciones enviados como parametros, alguno de los objetos identificacion coincide con el de la base de datos
+                    {
+                        //si no encuentro la identificacion en el array ingresado como parametro, elimino la relacion entre esa identificacion y el profesional
+                        db.IdentificacionesProfesional.Remove(dbIdent);
+                    }
+                }
+
+                //fpaz: agrego o actualizo las identificaciones del profesional
+                foreach (var prmIdent in profesional.IdentificacionesProfesional)
+                {
+                    var dbIdent = profDb.IdentificacionesProfesional.FirstOrDefault(s => s.Id == prmIdent.Id); //busco si la identificacion ingresada como parametro esta asociada al profesional en la bd
+                    if (dbIdent != null && dbIdent.Id > 0)
+                        // Update de la identificacion
+                        db.Entry(dbIdent).CurrentValues.SetValues(prmIdent);
+                    else
+                        //agrego una nueva identificacion al profesional
+                        profDb.IdentificacionesProfesional.Add(prmIdent);
+                }
+
+                #endregion
+
+
+                db.SaveChanges();
+
+                return Ok(profDb);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST: api/Profesionals

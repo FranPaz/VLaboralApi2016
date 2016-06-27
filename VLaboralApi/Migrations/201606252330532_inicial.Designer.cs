@@ -13,7 +13,7 @@ namespace VLaboralApi.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201606172155026_inicial"; }
+            get { return "201606252330532_inicial"; }
         }
         
         string IMigrationMetadata.Source
