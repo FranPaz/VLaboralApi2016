@@ -234,6 +234,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\HabilidadsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
@@ -242,20 +243,24 @@
     <Compile Include="Controllers\RubrosController.cs" />
     <Compile Include="Controllers\TipoContratosController.cs" />
     <Compile Include="Controllers\TipoDisponibilidadsController.cs" />
+    <Compile Include="Controllers\TipoIdentificacionProfesionalsController.cs" />
+    <Compile Include="Controllers\TipoRequisitoesController.cs" />
+    <Compile Include="Controllers\TiposDisponibilidadController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201606172155026_inicial.cs" />
-    <Compile Include="Migrations\201606172155026_inicial.Designer.cs">
-      <DependentUpon>201606172155026_inicial.cs</DependentUpon>
+    <Compile Include="Migrations\201606252131184_inicial.cs" />
+    <Compile Include="Migrations\201606252131184_inicial.Designer.cs">
+      <DependentUpon>201606252131184_inicial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
     <Compile Include="Models\Empresa.cs" />
+    <Compile Include="Models\Habilidad.cs" />
     <Compile Include="Models\Identificacion.cs" />
     <Compile Include="Models\ModelFactory.cs" />
     <Compile Include="Models\Oferta.cs" />
@@ -270,6 +275,7 @@
     <Compile Include="Models\TipoEstadoOferta.cs" />
     <Compile Include="Models\TipoDisponibilidad.cs" />
     <Compile Include="Models\TipoIdentificacion.cs" />
+    <Compile Include="Models\TipoRequisito.cs" />
     <Compile Include="Models\VLaboral_Context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\BlobStorageUploadProvider.cs" />
@@ -336,8 +342,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606172155026_inicial.resx">
-      <DependentUpon>201606172155026_inicial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201606252131184_inicial.resx">
+      <DependentUpon>201606252131184_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
