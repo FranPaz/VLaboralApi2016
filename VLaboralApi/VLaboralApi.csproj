@@ -234,6 +234,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\HabilidadsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
@@ -242,15 +243,18 @@
     <Compile Include="Controllers\RubrosController.cs" />
     <Compile Include="Controllers\TipoContratosController.cs" />
     <Compile Include="Controllers\TipoDisponibilidadsController.cs" />
+    <Compile Include="Controllers\TipoIdentificacionProfesionalsController.cs" />
+    <Compile Include="Controllers\TipoRequisitoesController.cs" />
+    <Compile Include="Controllers\TiposDisponibilidadController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201606252330532_inicial.cs" />
-    <Compile Include="Migrations\201606252330532_inicial.Designer.cs">
-      <DependentUpon>201606252330532_inicial.cs</DependentUpon>
+    <Compile Include="Migrations\201606281831374_inicial.cs" />
+    <Compile Include="Migrations\201606281831374_inicial.Designer.cs">
+      <DependentUpon>201606281831374_inicial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -338,8 +342,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606252330532_inicial.resx">
-      <DependentUpon>201606252330532_inicial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201606281831374_inicial.resx">
+      <DependentUpon>201606281831374_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
