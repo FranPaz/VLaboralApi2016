@@ -91,23 +91,6 @@ namespace VLaboralApi.Migrations
             context.Profesionals.Add(prof);
             #endregion
 
-            #region kikexp: Semilla para Cargar una Habilidad por Defecto
-            var Habilidad = new Habilidad
-            {
-                Nombre = "Habilidad Prueba",
-                Descripcion = "Descripcion Habilidad Prueba"
-            };
-            context.Habilidads.Add(Habilidad);
-            #endregion
-
-            #region kikexp: Semilla para Tipo de Requisito
-            var TipoRequisito = new TipoRequisito
-            {
-                Nombre = "Tipo de requisito Prueba"
-            };
-            context.TipoRequisitoes.Add(TipoRequisito);
-            #endregion
-
             #region SLuna: Semilla para Rubros y SubRubros
             var listRubros = new List<Rubro>{
                     new Rubro {Nombre="Informática", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
@@ -125,6 +108,27 @@ namespace VLaboralApi.Migrations
                     }}
             };
             context.Rubroes.AddRange(listRubros);
+            #endregion
+
+            #region iafar: Semilla de Habilidades
+            var listHabilidades = new List<Habilidad>{
+                new Habilidad {Nombre="SQL", Descripcion="Manejo de Lenguaje SQL"},
+                new Habilidad {Nombre="PHP", Descripcion="Manejo de Lenguaje PHP"},
+                new Habilidad {Nombre="HTML5", Descripcion="Manejo de Lenguaje HTML5"},
+                new Habilidad {Nombre="UI/UX web", Descripcion="Conocimiento de diseño web aplicando tecnicas UI/UX"}
+            };
+            context.Habilidads.AddRange(listHabilidades);
+            #endregion
+
+            #region iafar: Semilla para Tipo de Requisito
+            var TipoRequisito = new List<TipoRequisito>{
+                new TipoRequisito{Nombre="Edad"},
+                new TipoRequisito{Nombre="Sexo"},
+                new TipoRequisito{Nombre="Nacionalidad"},
+                new TipoRequisito{Nombre="Identidad Verificada"}
+            };
+            
+            context.TipoRequisitoes.AddRange(TipoRequisito);
             #endregion
 
 
