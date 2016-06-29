@@ -74,15 +74,21 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Oferta))]
         public IHttpActionResult PostOferta(Oferta oferta)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                db.Ofertas.Add(oferta);
+                db.SaveChanges();
+                return Ok();
             }
-
-            db.Ofertas.Add(oferta);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = oferta.Id }, oferta);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Ofertas/5

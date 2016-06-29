@@ -131,6 +131,15 @@ namespace VLaboralApi.Migrations
             context.TipoRequisitoes.AddRange(TipoRequisito);
             #endregion
 
+            #region fpaz: Semilla para Cargar una Empresa por defecto (Solo Para Desarrollo)
+            var emp = new Empresa
+            {
+                RazonSocial="Empresa 1 Srl",
+                NombreFantasia="Empresa de Fantasia"                
+            };
+            context.Empresas.Add(emp);
+            #endregion
+
 
             base.Seed(context);
         }
