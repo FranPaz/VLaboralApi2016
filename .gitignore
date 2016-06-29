@@ -253,3 +253,4 @@ paket-files/
 *.csproj
 *.orig
 VLaboralApi/VLaboralApi.csproj
+/VLaboralApi/Migrations

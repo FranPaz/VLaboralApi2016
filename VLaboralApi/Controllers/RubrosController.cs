@@ -16,7 +16,7 @@ namespace VLaboralApi.Controllers
     {
         private VLaboral_Context db = new VLaboral_Context();
 
-        // GET: api/Rubros
+        // GET: api/TipoContratos
         public IQueryable<Rubro> GetRubroes()
         {
             return db.Rubroes;
@@ -88,6 +88,8 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+           
+            if (rubro == null) return BadRequest();
 
             db.Rubroes.Add(rubro);
             db.SaveChanges();
@@ -99,7 +101,7 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Rubro))]
         public IHttpActionResult DeleteRubro(int id)
         {
-            Rubro rubro = db.Rubroes.Find(id);
+            var rubro = db.Rubroes.Find(id);
             if (rubro == null)
             {
                 return NotFound();
