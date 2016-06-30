@@ -7,6 +7,10 @@ namespace VLaboralApi.Models
 {
     public class SubRubro
     {
+        public SubRubro()
+        {
+            this.Puestos = new HashSet<Puesto>(); //fpaz: para la relacion M a M coin subrubros
+        }
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }

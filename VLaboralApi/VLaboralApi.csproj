@@ -256,6 +256,10 @@
     <Compile Include="Migrations\201606290254524_inicial.Designer.cs">
       <DependentUpon>201606290254524_inicial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606300605479_m1.cs" />
+    <Compile Include="Migrations\201606300605479_m1.Designer.cs">
+      <DependentUpon>201606300605479_m1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
@@ -344,6 +348,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201606290254524_inicial.resx">
       <DependentUpon>201606290254524_inicial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300605479_m1.resx">
+      <DependentUpon>201606300605479_m1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

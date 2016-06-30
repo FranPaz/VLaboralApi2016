@@ -41,6 +41,7 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoRequisito> TipoRequisitoes { get; set; }
         public System.Data.Entity.DbSet<VLaboralApi.Models.Empresa> Empresas { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Puesto> Puestos { get; set; }
         #endregion
 
         public static VLaboral_Context Create()

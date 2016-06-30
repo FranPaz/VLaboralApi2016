@@ -35,6 +35,51 @@ namespace VLaboralApi.Controllers
             return Ok(oferta);
         }
 
+        // GET: api/Ofertas/5        
+        public IHttpActionResult GetOfertas(int prmIdProfesional) //fpaz: funcion para obtener las ofertas relacionadas a los subrubros del empleado
+        {
+            try
+            {
+                //fpaz: obtengo los datos del profesional incluyendo los subrubros
+                var prof = (from p in db.Profesionals
+                            where p.Id == prmIdProfesional
+                            select p)
+                            .Include(s=>s.Subrubros)
+                            .FirstOrDefault();
+
+                //fpaz: armo un array solo con los Ids de los subrubros, sirve para el where en las ofertas
+                var subs = (from s in prof.Subrubros
+                            select s.Id).ToList();
+
+                var listOfertas = new List<Oferta>();
+                if (subs.Count > 0)
+                {
+                    //fpaz: obtengo el listado de ofertas que tengan al menos un puesto con algun subrubro cargado por el empleado
+                    listOfertas = (from p in db.Puestos
+                                       join o in db.Ofertas
+                                       on p.OfertaId equals o.Id
+                                       where
+                                           //DateTime.Parse(o.FechaFinConvocatoria).CompareTo(DateTime.Now) > 0  && 
+                                       p.Subrubros.Any(s => subs.Contains(s.Id)) // consulto si existe algunos de los subrubros de los puestos que este contenido dentro del array de Ids de Subrubros del Empleado
+                                       select o)
+                             .Take(10) //fpaz: cantidad de ofertas a devolver
+                             .ToList();
+                }
+                else
+                {
+                    //fpaz: si el empleado no tiene cargado ningun subrubro, se devuelve las ultimas x ofertas
+                    listOfertas = db.Ofertas
+                            .Take(1) //fpaz: cantidad de ofertas a devolver
+                            .ToList();
+                }
+                return Ok(listOfertas);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+        }
+
         // PUT: api/Ofertas/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutOferta(int id, Oferta oferta)

@@ -7,10 +7,10 @@ namespace VLaboralApi.Models
 {
     public class Puesto
     {
-        public Puesto()
-        {
-            this.Subrubros = new HashSet<SubRubro>(); //fpaz: para la relacion M a M coin subrubros
-        }
+        //public Puesto()
+        //{
+        //    this.Subrubros = new HashSet<SubRubro>(); //fpaz: para la relacion M a M coin subrubros
+        //}
 
         public int Id { get; set; }
         public string Nombre { get; set; }

@@ -139,7 +139,7 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        
         // POST: api/Profesionals
         [ResponseType(typeof(Profesional))]
         public IHttpActionResult PostProfesional(Profesional profesional)
