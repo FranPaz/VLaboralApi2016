@@ -32,10 +32,10 @@ namespace VLaboralApi.Controllers
                 //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
                 //TODO: Habría que agregar el estado de la oferta y algunos parametros más para asegurarse de que está activa
                 //TODO: Podríamos definir este filtro para no andar configurandolo en cada llamada. Ej: db.Ofertas.Activas() o algo de ese estilo
-                var totalRows = db.Ofertas.Count(o => DateTime.ParseExact(o.FechaInicioConvocatoria, "dd/MM/yyy", null) <= DateTime.Now && DateTime.ParseExact(o.FechaFinConvocatoria, "dd/MM/yyy", null) >= DateTime.Now);
+                var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now);
                 var totalPages = (int)Math.Ceiling((double)totalRows / rows);
                 var results = db.Ofertas
-                    .Where(o => DateTime.ParseExact(o.FechaInicioConvocatoria, "dd/MM/yyy", null) <= DateTime.Now && DateTime.ParseExact(o.FechaFinConvocatoria, "dd/MM/yyy", null) >= DateTime.Now)
+                    .Where(o => o.FechaInicioConvocatoria<= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now)
                     .OrderBy(o => o.Id)
                     .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
                     .Take(rows)
