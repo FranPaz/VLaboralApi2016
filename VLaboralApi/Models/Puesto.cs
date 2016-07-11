@@ -16,7 +16,7 @@ namespace VLaboralApi.Models
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public string Ubicacion { get; set; }
-        public ICollection<string> Habilidades { get; set; }
+        public string Habilidades { get; set; }
         public string Remuneracion { get; set; }
         public int Vacantes { get; set; } //fpaz: numero de vacantes para el puesto
 

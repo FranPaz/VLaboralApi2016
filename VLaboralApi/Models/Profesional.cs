@@ -17,10 +17,11 @@ namespace VLaboralApi.Models
         public string Nombre { get; set; }
         public string Apellido { get; set; }        
         public string Nacionalidad { get; set; }        
-        public DateTime? FechaNac { get; set; }
+        public string FechaNac { get; set; }
         public string Domicilio { get; set; }
         public string ObjetivoProfesional { get; set; }
         public string DescripcionCurricular { get; set; }
+        public string Habilidades { get; set; }
 
         //fpaz: relacion 1 a M con Identificacion (muchos). Tiene el array con todos los tipos de identificaciones del profesional y sus valores (Dni, Cuil, Pasaporte)        
         public virtual ICollection<IdentificacionProfesional> IdentificacionesProfesional { get; set; }        

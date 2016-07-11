@@ -252,13 +252,9 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201606290254524_inicial.cs" />
-    <Compile Include="Migrations\201606290254524_inicial.Designer.cs">
-      <DependentUpon>201606290254524_inicial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201606300605479_m1.cs" />
-    <Compile Include="Migrations\201606300605479_m1.Designer.cs">
-      <DependentUpon>201606300605479_m1.cs</DependentUpon>
+    <Compile Include="Migrations\201607112108566_inicial.cs" />
+    <Compile Include="Migrations\201607112108566_inicial.Designer.cs">
+      <DependentUpon>201607112108566_inicial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -287,6 +283,7 @@
     <Compile Include="Providers\CustomOAuthProvider.cs" />
     <Compile Include="Services\BlobHelper.cs" />
     <Compile Include="Services\BlobService.cs" />
+    <Compile Include="Services\CustomPaginateResult.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -319,6 +316,7 @@
     <None Include="Properties\PublishProfiles\VLaboralApi.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\VLaboralBE.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -346,11 +344,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606290254524_inicial.resx">
-      <DependentUpon>201606290254524_inicial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606300605479_m1.resx">
-      <DependentUpon>201606300605479_m1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607112108566_inicial.resx">
+      <DependentUpon>201607112108566_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

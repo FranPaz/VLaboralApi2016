@@ -10,8 +10,8 @@ namespace VLaboralApi.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
-        public DateTime FechaInicioConvocatoria { get; set; }
-        public DateTime FechaFinConvocatoria { get; set; }
+        public string FechaInicioConvocatoria { get; set; }
+        public string FechaFinConvocatoria { get; set; }
         public bool Publica { get; set; }
 
         //iafar:Relacion 1 a M con puestos (Muchos)
