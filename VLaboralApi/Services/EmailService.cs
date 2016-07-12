@@ -29,13 +29,8 @@ namespace VLaboralApi.Services
             myMessage.Html = message.Body;
 
             // Create network credentials to access your SendGrid account
-            var username = "";
-            var pswd = "";
-
-            var credentials = new NetworkCredential(username, pswd);
-            
-            //var credentials = new NetworkCredential(ConfigurationManager.AppSettings["emailService:Account"],
-            //                                        ConfigurationManager.AppSettings["emailService:Password"]);
+            var credentials = new NetworkCredential(ConfigurationManager.AppSettings["emailService:Account"],
+                                                    ConfigurationManager.AppSettings["emailService:Password"]);
 
             // Create a Web transport for sending email.
             var transportWeb = new Web(credentials);

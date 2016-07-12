@@ -8,25 +8,18 @@ namespace VLaboralApi.Models
 {
     public class CreateUserBindingModel
     {
+        [Required]        
+        [Display(Name = "Razon Social")]
+        public string RazonSocial { get; set; }
+
+        [Required]
+        [Display(Name = "Valor del Tipo de Identificacion")]
+        public string ValorIdentificacion { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
-
-        [Required]
-        [Display(Name = "Username")]
-        public string Username { get; set; }
-
-        [Required]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Required]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-        [Display(Name = "Role Name")]
-        public string RoleName { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -39,10 +32,21 @@ namespace VLaboralApi.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+        
+    }
+    public class modeloCreacionUsuarioEmpresa : CreateUserBindingModel
+    {
+        [Required]
+        [Display(Name = "Tipo de Identificacion de Empresa")]
+        public TipoIdentificacionEmpresa TipoIdentificacionEmpresa { get; set; }
+    }
 
-        //[Required]
-        [Display(Name="EmpleadorId")]
-        public int EmpleadorId { get; set; }
+    public class modeloCreacionUsuarioProfesional : CreateUserBindingModel
+    {
+
+        [Required]
+        [Display(Name = "Tipo de Identificacion")]
+        public TipoIdentificacionProfesional TipoIdentificacionProfesional { get; set; }
     }
 
     public class ChangePasswordBindingModel
