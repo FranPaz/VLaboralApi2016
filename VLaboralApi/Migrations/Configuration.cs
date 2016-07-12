@@ -90,7 +90,7 @@ namespace VLaboralApi.Migrations
             {
                 Nombre = "Nombre Profesional 1",
                 Apellido = "Apellidod Profesional 1",
-                FechaNac = new DateTime(2016, 4, 31)
+                FechaNac = new DateTime(2016, 4, 30)
             };
             context.Profesionals.Add(prof);
             #endregion
