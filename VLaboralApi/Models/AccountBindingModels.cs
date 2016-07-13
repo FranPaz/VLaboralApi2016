@@ -8,10 +8,6 @@ namespace VLaboralApi.Models
 {
     public class CreateUserBindingModel
     {
-        [Required]        
-        [Display(Name = "Razon Social")]
-        public string RazonSocial { get; set; }
-
         [Required]
         [Display(Name = "Valor del Tipo de Identificacion")]
         public string ValorIdentificacion { get; set; }
@@ -36,6 +32,10 @@ namespace VLaboralApi.Models
     }
     public class modeloCreacionUsuarioEmpresa : CreateUserBindingModel
     {
+        [Required]
+        [Display(Name = "Razon Social")]
+        public string RazonSocial { get; set; }
+
         [Required]
         [Display(Name = "Tipo de Identificacion de Empresa")]
         public TipoIdentificacionEmpresa TipoIdentificacionEmpresa { get; set; }
