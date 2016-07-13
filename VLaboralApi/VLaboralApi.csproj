@@ -256,10 +256,6 @@
     <Compile Include="Migrations\201606290254524_inicial.Designer.cs">
       <DependentUpon>201606290254524_inicial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201606300605479_m1.cs" />
-    <Compile Include="Migrations\201606300605479_m1.Designer.cs">
-      <DependentUpon>201606300605479_m1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
@@ -287,6 +283,7 @@
     <Compile Include="Providers\CustomOAuthProvider.cs" />
     <Compile Include="Services\BlobHelper.cs" />
     <Compile Include="Services\BlobService.cs" />
+    <Compile Include="Services\CustomPaginateResult.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -326,7 +323,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <None Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -348,9 +347,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201606290254524_inicial.resx">
       <DependentUpon>201606290254524_inicial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201606300605479_m1.resx">
-      <DependentUpon>201606300605479_m1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
