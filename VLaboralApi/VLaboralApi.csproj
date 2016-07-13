@@ -253,9 +253,9 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201607120246330_m1.cs" />
-    <Compile Include="Migrations\201607120246330_m1.Designer.cs">
-      <DependentUpon>201607120246330_m1.cs</DependentUpon>
+    <Compile Include="Migrations\201607121947086_inicial.cs" />
+    <Compile Include="Migrations\201607121947086_inicial.Designer.cs">
+      <DependentUpon>201607121947086_inicial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -317,6 +317,8 @@
     <None Include="Properties\PublishProfiles\VLaboralApi.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\VLaboralBE - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\VLaboralBE - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\VLaboralBE.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -347,8 +349,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201607120246330_m1.resx">
-      <DependentUpon>201607120246330_m1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201607121947086_inicial.resx">
+      <DependentUpon>201607121947086_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
