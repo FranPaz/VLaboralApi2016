@@ -19,6 +19,8 @@ namespace VLaboralApi.Models
         //iafar: relacion 1 a m con empresa (m)
         public virtual ICollection<Oferta> Ofertas { get; set; }
 
+        //fpaz: relacion 1 a M con IdentificacionEmpresa (muchos). Tiene el array con todos los tipos de identificaciones de la empresa y sus valores (cuit, etc)        
+        public virtual ICollection<IdentificacionEmpresa> IdentificacionesEmpresa { get; set; }        
 
     }
 }

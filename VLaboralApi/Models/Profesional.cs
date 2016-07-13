@@ -21,6 +21,7 @@ namespace VLaboralApi.Models
         public string Domicilio { get; set; }
         public string ObjetivoProfesional { get; set; }
         public string DescripcionCurricular { get; set; }
+        public string Habilidades { get; set; }
 
         //fpaz: relacion 1 a M con Identificacion (muchos). Tiene el array con todos los tipos de identificaciones del profesional y sus valores (Dni, Cuil, Pasaporte)        
         public virtual ICollection<IdentificacionProfesional> IdentificacionesProfesional { get; set; }        

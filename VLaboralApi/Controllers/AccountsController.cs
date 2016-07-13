@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
@@ -55,8 +56,8 @@ namespace VLaboralApi.Controllers
         }
 
         [AllowAnonymous]
-        [Route("create")]
-        public async Task<IHttpActionResult> CreateUser(CreateUserBindingModel createUserModel)
+        [Route("createEmpresa")]
+        public async Task<IHttpActionResult> CreateUserEmpresa(modeloCreacionUsuarioEmpresa createUserModel) //fpaz: funcion para crear un usuario del tipo Empresa
         {            
 
             if (!ModelState.IsValid)
@@ -66,18 +67,14 @@ namespace VLaboralApi.Controllers
 
             try
             {
-                VLaboral_Context db = new VLaboral_Context();
-                //var emp = db.Empleadores.Find(createUserModel.EmpleadorId);
+                VLaboral_Context db = new VLaboral_Context();                
 
+                //fpaz: agrego un nuevo usuario de la aplicacion usando identity framework
                 var user = new ApplicationUser()
                 {
-                    UserName = createUserModel.Username,
-                    Email = createUserModel.Email,
-                    FirstName = createUserModel.FirstName,
-                    LastName = createUserModel.LastName,
-                    Level = 3,
-                    JoinDate = DateTime.Now.Date,
-                    //Empleador = emp
+                    UserName = createUserModel.Email,
+                    Email = createUserModel.Email, 
+                    FechaAlta = DateTime.Now
                 };
 
                 IdentityResult addUserResult = await this.AppUserManager.CreateAsync(user, createUserModel.Password);
@@ -86,22 +83,128 @@ namespace VLaboralApi.Controllers
                 {
                     return GetErrorResult(addUserResult);
                 }
+                else
+                {
+                    #region alta de nueva empresa
+                    //fpaz: doy de alta una nueva instancia empresa que va a estar relacionada con el usuario del tipo empresa 
+                    Empresa emp = new Empresa { RazonSocial = createUserModel.RazonSocial };
 
-                string code = await this.AppUserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    emp.IdentificacionesEmpresa = new List<IdentificacionEmpresa> {
+                        new IdentificacionEmpresa {
+                            TipoIdentificacionEmpresaId = createUserModel.TipoIdentificacionEmpresa.Id,
+                            EmpresaId = emp.Id,
+                            Valor = createUserModel.ValorIdentificacion
+                        }
+                    };
 
-                var callbackUrl = new Uri(Url.Link("ConfirmEmailRoute", new { userId = user.Id, code = code }));
+                    db.Empresas.Add(emp);
+                    db.SaveChanges();
+                    #endregion
 
-                await this.AppUserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    #region Alta de Claims y Roles para el nuevo Usuario del tipo Empresa
+                    //fpaz: agrego al Usuario de la Aplicacion los Claims que van a tener informacion de la empresa a la cual esta asociado el Usuario del Tipo Empresa
+                    await this.AppUserManager.AddClaimAsync(user.Id, new Claim("app_usertype", "empresa"));
+                    await this.AppUserManager.AddClaimAsync(user.Id, new Claim("empresaId", emp.Id.ToString()));
 
-                Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+                    //fpaz: agrego los roles del usuario                    
+                    await this.AppUserManager.AddToRolesAsync(user.Id, new string[] { "Empresa" });
+                    #endregion
 
-                return Created(locationHeader, TheModelFactory.Create(user));
+
+                    #region Envio de Email de Confirmacion
+                    string code = await this.AppUserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+
+                    var callbackUrl = new Uri(Url.Link("ConfirmEmailRoute", new { userId = user.Id, code = code }));
+
+                    await this.AppUserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                    Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+                    #endregion
+
+                    return Created(locationHeader, TheModelFactory.Create(user));
+                }
             }
             catch (Exception ex)
-            {                
-                throw;
+            {
+                return BadRequest(ex.Message);
             }
             
+        }
+
+        [AllowAnonymous]
+        [Route("createProfesional")]
+        public async Task<IHttpActionResult> CreateUserProfesional(modeloCreacionUsuarioProfesional createUserModel) //fpaz: funcion para crear un usuario del tipo Profesional
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                VLaboral_Context db = new VLaboral_Context();
+
+                //fpaz: agrego un nuevo usuario de la aplicacion usando identity framework
+                var user = new ApplicationUser()
+                {
+                    UserName = createUserModel.Email,
+                    Email = createUserModel.Email,
+                    FechaAlta = DateTime.Now
+                };
+
+                IdentityResult addUserResult = await this.AppUserManager.CreateAsync(user, createUserModel.Password);
+
+                if (!addUserResult.Succeeded)
+                {
+                    return GetErrorResult(addUserResult);
+                }
+                else
+                {
+                    #region alta de nueva empresa
+                    //fpaz: doy de alta una nueva instancia Profesional que va a estar relacionada con el usuario del tipo Profesional 
+                    Profesional prof = new Profesional {};
+
+                    prof.IdentificacionesProfesional = new List<IdentificacionProfesional> {
+                        new IdentificacionProfesional {
+                            TipoIdentificacionProfesionalId = createUserModel.TipoIdentificacionProfesional.Id,
+                            ProfesionalId = prof.Id,
+                            Valor = createUserModel.ValorIdentificacion
+                        }
+                    };
+
+                    db.Profesionals.Add(prof);
+                    db.SaveChanges();
+                    #endregion
+
+                    #region Alta de Claims y Roles para el nuevo Usuario del tipo Profesional
+                    //fpaz: agrego al Usuario de la Aplicacion los Claims que van a tener informacion de la empresa a la cual esta asociado el Usuario del Tipo Empresa
+                    await this.AppUserManager.AddClaimAsync(user.Id, new Claim("app_usertype", "profesional"));
+                    await this.AppUserManager.AddClaimAsync(user.Id, new Claim("profesionalId", prof.Id.ToString()));
+
+                    //fpaz: agrego los roles del usuario                    
+                    await this.AppUserManager.AddToRolesAsync(user.Id, new string[] { "Profesional" });
+                    #endregion
+
+
+                    #region Envio de Email de Confirmacion
+                    string code = await this.AppUserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+
+                    var callbackUrl = new Uri(Url.Link("ConfirmEmailRoute", new { userId = user.Id, code = code }));
+
+                    await this.AppUserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                    Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+                    #endregion
+
+                    return Created(locationHeader, TheModelFactory.Create(user));
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [AllowAnonymous]

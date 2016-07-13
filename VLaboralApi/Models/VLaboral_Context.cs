@@ -33,7 +33,11 @@ namespace VLaboralApi.Models
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoContrato> TipoContratoes { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionProfesional> TiposIdentificacionesProfesionales { get; set; }
+
         public System.Data.Entity.DbSet<VLaboralApi.Models.IdentificacionProfesional> IdentificacionesProfesional { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionEmpresa> TiposIdentificacionesEmpresas { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.IdentificacionEmpresa> IdentificacionesEmpresa { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Profesional> Profesionals { get; set; }
 

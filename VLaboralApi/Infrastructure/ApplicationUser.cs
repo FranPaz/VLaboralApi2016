@@ -14,22 +14,7 @@ namespace VlaboralApi.Infrastructure
     public class ApplicationUser : IdentityUser
     {
         [Required]
-        [MaxLength(100)]
-        public string FirstName { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        public string LastName { get; set; }
-
-        [Required]
-        public byte Level { get; set; }
-
-        [Required]
-        public DateTime JoinDate { get; set; }
-
-        ////fpaz: 1 a M con Empleador (1)
-        //public int EmpleadorId { get; set; }
-        //public virtual Empleador Empleador { get; set; }
+        public DateTime FechaAlta { get; set; }
 
         //funcion que devuelve todos los claims y roles
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
