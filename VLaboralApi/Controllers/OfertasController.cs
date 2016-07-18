@@ -161,6 +161,19 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
+                foreach (var puesto in oferta.Puestos)
+                {
+                    List<SubRubro> subrubrosPuesto = new List<SubRubro>();
+
+                    foreach (var subRubro in puesto.Subrubros.ToList())
+                    {
+                        var a = db.SubRubros.Find(subRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
+                        subrubrosPuesto.Add(a);//agrego el subrubro al array de subrubros del profesional                                                
+                    }
+
+                    puesto.Subrubros = subrubrosPuesto;
+                }
+
                 db.Ofertas.Add(oferta);
                 db.SaveChanges();
                 return Ok();
