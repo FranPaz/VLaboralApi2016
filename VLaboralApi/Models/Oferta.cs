@@ -24,6 +24,8 @@ namespace VLaboralApi.Models
         //iafar: relacion 1 a m con OfertaEstado (m)
         public virtual ICollection<OfertaEstado> OfertaEstados { get; set; }
 
+        //fpaz: relacion 1 a m con etapa oferta (muchos)
+        public virtual ICollection<EtapaOferta> EtapasOferta { get; set; }
 
 
     }

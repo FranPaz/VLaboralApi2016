@@ -37,5 +37,8 @@ namespace VLaboralApi.Models
 
         //fpaz: relacion 1 a M con requisitos (muchos)
         public virtual ICollection<Requisito> Requisitos { get; set; }
+
+        //fpaz: relacion 1 a M con PuestoEtapaOferta (muchos)
+        public virtual ICollection<PuestoEtapaOferta> PuestoEtapasOferta { get; set; }
     }
 }
