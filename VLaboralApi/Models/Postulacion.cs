@@ -11,6 +11,7 @@ namespace VLaboralApi.Models
         public string Comentario { get; set; }
         public string Valoracion { get; set; }
         public bool PasaEtapa { get; set; }
+        public DateTime? Fecha { get; set; }
 
         //fpaz: relacion 1 a m con PuestoEtapaOferta (uno)
         public int PuestoEtapaOfertaId { get; set; }

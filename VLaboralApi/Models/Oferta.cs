@@ -12,6 +12,7 @@ namespace VLaboralApi.Models
         public string Descripcion { get; set; }
         public DateTime? FechaInicioConvocatoria { get; set; }
         public DateTime? FechaFinConvocatoria { get; set; }
+        public int IdEtapaActual { get; set; }
         public bool Publica { get; set; }
 
         //iafar:Relacion 1 a M con puestos (Muchos)

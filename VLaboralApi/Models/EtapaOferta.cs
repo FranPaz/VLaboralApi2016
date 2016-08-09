@@ -9,8 +9,7 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
         public int IdEtapaAnterior { get; set; }
-        public int IdEstapaSiguiente { get; set; }
-        public bool EtapaActiva { get; set; } //sirve para saber si la etapa todacia esta activa (true/false)
+        public int IdEstapaSiguiente { get; set; }        
         public DateTime? FechaFin { get; set; }
         public DateTime? FechaFinTentativa { get; set; } //fecha de fin de la etapa estimada por la empresa
 
