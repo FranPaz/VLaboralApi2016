@@ -61,7 +61,21 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Oferta))]
         public IHttpActionResult GetOferta(int id)
         {
-            Oferta oferta = db.Ofertas.Find(id);
+            var oferta = (from o in db.Ofertas
+                         where o.Id == id
+                         select o)
+                         .Include(e=>e.Empresa)
+                         .Include(p=>p.Puestos)
+                         .Include(p=>p.Puestos.Select(r=>r.Requisitos))
+                         .Include(p=>p.Puestos.Select(r => r.Requisitos.Select(tr=>tr.TipoRequisito)))
+                         .Include(p=>p.Puestos.Select(sr=>sr.Subrubros))
+                         .Include(p => p.Puestos.Select(tc=>tc.TipoContrato))
+                         .Include(p => p.Puestos.Select(d=>d.Disponibilidad))
+                         .FirstOrDefault();
+
+
+
+            //Oferta oferta = db.Ofertas.Find(id);
             if (oferta == null)
             {
                 return NotFound();
