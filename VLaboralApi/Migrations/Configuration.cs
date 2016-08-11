@@ -140,6 +140,19 @@ namespace VLaboralApi.Migrations
             context.TipoRequisitoes.AddRange(TipoRequisito);
             #endregion
 
+            #region iafar: Semilla de TipoEtapas
+            var listaTipoEtapas = new List<TipoEtapa>{
+                new TipoEtapa {Nombre="Reclutamiento", Descripcion="Publicación de la oferta de empleo por parte de la Empresa"},
+                new TipoEtapa {Nombre="Preseleccion", Descripcion="Escogerá aquellos que le parecen cumplen mejor con el perfil"},
+                new TipoEtapa {Nombre="Entrevista Formal", Descripcion="Conversación oral y directa con el candidato, la cual busca conocer un poco el comportamiento social del individuo, así como sus capacidades sobre el área que le ocuparía en la Empresa"},
+                new TipoEtapa {Nombre="Evaluacion Medica", Descripcion="Con el fin de poder investigar sobre la salud y hábitos del candidato"},
+                new TipoEtapa {Nombre="Evaluacion Tecnica", Descripcion="Con el fin de poder verificar los conocimientos del candidato"},
+                new TipoEtapa {Nombre="Entrevista Final", Descripcion="Con el objetivo de medir la afinidad que puede existir en la relación de trabajo y el area laboral"},
+                new TipoEtapa {Nombre="Contratacion", Descripcion="Marco legal a la relación laboral entre empleado y empresa"},
+            };
+            context.TipoEtapas.AddRange(listaTipoEtapas);
+            #endregion
+
             #region fpaz: Semilla para Cargar una Empresa por defecto (Solo Para Desarrollo)
             var emp = new Empresa
             {
