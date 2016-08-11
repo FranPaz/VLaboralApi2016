@@ -7,10 +7,7 @@ using System.Web;
 namespace VLaboralApi.Models
 {
     public class CreateUserBindingModel
-    {
-        [Required]
-        [Display(Name = "Valor del Tipo de Identificacion")]
-        public string ValorIdentificacion { get; set; }
+    {       
 
         [Required]
         [EmailAddress]
@@ -35,18 +32,19 @@ namespace VLaboralApi.Models
         [Required]
         [Display(Name = "Razon Social")]
         public string RazonSocial { get; set; }
-
-        [Required]
-        [Display(Name = "Tipo de Identificacion de Empresa")]
-        public TipoIdentificacionEmpresa TipoIdentificacionEmpresa { get; set; }
+        
     }
 
     public class modeloCreacionUsuarioProfesional : CreateUserBindingModel
     {
 
         [Required]
-        [Display(Name = "Tipo de Identificacion")]
-        public TipoIdentificacionProfesional TipoIdentificacionProfesional { get; set; }
+        [Display(Name = "Nombre")]
+        public string Nombre { get; set; }
+
+        [Required]
+        [Display(Name = "Apellido")]
+        public string Apellido { get; set; }
     }
 
     public class ChangePasswordBindingModel
