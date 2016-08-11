@@ -12,6 +12,7 @@ namespace VLaboralApi.Models
         public string Descripcion { get; set; }
         public DateTime? FechaInicioConvocatoria { get; set; }
         public DateTime? FechaFinConvocatoria { get; set; }
+        public int IdEtapaActual { get; set; }
         public bool Publica { get; set; }
 
         //iafar:Relacion 1 a M con puestos (Muchos)
@@ -24,6 +25,8 @@ namespace VLaboralApi.Models
         //iafar: relacion 1 a m con OfertaEstado (m)
         public virtual ICollection<OfertaEstado> OfertaEstados { get; set; }
 
+        //fpaz: relacion 1 a m con etapa oferta (muchos)
+        public virtual ICollection<EtapaOferta> EtapasOferta { get; set; }
 
 
     }

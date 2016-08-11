@@ -253,19 +253,17 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201606252330532_inicial.cs" />
-    <Compile Include="Migrations\201606252330532_inicial.Designer.cs">
-      <DependentUpon>201606252330532_inicial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
     <Compile Include="Models\Empresa.cs" />
+    <Compile Include="Models\EtapaOferta.cs" />
     <Compile Include="Models\Habilidad.cs" />
     <Compile Include="Models\Identificacion.cs" />
     <Compile Include="Models\ModelFactory.cs" />
     <Compile Include="Models\Oferta.cs" />
     <Compile Include="Models\OfertaEstado.cs" />
+    <Compile Include="Models\Postulacion.cs" />
     <Compile Include="Models\Profesional.cs" />
     <Compile Include="Models\Puesto.cs" />
     <Compile Include="Models\Requisito.cs" />
@@ -347,11 +345,6 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201606252330532_inicial.resx">
-      <DependentUpon>201606252330532_inicial.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
