@@ -188,6 +188,39 @@ namespace VLaboralApi.Controllers
                     puesto.Subrubros = subrubrosPuesto;
                 }
 
+                //fpaz: carga de etapas de una oferta
+                if (oferta.EtapasOferta.Count < 1)
+                {
+                    //si no se cargaron etapas doy de alta las etapas por defecto
+                    var etapaInicial = new EtapaOferta();
+                    var etapaFinal = new EtapaOferta();
+
+                    etapaInicial.IdEtapaAnterior = 0;
+                    etapaInicial.IdEstapaSiguiente = etapaFinal.Id;
+                    etapaInicial.TipoEtapaId = db.TiposEtapas.FirstOrDefault().Id;
+
+                    etapaFinal.IdEtapaAnterior = etapaInicial.Id;
+                    etapaFinal.IdEstapaSiguiente = 0;
+                    etapaFinal.TipoEtapaId = db.TiposEtapas.LastOrDefault().Id;
+
+                    var listPuestosEtapa = new List<PuestoEtapaOferta>{};
+                    foreach (var puesto in oferta.Puestos)
+                    {
+                        var p = new PuestoEtapaOferta {
+                            PuestoId = puesto.Id
+                        };
+
+                        listPuestosEtapa.Add(p);
+                    }
+
+                    etapaInicial.PuestosEtapaOferta = listPuestosEtapa;
+                    etapaFinal.PuestosEtapaOferta = listPuestosEtapa;
+
+                    oferta.IdEtapaActual = etapaInicial.Id;
+                    oferta.EtapasOferta.Add(etapaInicial);
+                    oferta.EtapasOferta.Add(etapaFinal);
+                }
+
                 db.Ofertas.Add(oferta);
                 db.SaveChanges();
                 return Ok();

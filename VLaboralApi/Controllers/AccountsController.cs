@@ -87,16 +87,7 @@ namespace VLaboralApi.Controllers
                 {
                     #region alta de nueva empresa
                     //fpaz: doy de alta una nueva instancia empresa que va a estar relacionada con el usuario del tipo empresa 
-                    Empresa emp = new Empresa { RazonSocial = createUserModel.RazonSocial };
-
-                    emp.IdentificacionesEmpresa = new List<IdentificacionEmpresa> {
-                        new IdentificacionEmpresa {
-                            TipoIdentificacionEmpresaId = createUserModel.TipoIdentificacionEmpresa.Id,
-                            EmpresaId = emp.Id,
-                            Valor = createUserModel.ValorIdentificacion
-                        }
-                    };
-
+                    Empresa emp = new Empresa { RazonSocial = createUserModel.RazonSocial };                    
                     db.Empresas.Add(emp);
                     db.SaveChanges();
                     #endregion
@@ -161,17 +152,9 @@ namespace VLaboralApi.Controllers
                 }
                 else
                 {
-                    #region alta de nueva empresa
+                    #region alta de nueva profesional
                     //fpaz: doy de alta una nueva instancia Profesional que va a estar relacionada con el usuario del tipo Profesional 
-                    Profesional prof = new Profesional {};
-
-                    prof.IdentificacionesProfesional = new List<IdentificacionProfesional> {
-                        new IdentificacionProfesional {
-                            TipoIdentificacionProfesionalId = createUserModel.TipoIdentificacionProfesional.Id,
-                            ProfesionalId = prof.Id,
-                            Valor = createUserModel.ValorIdentificacion
-                        }
-                    };
+                    Profesional prof = new Profesional { Nombre= createUserModel.Nombre, Apellido=createUserModel.Apellido};
 
                     db.Profesionals.Add(prof);
                     db.SaveChanges();
