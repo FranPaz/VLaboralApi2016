@@ -253,12 +253,8 @@
     </Compile>
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
-    <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201608181608135_postulacion.cs" />
-    <Compile Include="Migrations\201608181608135_postulacion.Designer.cs">
-      <DependentUpon>201608181608135_postulacion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Infrastructure\ApplicationUserManager.cs" /></Compile>
+<Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
     <Compile Include="Models\Empresa.cs" />
@@ -352,8 +348,6 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201608181608135_postulacion.resx">
-      <DependentUpon>201608181608135_postulacion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
