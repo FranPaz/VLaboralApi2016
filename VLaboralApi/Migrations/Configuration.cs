@@ -8,7 +8,7 @@ namespace VLaboralApi.Migrations
     using System.Linq;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
-    using VLaboralApi.Models;    
+    using VLaboralApi.Models;
     using VlaboralApi.Infrastructure;
     using System.Security.Claims;
 
@@ -142,15 +142,15 @@ namespace VLaboralApi.Migrations
 
             #region iafar: Semilla de TipoEtapas
             var listaTipoEtapas = new List<TipoEtapa>{
-                new TipoEtapa {Nombre="Reclutamiento", Descripcion="Publicación de la oferta de empleo por parte de la Empresa"},
+                new TipoEtapa {Nombre="Reclutamiento", Descripcion="Publicación de la oferta de empleo por parte de la Empresa", EsInicial=true },
                 new TipoEtapa {Nombre="Preseleccion", Descripcion="Escogerá aquellos que le parecen cumplen mejor con el perfil"},
                 new TipoEtapa {Nombre="Entrevista Formal", Descripcion="Conversación oral y directa con el candidato, la cual busca conocer un poco el comportamiento social del individuo, así como sus capacidades sobre el área que le ocuparía en la Empresa"},
                 new TipoEtapa {Nombre="Evaluacion Medica", Descripcion="Con el fin de poder investigar sobre la salud y hábitos del candidato"},
                 new TipoEtapa {Nombre="Evaluacion Tecnica", Descripcion="Con el fin de poder verificar los conocimientos del candidato"},
                 new TipoEtapa {Nombre="Entrevista Final", Descripcion="Con el objetivo de medir la afinidad que puede existir en la relación de trabajo y el area laboral"},
-                new TipoEtapa {Nombre="Contratacion", Descripcion="Marco legal a la relación laboral entre empleado y empresa"},
+                new TipoEtapa {Nombre="Contratacion", Descripcion="Marco legal a la relación laboral entre empleado y empresa", EsFinal=true },
             };
-            context.TipoEtapas.AddRange(listaTipoEtapas);
+            context.TiposEtapas.AddRange(listaTipoEtapas);
             #endregion
 
             #region fpaz: Semilla para Cargar una Empresa por defecto (Solo Para Desarrollo)
@@ -165,8 +165,14 @@ namespace VLaboralApi.Migrations
             #region SLuna: Semilla para Cargar una Ofertas por defecto (Solo Para Desarrollo)
             var listOfertas = new List<Oferta>
             {
-                new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN.",FechaInicioConvocatoria = new DateTime(2016,1,1) ,FechaFinConvocatoria = new DateTime(2016,12,31) ,Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+                new Oferta
+                {
+                    Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN.",FechaInicioConvocatoria = new DateTime(2016,1,1) ,FechaFinConvocatoria = new DateTime(2016,12,31) ,Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
+                },
+                new Oferta
+                {
+                    Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
+                },
                 //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
                 //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
                 //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
