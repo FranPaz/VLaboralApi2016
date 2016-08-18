@@ -239,7 +239,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
-    <Compile Include="Controllers\PostulacionesController.cs" />
     <Compile Include="Controllers\ProfesionalsController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\RubrosController.cs" />
@@ -253,8 +252,12 @@
     </Compile>
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
-    <Compile Include="Infrastructure\ApplicationUserManager.cs" /></Compile>
-<Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201608090244286_inicial.cs" />
+    <Compile Include="Migrations\201608090244286_inicial.Designer.cs">
+      <DependentUpon>201608090244286_inicial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
     <Compile Include="Models\Empresa.cs" />
@@ -348,6 +351,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201608090244286_inicial.resx">
+      <DependentUpon>201608090244286_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
