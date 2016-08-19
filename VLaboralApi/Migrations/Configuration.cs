@@ -150,7 +150,7 @@ namespace VLaboralApi.Migrations
                 new TipoEtapa {Nombre="Entrevista Final", Descripcion="Con el objetivo de medir la afinidad que puede existir en la relación de trabajo y el area laboral"},
                 new TipoEtapa {Nombre="Contratacion", Descripcion="Marco legal a la relación laboral entre empleado y empresa"},
             };
-            context.TipoEtapas.AddRange(listaTipoEtapas);
+            context.TiposEtapas.AddRange(listaTipoEtapas);
             #endregion
 
             #region fpaz: Semilla para Cargar una Empresa por defecto (Solo Para Desarrollo)

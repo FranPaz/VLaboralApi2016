@@ -9,7 +9,8 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
         public int IdEtapaAnterior { get; set; }
-        public int IdEstapaSiguiente { get; set; }        
+        public int IdEstapaSiguiente { get; set; }
+        public int Orden { get; set; }
         public DateTime? FechaFin { get; set; }
         public DateTime? FechaFinTentativa { get; set; } //fecha de fin de la etapa estimada por la empresa
 
