@@ -25,37 +25,40 @@ namespace VLaboralApi.Controllers
 
         // GET: api/Ofertas?page=4&rows=50
         [ResponseType(typeof(CustomPaginateResult<Oferta>))]
-        //public IHttpActionResult GetOfertas(int page, int rows)
-        //{
-        //    try
-        //    {
-        //        //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
-        //        //TODO: Habría que agregar el estado de la oferta y algunos parametros más para asegurarse de que está activa
-        //        //TODO: Podríamos definir este filtro para no andar configurandolo en cada llamada. Ej: db.Ofertas.Activas() o algo de ese estilo
-        //        //var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now);
-        //        var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-        //        var results = db.Ofertas
-        //            .Where(o => o.FechaInicioConvocatoria<= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now)
-        //            .OrderBy(o => o.Id)
-        //            .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-        //            .Take(rows)
-        //            .ToList();
-        //        if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+        public IHttpActionResult GetOfertas(int page, int rows)
+        {
+            try
+            {
+                //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
+                //Sluna: Para que sea una oferta vigente, la fecha actual tiene que estar dentro de las fechas de inicio y fin de convocatoria,
+                //sluna: además, la etapaActual de la oferta tiene que ser la primera, es decir, que la etapaActual tiene que tener idEstapaAnterior = 0
+                var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
-        //        var result = new CustomPaginateResult<Oferta>()
-        //        {
-        //            PageSize = rows,
-        //            TotalRows = totalRows,
-        //            TotalPages = totalPages,
-        //            CurrentPage = page,
-        //            Results = results
-        //        };
+                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+                var results = db.Ofertas
+                    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                    .OrderBy(o => o.Id)
+                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                    .Take(rows)
+                    .ToList();
+                if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
 
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    { return BadRequest(ex.Message); }
-        //}
+                var result = new CustomPaginateResult<Oferta>()
+                {
+                    PageSize = rows,
+                    TotalRows = totalRows,
+                    TotalPages = totalPages,
+                    CurrentPage = page,
+                    Results = results
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            { return BadRequest(ex.Message); }
+        }
 
         // GET: api/Ofertas/5
         [ResponseType(typeof(Oferta))]

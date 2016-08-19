@@ -49,7 +49,11 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoEtapa> TiposEtapas { get; set; }
 
-        public System.Data.Entity.DbSet<VLaboralApi.Models.EtapaOferta> EtapasOfertas { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Postulacion> Postulacions { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.PuestoEtapaOferta> PuestoEtapaOfertas { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.EtapaOferta> EtapasOferta { get; set; }
 
 
         #endregion
@@ -59,7 +63,7 @@ namespace VLaboralApi.Models
             return new VLaboral_Context();
         }
 
-
+        
     }
 
 }
