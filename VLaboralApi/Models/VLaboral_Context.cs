@@ -53,7 +53,7 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.PuestoEtapaOferta> PuestoEtapaOfertas { get; set; }
 
-        public System.Data.Entity.DbSet<VLaboralApi.Models.EtapaOferta> EtapasOferta { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.EtapaOferta> EtapasOfertas { get; set; }
 
 
         #endregion
