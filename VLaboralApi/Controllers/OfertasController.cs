@@ -35,6 +35,7 @@ namespace VLaboralApi.Controllers
                 var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
                     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
+                //var totalRows = 10;
                 var totalPages = (int)Math.Ceiling((double)totalRows / rows);
                 var results = db.Ofertas
                     .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
@@ -43,7 +44,7 @@ namespace VLaboralApi.Controllers
                     .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
                     .Take(rows)
                     .ToList();
-                if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
 
                 var result = new CustomPaginateResult<Oferta>()
                 {
