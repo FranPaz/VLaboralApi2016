@@ -43,7 +43,7 @@ namespace VLaboralApi.Controllers
                     .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
                     .Take(rows)
                     .ToList();
-                if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
 
                 var result = new CustomPaginateResult<Oferta>()
                 {
