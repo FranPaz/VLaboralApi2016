@@ -23,4 +23,28 @@ namespace VLaboralApi.Models
 
 
     }
+
+
+    public class NuevaPostulacion //fpaz: contiene info de un postulante de un puesto en una etapa determinada
+    {
+        public int ProfesionalId { get; set; }
+        public int PuestoId { get; set; }
+        
+        //public int Id { get; set; }
+        //public string Comentario { get; set; }
+        //public string Valoracion { get; set; }
+        //public bool PasaEtapa { get; set; }
+        //public DateTime? Fecha { get; set; }
+
+        ////fpaz: relacion 1 a m con PuestoEtapaOferta (uno)
+        //public int PuestoEtapaOfertaId { get; set; }
+        //public virtual PuestoEtapaOferta PuestoEtapaOferta { get; set; }
+
+        ////fpaz: relacion 1 a m con profesional (uno)
+     
+        //public virtual Profesional Profesional { get; set; }
+
+
+    }
+
 }

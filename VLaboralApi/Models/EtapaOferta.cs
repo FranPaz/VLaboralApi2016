@@ -9,7 +9,8 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
         public int IdEtapaAnterior { get; set; }
-        public int IdEstapaSiguiente { get; set; }        
+        public int IdEstapaSiguiente { get; set; }
+        public int Orden { get; set; }
         public DateTime? FechaFin { get; set; }
         public DateTime? FechaFinTentativa { get; set; } //fecha de fin de la etapa estimada por la empresa
 
@@ -30,6 +31,8 @@ namespace VLaboralApi.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
+        public bool? EsInicial { get; set; }
+        public bool? EsFinal { get; set; }
 
         //fpaz: relacion 1 a m con etapa oferta (muchos)
         public virtual ICollection<EtapaOferta> EtapasOferta { get; set; }
