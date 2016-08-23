@@ -35,6 +35,7 @@ namespace VLaboralApi.Controllers
                 var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
                     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
+                //var totalRows = 10;
                 var totalPages = (int)Math.Ceiling((double)totalRows / rows);
                 var results = db.Ofertas
                     .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
@@ -75,6 +76,7 @@ namespace VLaboralApi.Controllers
                          .Include(p => p.Puestos.Select(tc=>tc.TipoContrato))
                          .Include(p => p.Puestos.Select(d=>d.Disponibilidad))
                          .Include(et => et.EtapasOferta)
+                         .Include(et => et.EtapasOferta.Select(te=>te.TipoEtapa))
                          .FirstOrDefault();
 
 
