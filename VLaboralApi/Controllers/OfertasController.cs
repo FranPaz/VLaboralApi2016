@@ -74,6 +74,7 @@ namespace VLaboralApi.Controllers
                          .Include(p=>p.Puestos.Select(sr=>sr.Subrubros))
                          .Include(p => p.Puestos.Select(tc=>tc.TipoContrato))
                          .Include(p => p.Puestos.Select(d=>d.Disponibilidad))
+                         .Include(et => et.EtapasOferta)
                          .FirstOrDefault();
 
 
