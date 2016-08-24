@@ -35,6 +35,7 @@ namespace VLaboralApi.Controllers
                 var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
                     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
+                //var totalRows = 10;
                 var totalPages = (int)Math.Ceiling((double)totalRows / rows);
                 var results = db.Ofertas
                     .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
@@ -43,7 +44,7 @@ namespace VLaboralApi.Controllers
                     .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
                     .Take(rows)
                     .ToList();
-                if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
 
                 var result = new CustomPaginateResult<Oferta>()
                 {
@@ -65,15 +66,17 @@ namespace VLaboralApi.Controllers
         public IHttpActionResult GetOferta(int id)
         {
             var oferta = (from o in db.Ofertas
-                          where o.Id == id
-                          select o)
-                         .Include(e => e.Empresa)
-                         .Include(p => p.Puestos)
-                         .Include(p => p.Puestos.Select(r => r.Requisitos))
-                         .Include(p => p.Puestos.Select(r => r.Requisitos.Select(tr => tr.TipoRequisito)))
-                         .Include(p => p.Puestos.Select(sr => sr.Subrubros))
-                         .Include(p => p.Puestos.Select(tc => tc.TipoContrato))
-                         .Include(p => p.Puestos.Select(d => d.Disponibilidad))
+                         where o.Id == id
+                         select o)
+                         .Include(e=>e.Empresa)
+                         .Include(p=>p.Puestos)
+                         .Include(p=>p.Puestos.Select(r=>r.Requisitos))
+                         .Include(p=>p.Puestos.Select(r => r.Requisitos.Select(tr=>tr.TipoRequisito)))
+                         .Include(p=>p.Puestos.Select(sr=>sr.Subrubros))
+                         .Include(p => p.Puestos.Select(tc=>tc.TipoContrato))
+                         .Include(p => p.Puestos.Select(d=>d.Disponibilidad))
+                         .Include(et => et.EtapasOferta)
+                         .Include(et => et.EtapasOferta.Select(te=>te.TipoEtapa))
                          .FirstOrDefault();
 
 
@@ -111,7 +114,7 @@ namespace VLaboralApi.Controllers
                                    join o in db.Ofertas
                                    on p.OfertaId equals o.Id
                                    where
-                                       //DateTime.Parse(o.FechaFinConvocatoria).CompareTo(DateTime.Now) > 0  && 
+                                   //DateTime.Parse(o.FechaFinConvocatoria).CompareTo(DateTime.Now) > 0  && 
                                    p.Subrubros.Any(s => subs.Contains(s.Id)) // consulto si existe algunos de los subrubros de los puestos que este contenido dentro del array de Ids de Subrubros del Empleado
                                    select o)
                              .Take(10) //fpaz: cantidad de ofertas a devolver
@@ -190,43 +193,68 @@ namespace VLaboralApi.Controllers
 
                     puesto.Subrubros = subrubrosPuesto;
                 }
+                db.Ofertas.Add(oferta); //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
+                db.SaveChanges();
 
                 //fpaz: carga de etapas de una oferta
-                if (oferta.EtapasOferta.Count < 1)
+                if (oferta.EtapasOferta != null)
                 {
-                    //si no se cargaron etapas doy de alta las etapas por defecto
-                    var etapaInicial = new EtapaOferta();
-                    var etapaFinal = new EtapaOferta();
-
-                    etapaInicial.IdEtapaAnterior = 0;
-                    etapaInicial.IdEstapaSiguiente = etapaFinal.Id;
-                    etapaInicial.TipoEtapaId = db.TiposEtapas.FirstOrDefault().Id;
-
-                    etapaFinal.IdEtapaAnterior = etapaInicial.Id;
-                    etapaFinal.IdEstapaSiguiente = 0;
-                    etapaFinal.TipoEtapaId = db.TiposEtapas.LastOrDefault().Id;
-
-                    var listPuestosEtapa = new List<PuestoEtapaOferta> { };
-                    foreach (var puesto in oferta.Puestos)
+                    foreach (var etapa in oferta.EtapasOferta)
                     {
-                        var p = new PuestoEtapaOferta
+                        #region fpaz defino los id de etapa anterior y siguiente para cada etapa
+                        if (etapa.Orden == 0)
                         {
-                            PuestoId = puesto.Id
-                        };
+                            //fpaz: si el orden es 0 es la etapa inicial 
+                            etapa.IdEtapaAnterior = 0;
+                            etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
+                                                       where e.Orden == etapa.Orden + 1
+                                                               select e.Id).FirstOrDefault();
+                            oferta.IdEtapaActual = etapa.Id;
+                        }
+                        else
+                        {
+                            if (etapa.Orden == oferta.EtapasOferta.Count)
+                            {
+                                //fpaz: es la ultima etapa
+                                etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
+                                                                 where e.Orden == etapa.Orden - 1
+                                                                 select e.Id).FirstOrDefault();
+                                etapa.IdEstapaSiguiente = 0;
+                            }
+                            else
+                            {
+                                //fpaz: es alguna etapa intermedia
+                                etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
+                                                         where e.Orden == etapa.Orden - 1
+                                                                 select e.Id).FirstOrDefault();
+                                etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
+                                                           where e.Orden == etapa.Orden + 1
+                                                                   select e.Id).FirstOrDefault();
+                            }
+                        }
+                        #endregion
 
-                        listPuestosEtapa.Add(p);
+                        #region fpaz defino los puestos para cada etapa
+                        var listPuestosEtapa = new List<PuestoEtapaOferta> { };
+                        foreach (var puesto in oferta.Puestos)
+                        {
+                            var p = new PuestoEtapaOferta
+                            {
+                                Puesto = puesto
+                            };
+
+                            listPuestosEtapa.Add(p);
+                        }
+
+                        etapa.PuestosEtapaOferta = listPuestosEtapa;
+                        #endregion
                     }
 
-                    etapaInicial.PuestosEtapaOferta = listPuestosEtapa;
-                    etapaFinal.PuestosEtapaOferta = listPuestosEtapa;
 
-                    oferta.IdEtapaActual = etapaInicial.Id;
-                    oferta.EtapasOferta.Add(etapaInicial);
-                    oferta.EtapasOferta.Add(etapaFinal);
+                 
                 }
+                db.SaveChanges(); //fpaz: guardo las etapas de la oferta completas
 
-                db.Ofertas.Add(oferta);
-                db.SaveChanges();
                 return Ok();
             }
             catch (Exception ex)
