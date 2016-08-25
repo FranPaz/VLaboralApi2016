@@ -188,7 +188,7 @@ namespace VLaboralApi.Migrations
 
             #region iafar: Semilla de TipoEtapas
             var listaTipoEtapas = new List<TipoEtapa>{
-                new TipoEtapa {Nombre="Reclutamiento", Descripcion="Publicación de la oferta de empleo por parte de la Empresa"},
+                new TipoEtapa {Nombre="Reclutamiento", Descripcion="Publicación de la oferta de empleo por parte de la Empresa", EsInicial=true},
                 new TipoEtapa {Nombre="Preseleccion", Descripcion="Escogerá aquellos que le parecen cumplen mejor con el perfil"},
                 new TipoEtapa {Nombre="Entrevista Formal", Descripcion="Conversación oral y directa con el candidato, la cual busca conocer un poco el comportamiento social del individuo, así como sus capacidades sobre el área que le ocuparía en la Empresa"},
                 new TipoEtapa {Nombre="Evaluacion Medica", Descripcion="Con el fin de poder investigar sobre la salud y hábitos del candidato"},
