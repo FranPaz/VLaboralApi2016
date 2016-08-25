@@ -21,20 +21,20 @@ namespace VLaboralApi.Controllers
         {
             try
             {
-                List<EtapaOferta> listEtapasObligatorias = new List<EtapaOferta>();                
+                List<EtapaOferta> listEtapasObligatorias = new List<EtapaOferta>();
 
                 var etapaInicial = new EtapaOferta();
                 var etapaFinal = new EtapaOferta();
 
 
-                etapaInicial.Orden = 0;      
+                etapaInicial.Orden = 0;
                 etapaInicial.TipoEtapa = (from te in db.TiposEtapas
                                           select te).FirstOrDefault();
 
 
 
                 etapaFinal.Orden = 1;
-                var idUltimaEtapa= db.TiposEtapas.Max(p => p.Id);                
+                var idUltimaEtapa = db.TiposEtapas.Max(p => p.Id);
                 etapaFinal.TipoEtapa = db.TiposEtapas.Find(idUltimaEtapa);
 
                 listEtapasObligatorias.Add(etapaInicial);
@@ -47,14 +47,19 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         // GET: api/EtapaOfertas/5
         [ResponseType(typeof(EtapaOferta))]
         public IHttpActionResult GetEtapaOferta(int id)
         {
-            EtapaOferta etapaOferta = db.EtapasOfertas.Find(id);
+            var etapaOferta = db.EtapasOfertas
+                .Include(e => e.PuestosEtapaOferta)
+                .Include(e => e.PuestosEtapaOferta
+                    .Select(pe => pe.Postulaciones
+                        .Select(p => p.Profesional)))
+                .FirstOrDefault(e => e.Id == id);
             if (etapaOferta == null)
             {
                 return NotFound();
