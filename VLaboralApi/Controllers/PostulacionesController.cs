@@ -38,40 +38,48 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Postulacion))]
         public IHttpActionResult PostPostulacion(NuevaPostulacion postulacion)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var mensaje = "";
+                if (YaEstaPostulado(postulacion, ref mensaje)) return BadRequest(mensaje);
+
+                //sluna: TODO: hay que agregar la validacion de requisitos aquí.
+
+                //Sluna: obtengo el puestoEtapaOferta correspondiente al Puesto al que desea postularse
+                var puestoEtapaOferta = db.PuestoEtapaOfertas
+                    .FirstOrDefault(peo => peo.PuestoId == postulacion.PuestoId
+                                    && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
+                                                                                     //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
+                                                                                     // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
+
+                if (puestoEtapaOferta == null)
+                {
+                    return BadRequest();
+                }
+
+                var p = new Postulacion
+                {
+                    ProfesionalId = postulacion.ProfesionalId,
+                    Fecha = DateTime.Now,
+                    PuestoEtapaOfertaId = puestoEtapaOferta.Id
+                };
+
+                db.Postulacions.Add(p);
+                db.SaveChanges();
+
+                return Ok();
+
             }
-
-            var mensaje = "";
-            if (YaEstaPostulado(postulacion, ref mensaje)) return BadRequest(mensaje);
-
-            //sluna: TODO: hay que agregar la validacion de requisitos aquí.
-
-            //Sluna: obtengo el puestoEtapaOferta correspondiente al Puesto al que desea postularse
-            var puestoEtapaOferta=db.PuestoEtapaOfertas
-                .FirstOrDefault(peo => peo.PuestoId == postulacion.PuestoId
-                                && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
-                                //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
-            // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
-
-            if (puestoEtapaOferta == null)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
-
-            var p = new Postulacion
-            {
-                ProfesionalId = postulacion.ProfesionalId,
-                Fecha = DateTime.Now,
-                PuestoEtapaOfertaId = puestoEtapaOferta.Id
-            };
-
-            db.Postulacions.Add(p);
-            db.SaveChanges();
-
-            return Ok();
-            //  return CreatedAtRoute("DefaultApi", new { id = postulacion.Id }, postulacion);
+            
         }
 
 

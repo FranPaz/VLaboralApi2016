@@ -29,13 +29,15 @@ namespace VLaboralApi.Controllers
 
                 etapaInicial.Orden = 0;      
                 etapaInicial.TipoEtapa = (from te in db.TiposEtapas
+                                          where te.EsInicial == true
                                           select te).FirstOrDefault();
 
 
 
                 etapaFinal.Orden = 1;
-                var idUltimaEtapa= db.TiposEtapas.Max(p => p.Id);                
-                etapaFinal.TipoEtapa = db.TiposEtapas.Find(idUltimaEtapa);
+                etapaFinal.TipoEtapa = (from te in db.TiposEtapas
+                                          where te.EsFinal == true
+                                          select te).FirstOrDefault();
 
                 listEtapasObligatorias.Add(etapaInicial);
                 listEtapasObligatorias.Add(etapaFinal);
