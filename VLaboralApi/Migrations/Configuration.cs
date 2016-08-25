@@ -131,13 +131,59 @@ namespace VLaboralApi.Migrations
 
             #region iafar: Semilla para Tipo de Requisito
             var TipoRequisito = new List<TipoRequisito>{
-                new TipoRequisito{Nombre="Edad"},
-                new TipoRequisito{Nombre="Sexo"},
-                new TipoRequisito{Nombre="Nacionalidad"},
-                new TipoRequisito{Nombre="Identidad Verificada"}
+                new TipoRequisito{Nombre="Edad", Verificable=true, Habilitado =  true},
+                new TipoRequisito{Nombre="Sexo",Verificable=true, Habilitado =  true},
+                new TipoRequisito{Nombre="Lugar de Residencia",Verificable=false, Habilitado=true},
+                new TipoRequisito{Nombre="Identidad",Verificable=true, Habilitado =  true},
+                new TipoRequisito{Nombre="Idiomas",Verificable=true, Habilitado=false}
             };
-
             context.TipoRequisitoes.AddRange(TipoRequisito);
+            #endregion
+
+
+            context.SaveChanges(); //sluna: guardo los cambios para poder usar los datos en la próxima semilla
+
+            #region sluna: Semilla para ValoresTipoRequisito
+            var valoresTipoRequisito = new List<ValoresTipoRequisito>{
+
+                #region TipoRequisito Edad
+                 new ValoresTipoRequisito{Valor ="Mayores de 40 años", Desde = 40, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+		         new ValoresTipoRequisito{Valor ="Mayores de 30 años", Desde = 30, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+                 new ValoresTipoRequisito{Valor ="Mayores de 18 años", Desde = 18, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+                 new ValoresTipoRequisito{Valor ="Menores de 25 años", Desde = 18, Hasta=25, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+                 new ValoresTipoRequisito{Valor ="Menores de 30 años", Desde = 18, Hasta=30, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+                 new ValoresTipoRequisito{Valor ="Menores de 40 años", Desde = 18, Hasta=40, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+	            #endregion
+
+                 #region TipoRequisito Sexo
+                 new ValoresTipoRequisito{Valor ="Masculino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
+		         new ValoresTipoRequisito{Valor ="Femenino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
+                 new ValoresTipoRequisito{Valor ="Otro", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
+	            #endregion
+
+                #region TipoRequisito Lugar de Residencia
+                 new ValoresTipoRequisito{Valor ="Argentina", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
+                 new ValoresTipoRequisito{Valor ="Brasil", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
+                 new ValoresTipoRequisito{Valor ="Resto de Latinoamérica", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
+                 new ValoresTipoRequisito{Valor ="Indiferente", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
+                #endregion
+
+                #region TipoRequisito Identidad
+                 new ValoresTipoRequisito{Valor ="Verificada", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Identidad")).Id},
+		         new ValoresTipoRequisito{Valor ="Sin verificar", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Identidad")).Id},
+	            #endregion
+
+                #region TipoRequisito Idiomas
+                 new ValoresTipoRequisito{Valor ="Español", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+		         new ValoresTipoRequisito{Valor ="Inglés", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Portugués", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Alemán", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Francés", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Italiano", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Chino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id}
+	            #endregion
+            };
+            context.ValoresTipoRequisitos.AddRange(valoresTipoRequisito);
             #endregion
 
             #region iafar: Semilla de TipoEtapas

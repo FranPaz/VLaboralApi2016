@@ -43,7 +43,12 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Habilidad> Habilidads { get; set; }
 
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Requisito> Requisitos { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.ValoresRequisito> ValoresRequisitos { get; set; }
+        
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoRequisito> TipoRequisitoes { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.ValoresTipoRequisito> ValoresTipoRequisitos { get; set; }
+
         public System.Data.Entity.DbSet<VLaboralApi.Models.Empresa> Empresas { get; set; }
         public System.Data.Entity.DbSet<VLaboralApi.Models.Puesto> Puestos { get; set; }
 

@@ -21,28 +21,20 @@ namespace VLaboralApi.Controllers
         {
             try
             {
-                var listTipoRequisito = (from a in db.TipoRequisitoes                                    
-                                    select a)
-                                    .ToList();
-
-                if (listTipoRequisito == null)
-                {
-                    return BadRequest("No existen tipos de requisitos");
-                }
-                else
-                {       
-
-                    return Ok(listTipoRequisito);
-                }
-
-
+                var listTipoRequisito = (from a in db.TipoRequisitoes
+                                         where a.Habilitado
+                                         select a)
+                                         .Include(a => a.ValoresTipoRequisito)
+                                            .ToList();
+              //  var listTipoRequisito = db.TipoRequisitoes.Where(t => t.Habilitado).Include(t => t.ValoresTipoRequisito);
+                return Ok(listTipoRequisito);
             }
 
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         // GET: api/TipoRequisitoes/5
