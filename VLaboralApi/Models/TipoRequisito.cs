@@ -8,6 +8,7 @@ namespace VLaboralApi.Models
     public class TipoRequisito
     {
         public int Id { get; set; }
+        public string Codigo { get; set; }
         public string Nombre { get; set; }
 
         public bool Verificable { get; set; }
