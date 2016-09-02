@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.UI.WebControls;
 using VLaboralApi.Models;
 
 namespace VLaboralApi.Controllers
@@ -38,41 +39,51 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Postulacion))]
         public IHttpActionResult PostPostulacion(NuevaPostulacion postulacion)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var mensaje = "";
+                if (EstaPostulado(postulacion, ref mensaje)) return BadRequest(mensaje);
+
+                if (!CumpleRequisitos(postulacion, ref mensaje)) return BadRequest(mensaje);
+
+                //Sluna: obtengo el puestoEtapaOferta correspondiente al Puesto al que desea postularse
+                var puestoEtapaOferta = db.PuestoEtapaOfertas
+                    .FirstOrDefault(peo => peo.PuestoId == postulacion.PuestoId
+                                    && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
+                                                                                     //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
+                                                                                     // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
+
+                if (puestoEtapaOferta == null)
+                {
+                    return BadRequest();
+                }
+
+                var p = new Postulacion
+                {
+                    ProfesionalId = postulacion.ProfesionalId,
+                    Fecha = DateTime.Now,
+                    PuestoEtapaOfertaId = puestoEtapaOferta.Id
+                };
+
+                db.Postulacions.Add(p);
+                db.SaveChanges();
+
+                return Ok();
+
             }
-
-            var mensaje = "";
-            if (YaEstaPostulado(postulacion, ref mensaje)) return BadRequest(mensaje);
-
-            //sluna: TODO: hay que agregar la validacion de requisitos aquí.
-
-            //Sluna: obtengo el puestoEtapaOferta correspondiente al Puesto al que desea postularse
-            var puestoEtapaOferta=db.PuestoEtapaOfertas
-                .FirstOrDefault(peo => peo.PuestoId == postulacion.PuestoId
-                                && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
-                                //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
-            // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
-
-            if (puestoEtapaOferta == null)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
-
-            var p = new Postulacion
-            {
-                ProfesionalId = postulacion.ProfesionalId,
-                Fecha = DateTime.Now,
-                PuestoEtapaOfertaId = puestoEtapaOferta.Id
-            };
-
-            db.Postulacions.Add(p);
-            db.SaveChanges();
-
-            return Ok();
-            //  return CreatedAtRoute("DefaultApi", new { id = postulacion.Id }, postulacion);
+            
         }
+
+     
 
 
         protected override void Dispose(bool disposing)
@@ -89,7 +100,7 @@ namespace VLaboralApi.Controllers
             return db.Postulacions.Count(e => e.Id == id) > 0;
         }
 
-        private bool YaEstaPostulado(NuevaPostulacion postulacion, ref string mensaje)
+        private bool EstaPostulado(NuevaPostulacion postulacion, ref string mensaje)
         {
             //Sluna: valido si el profesional está postulado en el puesto que pretende postularse
 
@@ -99,6 +110,94 @@ namespace VLaboralApi.Controllers
 
             mensaje = "El profesional ya se ha postulado al puesto especificado.";
             return true;
+        }
+
+        private bool CumpleRequisitos(NuevaPostulacion postulacion, ref string mensaje)
+        {
+            var requisitos = db.Requisitos
+                                    .Where(r => r.PuestoId == postulacion.PuestoId && r.AutoVerificar && r.Excluyente)
+                                    //Sluna: traigo solo los requisitos seleccionados para la atuoverificación y marcados como excluyentes
+                                    .Include(r => r.ValoresRequisito)
+                                    .Include(r => r.TipoRequisito);
+
+            var profesional = db.Profesionals.FirstOrDefault(p => p.Id == postulacion.ProfesionalId);
+            if (profesional == null)
+            {
+                mensaje =
+                    "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                return false;
+            }
+            foreach (var requisito in requisitos)
+            {
+                    switch (requisito.TipoRequisito.Nombre)
+                    {
+                        case "Edad":
+                            if (profesional.FechaNac != null)
+                            {
+                                var edad = DateTime.Today.AddTicks(-profesional.FechaNac.Value.Ticks).Year - 1;
+                                foreach (var valor in requisito.ValoresRequisito)
+                                {
+                                    if (edad < valor.Desde)
+                                    {
+                                        mensaje =
+                                            "El postulante no cumple con el requisito de edad necesario para el puesto.";
+                                        return false;
+                                    }
+                                    if (edad > valor.Hasta)
+                                    {
+                                        mensaje =
+                                            "El postulante no cumple con el requisito de edad necesario para el puesto.";
+                                        return false;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                mensaje =
+                                      "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                                return false;
+                            }
+                            break;
+                        case "Sexo":
+                            if (profesional.Sexo != null)
+                            {
+                                if (requisito.ValoresRequisito.Any(valor => profesional.Sexo != valor.Valor))
+                                {
+                                    mensaje =
+                                        "El postulante no cumple con el requisito de sexo necesario para el puesto.";
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                mensaje =
+                                      "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                                return false;
+                            }
+                            break;
+                        case "Identidad":
+                            {
+                                //SLuna: esto queda muy fiero
+                                if (!profesional.IdentidadVerificada)
+                                {
+                                    mensaje =
+                                        "El postulante no cumple con el requisito de tener la identidad verificada necesaria para el puesto.";
+                                    return false;
+                                }
+                            }
+                            break;
+                        case "Lugar de Residencia":
+                            //SLuna: no tenemos nada defino para Lugar de Residencia todavia
+                            break;
+                        case "Idioma":
+                            //SLuna: no tenemos nada defino para Idioma todavia
+                            break;
+                    }
+                }
+                
+            return true;
+
+
         }
     }
 }
