@@ -95,6 +95,8 @@ namespace VLaboralApi.Migrations
             {
                 Nombre = "Nombre Profesional 1",
                 Apellido = "Apellidod Profesional 1",
+                IdentidadVerificada = true,
+                Sexo = "Masculino",
                 FechaNac = new DateTime(2016, 4, 30)
             };
             context.Profesionals.Add(prof);
@@ -131,11 +133,11 @@ namespace VLaboralApi.Migrations
 
             #region iafar: Semilla para Tipo de Requisito
             var TipoRequisito = new List<TipoRequisito>{
-                new TipoRequisito{Nombre="Edad", Verificable=true, Habilitado =  true},
-                new TipoRequisito{Nombre="Sexo",Verificable=true, Habilitado =  true},
-                new TipoRequisito{Nombre="Lugar de Residencia",Verificable=false, Habilitado=true},
-                new TipoRequisito{Nombre="Identidad",Verificable=true, Habilitado =  true},
-                new TipoRequisito{Nombre="Idiomas",Verificable=true, Habilitado=false}
+                new TipoRequisito{Nombre="Edad", Verificable=true, Habilitado =  true, Multiple= false},
+                new TipoRequisito{Nombre="Sexo",Verificable=true, Habilitado =  true, Multiple= false},
+                new TipoRequisito{Nombre="Lugar de Residencia",Verificable=false, Habilitado=true, Multiple=true},
+                new TipoRequisito{Nombre="Identidad",Verificable=true, Habilitado =  true, Multiple=false},
+                new TipoRequisito{Nombre="Idiomas",Verificable=false, Habilitado=false, Multiple=true}
             };
             context.TipoRequisitoes.AddRange(TipoRequisito);
             #endregion
@@ -158,19 +160,19 @@ namespace VLaboralApi.Migrations
                  #region TipoRequisito Sexo
                  new ValoresTipoRequisito{Valor ="Masculino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
 		         new ValoresTipoRequisito{Valor ="Femenino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
-                 new ValoresTipoRequisito{Valor ="Otro", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
+                // new ValoresTipoRequisito{Valor ="Otro", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
 	            #endregion
 
                 #region TipoRequisito Lugar de Residencia
                  new ValoresTipoRequisito{Valor ="Argentina", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
                  new ValoresTipoRequisito{Valor ="Brasil", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
                  new ValoresTipoRequisito{Valor ="Resto de Latinoamérica", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
-                 new ValoresTipoRequisito{Valor ="Indiferente", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
+                 //new ValoresTipoRequisito{Valor ="Indiferente", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Lugar de Residencia")).Id},
                 #endregion
 
                 #region TipoRequisito Identidad
                  new ValoresTipoRequisito{Valor ="Verificada", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Identidad")).Id},
-		         new ValoresTipoRequisito{Valor ="Sin verificar", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Identidad")).Id},
+                 //new ValoresTipoRequisito{Valor ="Sin verificar", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Identidad")).Id},
 	            #endregion
 
                 #region TipoRequisito Idiomas

@@ -10,7 +10,7 @@ namespace VLaboralApi.Models
         public int Id { get; set; }
         public string Observacion { get; set; }
         public bool Excluyente { get; set; }
-        public bool Verificable { get; set; }
+        public bool AutoVerificar { get; set; }
 
         //kikexp: relacion 1 a M con TipoRequisito
         public int TipoRequisitoId { get; set; }
