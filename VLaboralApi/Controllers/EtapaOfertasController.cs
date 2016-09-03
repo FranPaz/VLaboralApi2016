@@ -56,11 +56,15 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(EtapaOferta))]
         public IHttpActionResult GetEtapaOferta(int id)
         {
-            var etapaOferta = db.EtapasOfertas
+            var etapaOferta = db.EtapasOfertas                
                 .Include(e => e.PuestosEtapaOferta)
-                .Include(e => e.PuestosEtapaOferta
+                .Include(e => e.PuestosEtapaOferta                    
                     .Select(pe => pe.Postulaciones
                         .Select(p => p.Profesional)))
+                .Include(etp => etp.PuestosEtapaOferta
+                    .Select(pu => pu.Puesto)
+                    )
+                .Include(o => o.Oferta)
                 .FirstOrDefault(e => e.Id == id);
             if (etapaOferta == null)
             {
