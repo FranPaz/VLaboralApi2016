@@ -142,6 +142,15 @@ namespace VLaboralApi.Migrations
             context.TipoRequisitoes.AddRange(TipoRequisito);
             #endregion
 
+            #region fpaz: Semilla para Tipos de Nivel de Estudio
+            var listTiposNivelesEstudio = new List<TipoNivelEstudio>{
+                new TipoNivelEstudio {Nombre="Secundario", Descripcion="Nivel Secundario"},
+                new TipoNivelEstudio {Nombre="Terciario", Descripcion="Nivel Terciario"},
+                new TipoNivelEstudio {Nombre="Universitario", Descripcion="Nivel Universitario"}
+            };
+            context.TipoNivelEstudios.AddRange(listTiposNivelesEstudio);
+            #endregion
+
 
             context.SaveChanges(); //sluna: guardo los cambios para poder usar los datos en la próxima semilla
 

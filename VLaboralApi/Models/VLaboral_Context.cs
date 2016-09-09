@@ -68,7 +68,19 @@ namespace VLaboralApi.Models
             return new VLaboral_Context();
         }
 
-        
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoNivelEstudio> TipoNivelEstudios { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Estudio> Estudios { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Educacion> Educacions { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.ExperienciaLaboral> ExperienciaLaborals { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Idioma> Idiomas { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.IdiomaConocido> IdiomaConocidoes { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.CompetenciaIdioma> CompetenciaIdiomas { get; set; }
     }
 
 }
