@@ -237,10 +237,16 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\CompetenciaIdiomasController.cs" />
+    <Compile Include="Controllers\EducacionsController.cs" />
     <Compile Include="Controllers\EmpresasController.cs" />
+    <Compile Include="Controllers\EstudiosController.cs" />
     <Compile Include="Controllers\EtapaOfertasController.cs" />
+    <Compile Include="Controllers\ExperienciaLaboralsController.cs" />
     <Compile Include="Controllers\HabilidadsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IdiomaConocidoesController.cs" />
+    <Compile Include="Controllers\IdiomasController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
     <Compile Include="Controllers\PostulacionesController.cs" />
@@ -251,6 +257,7 @@
     <Compile Include="Controllers\TipoDisponibilidadsController.cs" />
     <Compile Include="Controllers\TipoEtapasController.cs" />
     <Compile Include="Controllers\TipoIdentificacionProfesionalsController.cs" />
+    <Compile Include="Controllers\TipoNivelEstudiosController.cs" />
     <Compile Include="Controllers\TipoRequisitoesController.cs" />
     <Compile Include="Controllers\TiposDisponibilidadController.cs" />
     <Compile Include="Global.asax.cs">
@@ -268,8 +275,11 @@
     <Compile Include="Models\BlobModels.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EtapaOferta.cs" />
+    <Compile Include="Models\ExperienciaLaboral.cs" />
+    <Compile Include="Models\Estudios.cs" />
     <Compile Include="Models\Habilidad.cs" />
     <Compile Include="Models\Identificacion.cs" />
+    <Compile Include="Models\IdiomaConocido.cs" />
     <Compile Include="Models\ModelFactory.cs" />
     <Compile Include="Models\Oferta.cs" />
     <Compile Include="Models\OfertaEstado.cs" />
@@ -284,6 +294,7 @@
     <Compile Include="Models\TipoEstadoOferta.cs" />
     <Compile Include="Models\TipoDisponibilidad.cs" />
     <Compile Include="Models\TipoIdentificacion.cs" />
+    <Compile Include="Models\TipoNivelEstudio.cs" />
     <Compile Include="Models\TipoRequisito.cs" />
     <Compile Include="Models\VLaboral_Context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

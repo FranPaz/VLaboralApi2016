@@ -31,6 +31,15 @@ namespace VLaboralApi.Models
         //fpaz: relacion M a M con Subrubros
         public virtual ICollection<SubRubro> Subrubros { get; set; }
 
+        //fpaz: relacion 1 a M con ExperienciaLaboral (muchos)
+        public virtual ICollection<ExperienciaLaboral> ExperienciasLaborales { get; set; }
+
+        //fpaz: relacion 1 a M con Estudios
+        public virtual ICollection<Estudio> Estudios { get; set; }
+
+        //fpaz: relacion 1 a m con IdiomasConocidos (muchos)
+        public virtual ICollection<IdiomaConocido> IdiomasConocidos { get; set; }
+
         public override string ToString()
         {
             return Nombre + " " + Apellido;
