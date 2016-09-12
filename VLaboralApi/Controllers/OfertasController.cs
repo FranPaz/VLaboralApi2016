@@ -279,6 +279,68 @@ namespace VLaboralApi.Controllers
             return Ok(oferta);
         }
 
+
+        [Route("api/Ofertas/PasarSiguienteEtapa/{ofertaId}")]
+        [ResponseType(typeof(Postulacion))]
+        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int ofertaId)
+        {
+            //Sluna: Obtengo la etapa actual a partir de IdEtapaActual de la Oferta. Joineo PuestosEtapaOferta y Postulaciones.
+            var etapaActual = db.EtapasOfertas
+                .Include(eo => eo.PuestosEtapaOferta
+                    .Select(peo => peo.Postulaciones))
+                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == ofertaId);
+
+
+            if (etapaActual != null)
+            {
+                var puestosEtapaOferta = etapaActual.PuestosEtapaOferta;
+
+                //Sluna: Obtengo la etapa Siguiente a partir de IdEstapaSiguiente de la EtapaActual. Joineo PuestosEtapaOferta.
+                var etapaSiguiente = db.EtapasOfertas
+                    .Include(eo => eo.PuestosEtapaOferta)
+                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == ofertaId);
+
+                //Inicio la transacción
+                using (var dbTransaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        //Sluna: Paso las postulaciones marcadas con "PasaEtapa" de la EtapaActual a cada uno de los PuestosEtapaOferta de la EtapaSiguiente.
+                        foreach (var puestoEtapaOferta in puestosEtapaOferta)
+                        {
+                            var postulantesAprobados =
+                                puestoEtapaOferta.Postulaciones.Where(p => p.PasaEtapa)
+                                    .Select(postulante => new Postulacion
+                                    {
+                                        ProfesionalId = postulante.ProfesionalId,
+                                        Fecha = DateTime.Now,
+                                        PuestoEtapaOfertaId =
+                                            etapaSiguiente.PuestosEtapaOferta.FirstOrDefault(
+                                                peo => peo.PuestoId == puestoEtapaOferta.PuestoId).Id
+                                    }).ToList();
+                            db.Postulacions.AddRange(postulantesAprobados);
+                        }
+
+                        //Sluna: Actualizo el IdEtapaActual de la Oferta
+                        db.Ofertas.FirstOrDefault(o => o.Id == ofertaId).IdEtapaActual = etapaSiguiente.Id;
+
+                        db.SaveChanges();
+
+                        //Cierro la transacción
+                        dbTransaction.Commit();
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        //Aborto la transacción
+                        dbTransaction.Rollback();
+                        BadRequest(ex.Message);
+                    }
+                }
+            }
+            return BadRequest();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
