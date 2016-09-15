@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.UI.WebControls;
 using VLaboralApi.Models;
+using WebGrease.Css.Extensions;
 
 namespace VLaboralApi.Controllers
 {
@@ -57,7 +59,6 @@ namespace VLaboralApi.Controllers
                                     && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
                                                                                      //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
                                                                                      // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
-
                 if (puestoEtapaOferta == null)
                 {
                     return BadRequest();
@@ -83,7 +84,37 @@ namespace VLaboralApi.Controllers
             
         }
 
-     
+        // PUT: api/Postulaciones/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutPostulacion(ResultadoPostulacion resultado)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            //sluna: Actualizo los atributos de las postulaciones.
+
+            var postulaciones = db.Postulacions.Where(p => p.PuestoEtapaOfertaId == resultado.PuestoEstapaOfertaId);
+            foreach (var resultadoPostulacion in resultado.Postulaciones)
+            {
+                var postulacion =
+                    postulaciones.FirstOrDefault(p => p.Id == resultadoPostulacion.Id);
+
+                if (postulacion != null)
+                {
+                    postulacion.Valoracion = resultadoPostulacion.Valoracion;
+                    postulacion.Comentario = resultadoPostulacion.Comentario;
+                    postulacion.PasaEtapa = resultadoPostulacion.PasaEtapa;
+                }
+            }
+
+            db.SaveChanges();
+
+            return Ok();
+        }
+        
+      
 
 
         protected override void Dispose(bool disposing)
