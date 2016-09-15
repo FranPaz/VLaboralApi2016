@@ -248,6 +248,7 @@
     <Compile Include="Controllers\IdiomaConocidoesController.cs" />
     <Compile Include="Controllers\IdiomasController.cs" />
     <Compile Include="Controllers\ImagenesController.cs" />
+    <Compile Include="Controllers\NotificacionesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
     <Compile Include="Controllers\PostulacionesController.cs" />
     <Compile Include="Controllers\ProfesionalsController.cs" />
@@ -266,6 +267,10 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201609151909133_inicial.cs" />
+    <Compile Include="Migrations\201609151909133_inicial.Designer.cs">
+      <DependentUpon>201609151909133_inicial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
@@ -277,6 +282,7 @@
     <Compile Include="Models\Identificacion.cs" />
     <Compile Include="Models\IdiomaConocido.cs" />
     <Compile Include="Models\ModelFactory.cs" />
+    <Compile Include="Models\Notificacion.cs" />
     <Compile Include="Models\Oferta.cs" />
     <Compile Include="Models\OfertaEstado.cs" />
     <Compile Include="Models\Postulacion.cs" />
@@ -362,6 +368,11 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201609151909133_inicial.resx">
+      <DependentUpon>201609151909133_inicial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
