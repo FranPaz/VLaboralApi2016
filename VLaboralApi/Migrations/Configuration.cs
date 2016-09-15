@@ -24,33 +24,88 @@ namespace VLaboralApi.Migrations
         {
             //fpaz:Semillas para el llenado inicial de la bd
 
-            #region Carga de ApplicationUser
-            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
-
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new VLaboral_Context()));
-
-            var user = new ApplicationUser()
+            #region Carga de Profesional Y Empresas Por Defecto           
+            
+            //fpaz: doy de alta las instancias de Profesional y de Empresa que van a estar relacionada con los ususarios de la aplicacion por defecto            
+            var prof = new Profesional
             {
-                UserName = "Administrador",
-                Email = "overcode_dev@outlook.com",
-                EmailConfirmed = true,
-                FechaAlta = DateTime.Now.AddYears(-3)
+                Nombre = "Nombre Profesional Prueba",
+                Apellido = "Apellidod Profesional Prueba",
+                IdentidadVerificada = true,
+                Sexo = "Masculino",
+                FechaNac = new DateTime(2016, 4, 30)
+            };
+            context.Profesionals.Add(prof);
+
+            var emp = new Empresa
+            {
+                RazonSocial = "Empresa de prueba",
+                NombreFantasia = "Empresa de Fantasia"
             };
 
-            manager.Create(user, "qwerty123");
+            context.Empresas.Add(emp);
 
+
+            #region fpaz: defino y guardo los tipos de Roles
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new VLaboral_Context()));
             if (roleManager.Roles.Count() == 0)
             {
-                roleManager.Create(new IdentityRole { Name = "Admin" });
                 roleManager.Create(new IdentityRole { Name = "Empresa" });
                 roleManager.Create(new IdentityRole { Name = "Profesional" });
             }
+            #endregion
 
-            var adminUser = manager.FindByName("Administrador");
+            # region fpaz: defino los usuarios por defecto para profesional y para empresa
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
 
-            manager.AddToRoles(adminUser.Id, new string[] { "Admin" });
-            manager.AddClaim(adminUser.Id, new Claim("adminId", adminUser.Id.ToString()));
-            manager.AddClaim(adminUser.Id, new Claim("app_usertype", "administrador"));
+            var listUsers = new List<ApplicationUser>{
+                new ApplicationUser {UserName = "profesional@overcodesde.com", Email = "profesional@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)},
+                new ApplicationUser {UserName = "empresa@overcodesde.com",Email = "empresa@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)}
+
+            };
+
+            foreach (var newUser in listUsers)
+            {
+                manager.Create(newUser, "qwerty123");
+                manager.SetLockoutEnabled(newUser.Id, false);
+
+                if (newUser.UserName == "profesional@overcodesde.com")
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Profesional" });
+
+                    var user = manager.FindByName("profesional@overcodesde.com");
+
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "profesional"),
+                        new Claim("profesionalId", "1")
+                    };
+
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
+                else
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Empresa" });
+
+                    var user = manager.FindByName("empresa@overcodesde.com");
+
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "empresa"),
+                        new Claim("empresaId", "1")
+                    };
+
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
+                       
+            }
+            #endregion
+
+         
             #endregion
 
             #region fpaz: Semilla para Tipos de Disponibilidad
@@ -88,18 +143,6 @@ namespace VLaboralApi.Migrations
                 new TipoIdentificacionEmpresa {Nombre="CUIT", Descripcion=" Clave Única de Identificación Tributaria "}
             };
             context.TiposIdentificacionesEmpresas.AddRange(listTiposIdEmp);
-            #endregion
-
-            #region fpaz: Semilla para Cargar un Profesional por defecto (Solo Para Desarrollo)
-            var prof = new Profesional
-            {
-                Nombre = "Nombre Profesional 1",
-                Apellido = "Apellidod Profesional 1",
-                IdentidadVerificada = true,
-                Sexo = "Masculino",
-                FechaNac = new DateTime(2016, 4, 30)
-            };
-            context.Profesionals.Add(prof);
             #endregion
 
             #region SLuna: Semilla para Rubros y SubRubros
@@ -149,6 +192,24 @@ namespace VLaboralApi.Migrations
                 new TipoNivelEstudio {Nombre="Universitario", Descripcion="Nivel Universitario"}
             };
             context.TipoNivelEstudios.AddRange(listTiposNivelesEstudio);
+            #endregion
+
+            #region fpaz: Semilla para Idiomas
+            var listIdiomas = new List<Idioma>{
+                new Idioma {Nombre="Ingles"},
+                new Idioma {Nombre="Portugues"},
+                new Idioma {Nombre="Aleman"}
+            };
+            context.Idiomas.AddRange(listIdiomas);
+            #endregion
+
+            #region fpaz: Semilla para Competencias Idiomas
+            var listCompIdiomas = new List<CompetenciaIdioma>{
+                new CompetenciaIdioma {Nombre="Basico"},
+                new CompetenciaIdioma {Nombre="Intermedio"},
+                new CompetenciaIdioma {Nombre="Avanzado"}
+            };
+            context.CompetenciaIdiomas.AddRange(listCompIdiomas);
             #endregion
 
 
@@ -208,15 +269,6 @@ namespace VLaboralApi.Migrations
                 new TipoEtapa {Nombre="Contratacion", Descripcion="Marco legal a la relación laboral entre empleado y empresa", EsFinal=true },
             };
             context.TiposEtapas.AddRange(listaTipoEtapas);
-            #endregion
-
-            #region fpaz: Semilla para Cargar una Empresa por defecto (Solo Para Desarrollo)
-            var emp = new Empresa
-            {
-                RazonSocial = "Empresa 1 Srl",
-                NombreFantasia = "Empresa de Fantasia"
-            };
-            context.Empresas.Add(emp);
             #endregion
 
             #region SLuna: Semilla para Cargar una Ofertas por defecto (Solo Para Desarrollo)
