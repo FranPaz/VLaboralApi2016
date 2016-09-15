@@ -17,9 +17,24 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/Empresas
-        public IQueryable<Empresa> GetEmpresas()
+        public IHttpActionResult GetEmpresas()
         {
-            return db.Empresas;
+            try
+            {
+                var empresas = db.Empresas.ToList();
+                if (empresas == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return Ok(empresas);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Empresas/5

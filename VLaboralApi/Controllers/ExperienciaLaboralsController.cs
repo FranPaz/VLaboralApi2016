@@ -72,17 +72,33 @@ namespace VLaboralApi.Controllers
 
         // POST: api/ExperienciaLaborals
         [ResponseType(typeof(ExperienciaLaboral))]
-        public IHttpActionResult PostExperienciaLaboral(ExperienciaLaboral experienciaLaboral)
+        public IHttpActionResult PostExperienciaLaboral(ExperienciaLaboral experienciaLaboral) //fpaz: funcion que guarda una nueva experiencia laboral de un profesional en particular
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                db.ExperienciaLaborals.Add(experienciaLaboral);
+                db.SaveChanges();
+
+                if (experienciaLaboral.EmpresaId != null)
+                {
+                    //*TODO: dar de alta la notificacion de nueva experiencia laboral cargada para la validacion por parte de la empresa
+                    // a partir del usuario que dio de alta la exp
+                }
+
+
+                return Ok();
+
             }
-
-            db.ExperienciaLaborals.Add(experienciaLaboral);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = experienciaLaboral.Id }, experienciaLaboral);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+            
         }
 
         // DELETE: api/ExperienciaLaborals/5

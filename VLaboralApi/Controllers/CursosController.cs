@@ -12,44 +12,44 @@ using VLaboralApi.Models;
 
 namespace VLaboralApi.Controllers
 {
-    public class IdiomaConocidoesController : ApiController
+    public class CursosController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
 
-        // GET: api/IdiomaConocidoes
-        public IQueryable<IdiomaConocido> GetIdiomaConocidoes()
+        // GET: api/Cursos
+        public IQueryable<Curso_Certificacion> GetEstudios()
         {
-            return db.IdiomaConocidoes;
+            return db.Cursos;
         }
 
-        // GET: api/IdiomaConocidoes/5
-        [ResponseType(typeof(IdiomaConocido))]
-        public IHttpActionResult GetIdiomaConocido(int id)
+        // GET: api/Cursos/5
+        [ResponseType(typeof(Curso_Certificacion))]
+        public IHttpActionResult GetCurso_Certificacion(int id)
         {
-            IdiomaConocido idiomaConocido = db.IdiomaConocidoes.Find(id);
-            if (idiomaConocido == null)
+            Curso_Certificacion curso_Certificacion = db.Cursos.Find(id);
+            if (curso_Certificacion == null)
             {
                 return NotFound();
             }
 
-            return Ok(idiomaConocido);
+            return Ok(curso_Certificacion);
         }
 
-        // PUT: api/IdiomaConocidoes/5
+        // PUT: api/Cursos/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutIdiomaConocido(int id, IdiomaConocido idiomaConocido)
+        public IHttpActionResult PutCurso_Certificacion(int id, Curso_Certificacion curso_Certificacion)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != idiomaConocido.Id)
+            if (id != curso_Certificacion.Id)
             {
                 return BadRequest();
             }
 
-            db.Entry(idiomaConocido).State = EntityState.Modified;
+            db.Entry(curso_Certificacion).State = EntityState.Modified;
 
             try
             {
@@ -57,7 +57,7 @@ namespace VLaboralApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!IdiomaConocidoExists(id))
+                if (!Curso_CertificacionExists(id))
                 {
                     return NotFound();
                 }
@@ -70,9 +70,9 @@ namespace VLaboralApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/IdiomaConocidoes
-        [ResponseType(typeof(IdiomaConocido))]
-        public IHttpActionResult PostIdiomaConocido(IdiomaConocido idiomaConocido) //fpaz: agrega un nuevo conocimiento de idioma al profesional
+        // POST: api/Cursos
+        [ResponseType(typeof(Curso_Certificacion))]
+        public IHttpActionResult PostCurso_Certificacion(Curso_Certificacion curso_Certificacion) //fpaz: alta de nuevo curso realizado por el profesional
         {
             try
             {
@@ -81,32 +81,30 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                db.IdiomaConocidoes.Add(idiomaConocido);
+                db.Estudios.Add(curso_Certificacion);
                 db.SaveChanges();
-
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest( ex.Message);
-            }
-           
+                return BadRequest(ex.Message);
+            }            
         }
 
-        // DELETE: api/IdiomaConocidoes/5
-        [ResponseType(typeof(IdiomaConocido))]
-        public IHttpActionResult DeleteIdiomaConocido(int id)
+        // DELETE: api/Cursos/5
+        [ResponseType(typeof(Curso_Certificacion))]
+        public IHttpActionResult DeleteCurso_Certificacion(int id)
         {
-            IdiomaConocido idiomaConocido = db.IdiomaConocidoes.Find(id);
-            if (idiomaConocido == null)
+            Curso_Certificacion curso_Certificacion = db.Cursos.Find(id);
+            if (curso_Certificacion == null)
             {
                 return NotFound();
             }
 
-            db.IdiomaConocidoes.Remove(idiomaConocido);
+            db.Estudios.Remove(curso_Certificacion);
             db.SaveChanges();
 
-            return Ok(idiomaConocido);
+            return Ok(curso_Certificacion);
         }
 
         protected override void Dispose(bool disposing)
@@ -118,9 +116,9 @@ namespace VLaboralApi.Controllers
             base.Dispose(disposing);
         }
 
-        private bool IdiomaConocidoExists(int id)
+        private bool Curso_CertificacionExists(int id)
         {
-            return db.IdiomaConocidoes.Count(e => e.Id == id) > 0;
+            return db.Estudios.Count(e => e.Id == id) > 0;
         }
     }
 }

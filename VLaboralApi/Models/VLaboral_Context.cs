@@ -74,6 +74,8 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Educacion> Educacions { get; set; }
 
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Curso_Certificacion> Cursos { get; set; }
+
         public System.Data.Entity.DbSet<VLaboralApi.Models.ExperienciaLaboral> ExperienciaLaborals { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Idioma> Idiomas { get; set; }

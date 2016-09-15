@@ -17,9 +17,25 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/CompetenciaIdiomas
-        public IQueryable<CompetenciaIdioma> GetCompetenciaIdiomas()
+        public IHttpActionResult GetCompetenciaIdiomas()
         {
-            return db.CompetenciaIdiomas;
+            try
+            {
+                var listCompetencias = db.CompetenciaIdiomas.ToList();
+                if (listCompetencias == null)
+                {
+                    return BadRequest("No se cargaron competencias de idiomas");
+
+                }
+                else
+                {
+                    return Ok(listCompetencias);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
         }
 
         // GET: api/CompetenciaIdiomas/5

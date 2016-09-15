@@ -32,6 +32,12 @@ namespace VLaboralApi.Controllers
                     .Where(p => p.Id == id)
                     .Include(s => s.Subrubros.Select(r => r.Rubro))
                     .Include(i => i.IdentificacionesProfesional.Select(ti => ti.TipoIdentificacionProfesional))
+                    .Include(exp => exp.ExperienciasLaborales.Select(e => e.Empresa))
+                    //.Include(est => est.Estudios.OfType<Educacion>().Select(r => r.TipoNivelEstudio))
+                    .Include(cur => cur.Cursos)
+                    .Include(educ => educ.Educaciones)
+                    .Include(idioma => idioma.IdiomasConocidos.Select(idio => idio.Idioma))
+                    .Include(idioma => idioma.IdiomasConocidos.Select(comp => comp.CompetenciaIdioma))
                     .FirstOrDefault();
 
                 if (profesional == null)

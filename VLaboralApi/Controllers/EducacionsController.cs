@@ -72,17 +72,23 @@ namespace VLaboralApi.Controllers
 
         // POST: api/Educacions
         [ResponseType(typeof(Educacion))]
-        public IHttpActionResult PostEducacion(Educacion educacion)
+        public IHttpActionResult PostEducacion(Educacion educacion) //fpaz: funcion para guardar una nueva educacion en la bd
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                db.Estudios.Add(educacion);
+                db.SaveChanges();
+                return Ok();
             }
-
-            db.Estudios.Add(educacion);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = educacion.Id }, educacion);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }           
         }
 
         // DELETE: api/Educacions/5

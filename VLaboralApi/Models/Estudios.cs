@@ -16,9 +16,7 @@ namespace VLaboralApi.Models
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
 
-        //fpaz: 1 a m con profesional (uno)
-        public int ProfesionalId { get; set; }
-        public virtual Profesional Profesional { get; set; }        
+           
     }
 
     [Table("Educacion")]
@@ -27,11 +25,19 @@ namespace VLaboralApi.Models
         //fpaz: relacion 1 a m con tiponivel de estudio (uno)
         public int TipoNivelEstudioId { get; set; }
         public virtual TipoNivelEstudio TipoNivelEstudio { get; set; }
+
+        //fpaz: 1 a m con profesional (uno)
+        public int ProfesionalId { get; set; }
+        public virtual Profesional Profesional { get; set; }
     }
 
     [Table("Cursos_Certificaciones")]
     public class Curso_Certificacion : Estudio
     {
         public string EntidadCertificante { get; set; }
+
+        //fpaz: 1 a m con profesional (uno)
+        public int ProfesionalId { get; set; }
+        public virtual Profesional Profesional { get; set; }
     }
 }

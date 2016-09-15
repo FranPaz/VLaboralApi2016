@@ -17,9 +17,24 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/Idiomas
-        public IQueryable<Idioma> GetIdiomas()
+        public IHttpActionResult GetIdiomas()
         {
-            return db.Idiomas;
+            try
+            {
+                var listIdiomas = db.Idiomas.ToList();
+                if (listIdiomas == null)
+                {
+                    return BadRequest("No se cargaron idiomas");
+                }
+                else
+                {
+                    return Ok(listIdiomas);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Idiomas/5
