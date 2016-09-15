@@ -66,17 +66,17 @@ namespace VLaboralApi.Controllers
         public IHttpActionResult GetOferta(int id)
         {
             var oferta = (from o in db.Ofertas
-                         where o.Id == id
-                         select o)
-                         .Include(e=>e.Empresa)
-                         .Include(p=>p.Puestos)
-                         .Include(p=>p.Puestos.Select(r=>r.Requisitos))
-                         .Include(p=>p.Puestos.Select(r => r.Requisitos.Select(tr=>tr.TipoRequisito)))
-                         .Include(p=>p.Puestos.Select(sr=>sr.Subrubros))
-                         .Include(p => p.Puestos.Select(tc=>tc.TipoContrato))
-                         .Include(p => p.Puestos.Select(d=>d.Disponibilidad))
+                          where o.Id == id
+                          select o)
+                         .Include(e => e.Empresa)
+                         .Include(p => p.Puestos)
+                         .Include(p => p.Puestos.Select(r => r.Requisitos))
+                         .Include(p => p.Puestos.Select(r => r.Requisitos.Select(tr => tr.TipoRequisito)))
+                         .Include(p => p.Puestos.Select(sr => sr.Subrubros))
+                         .Include(p => p.Puestos.Select(tc => tc.TipoContrato))
+                         .Include(p => p.Puestos.Select(d => d.Disponibilidad))
                          .Include(et => et.EtapasOferta)
-                         .Include(et => et.EtapasOferta.Select(te=>te.TipoEtapa))
+                         .Include(et => et.EtapasOferta.Select(te => te.TipoEtapa))
                          .FirstOrDefault();
 
 
@@ -114,7 +114,7 @@ namespace VLaboralApi.Controllers
                                    join o in db.Ofertas
                                    on p.OfertaId equals o.Id
                                    where
-                                   //DateTime.Parse(o.FechaFinConvocatoria).CompareTo(DateTime.Now) > 0  && 
+                                       //DateTime.Parse(o.FechaFinConvocatoria).CompareTo(DateTime.Now) > 0  && 
                                    p.Subrubros.Any(s => subs.Contains(s.Id)) // consulto si existe algunos de los subrubros de los puestos que este contenido dentro del array de Ids de Subrubros del Empleado
                                    select o)
                              .Take(10) //fpaz: cantidad de ofertas a devolver
@@ -208,7 +208,7 @@ namespace VLaboralApi.Controllers
                             etapa.IdEtapaAnterior = 0;
                             etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
                                                        where e.Orden == etapa.Orden + 1
-                                                               select e.Id).FirstOrDefault();
+                                                       select e.Id).FirstOrDefault();
                             oferta.IdEtapaActual = etapa.Id;
                         }
                         else
@@ -217,8 +217,8 @@ namespace VLaboralApi.Controllers
                             {
                                 //fpaz: es la ultima etapa
                                 etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
-                                                                 where e.Orden == etapa.Orden - 1
-                                                                 select e.Id).FirstOrDefault();
+                                                         where e.Orden == etapa.Orden - 1
+                                                         select e.Id).FirstOrDefault();
                                 etapa.IdEstapaSiguiente = 0;
                             }
                             else
@@ -226,10 +226,10 @@ namespace VLaboralApi.Controllers
                                 //fpaz: es alguna etapa intermedia
                                 etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
                                                          where e.Orden == etapa.Orden - 1
-                                                                 select e.Id).FirstOrDefault();
+                                                         select e.Id).FirstOrDefault();
                                 etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
                                                            where e.Orden == etapa.Orden + 1
-                                                                   select e.Id).FirstOrDefault();
+                                                           select e.Id).FirstOrDefault();
                             }
                         }
                         #endregion
@@ -251,7 +251,7 @@ namespace VLaboralApi.Controllers
                     }
 
 
-                 
+
                 }
                 db.SaveChanges(); //fpaz: guardo las etapas de la oferta completas
 
@@ -277,6 +277,82 @@ namespace VLaboralApi.Controllers
             db.SaveChanges();
 
             return Ok(oferta);
+        }
+
+
+        [Route("api/Ofertas/PasarSiguienteEtapa/{ofertaId}")]
+        [ResponseType(typeof(Postulacion))]
+        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int ofertaId)
+        {
+            //Sluna: Obtengo la etapa actual a partir de IdEtapaActual de la Oferta. Joineo PuestosEtapaOferta y Postulaciones.
+            var etapaActual = db.EtapasOfertas
+                .Include(eo => eo.PuestosEtapaOferta
+                    .Select(peo => peo.Postulaciones))
+                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == ofertaId);
+
+
+            if (etapaActual == null) return BadRequest("Ocurrió un error al buscar la etapa actual.");
+            {
+                if (etapaActual.IdEstapaSiguiente == 0)
+                {
+                    return BadRequest("La oferta no se puede avanzar de Etapa porque la Oferta ya se encuentra en la última etapa.");
+                }
+
+                var puestosEtapaOferta = etapaActual.PuestosEtapaOferta;
+
+                //Sluna: Obtengo la etapa Siguiente a partir de IdEstapaSiguiente de la EtapaActual. Joineo PuestosEtapaOferta.
+                var etapaSiguiente = db.EtapasOfertas
+                    .Include(eo => eo.PuestosEtapaOferta)
+                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == ofertaId);
+
+                if (etapaSiguiente == null) return BadRequest("Ocurrío un error al buscar la etapa siguiente.");
+
+                //Inicio la transacción
+                using (var dbTransaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        //Sluna: Paso las postulaciones marcadas con "PasaEtapa" de la EtapaActual a cada uno de los PuestosEtapaOferta de la EtapaSiguiente.
+                        foreach (var puestoEtapaOferta in puestosEtapaOferta)
+                        {
+                            var puestoEtapaSiguiente = etapaSiguiente.PuestosEtapaOferta.FirstOrDefault(
+                                          peo => peo.PuestoId == puestoEtapaOferta.PuestoId);
+
+                            if (puestoEtapaSiguiente == null){
+                                dbTransaction.Rollback();
+                                return BadRequest("La Etapa Siguiente no tiene puestos configurados.");
+                            }
+
+                            var postulantesAprobados =
+                                puestoEtapaOferta.Postulaciones.Where(p => p.PasaEtapa)
+                                    .Select(postulante => new Postulacion
+                                    {
+                                        ProfesionalId = postulante.ProfesionalId,
+                                        Fecha = DateTime.Now,
+                                        PuestoEtapaOfertaId = puestoEtapaSiguiente.Id
+                                    }).ToList();
+
+                            db.Postulacions.AddRange(postulantesAprobados);
+                        }
+
+                        //Sluna: Actualizo el IdEtapaActual de la Oferta
+                        db.Ofertas.FirstOrDefault(o => o.Id == ofertaId).IdEtapaActual = etapaSiguiente.Id;
+
+                        db.SaveChanges();
+
+                        //Cierro la transacción
+                        dbTransaction.Commit();
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        //Aborto la transacción
+                        dbTransaction.Rollback();
+                        BadRequest(ex.Message);
+                    }
+                }
+            }
+            return BadRequest();
         }
 
         protected override void Dispose(bool disposing)
