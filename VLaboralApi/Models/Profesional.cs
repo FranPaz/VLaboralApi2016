@@ -35,7 +35,9 @@ namespace VLaboralApi.Models
         public virtual ICollection<ExperienciaLaboral> ExperienciasLaborales { get; set; }
 
         //fpaz: relacion 1 a M con Estudios
-        public virtual ICollection<Estudio> Estudios { get; set; }
+        public virtual ICollection<Curso_Certificacion> Cursos { get; set; }
+
+        public virtual ICollection<Educacion> Educaciones { get; set; }
 
         //fpaz: relacion 1 a m con IdiomasConocidos (muchos)
         public virtual ICollection<IdiomaConocido> IdiomasConocidos { get; set; }

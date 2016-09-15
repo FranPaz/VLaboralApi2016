@@ -9,7 +9,7 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
         public string Comentario { get; set; }
-        public string Valoracion { get; set; }
+        public double Valoracion { get; set; }
         public bool PasaEtapa { get; set; }
         public DateTime? Fecha { get; set; }
 

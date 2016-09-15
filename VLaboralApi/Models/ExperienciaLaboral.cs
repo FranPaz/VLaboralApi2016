@@ -15,6 +15,7 @@ namespace VLaboralApi.Models
         public bool isVerificada { get; set; }
         public DateTime? PeriodoDesde { get; set; }
         public DateTime? PeriodoHasta { get; set; }
+        public DateTime? FechaCreacion { get; set; }
 
         //fpaz: 1 a muchos con empresa (uno)
         public int? EmpresaId { get; set; }
@@ -23,5 +24,7 @@ namespace VLaboralApi.Models
         //fpaz: 1 a m con profesional (uno)
         public int ProfesionalId { get; set; }
         public virtual Profesional Profesional { get; set; }
+
+        public string idUsuarioCreacion { get; set; }
     }
 }

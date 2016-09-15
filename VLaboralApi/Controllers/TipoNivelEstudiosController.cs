@@ -17,9 +17,24 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/TipoNivelEstudios
-        public IQueryable<TipoNivelEstudio> GetTipoNivelEstudios()
+        public IHttpActionResult GetTipoNivelEstudios()
         {
-            return db.TipoNivelEstudios;
+            try
+            {
+                var listTiposNiveles = db.TipoNivelEstudios.ToList();
+                if (listTiposNiveles == null)
+                {
+                    return BadRequest("No se Cargaron Tipos de Niveles de Estudio");
+                }
+                else
+                {
+                    return Ok(listTiposNiveles);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/TipoNivelEstudios/5
