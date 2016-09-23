@@ -282,13 +282,13 @@ namespace VLaboralApi.Controllers
 
         [Route("api/Ofertas/PasarSiguienteEtapa/{ofertaId}")]
         [ResponseType(typeof(Postulacion))]
-        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int ofertaId)
+        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int Id)
         {
             //Sluna: Obtengo la etapa actual a partir de IdEtapaActual de la Oferta. Joineo PuestosEtapaOferta y Postulaciones.
             var etapaActual = db.EtapasOfertas
                 .Include(eo => eo.PuestosEtapaOferta
                     .Select(peo => peo.Postulaciones))
-                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == ofertaId);
+                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == Id);
 
 
             if (etapaActual == null) return BadRequest("Ocurrió un error al buscar la etapa actual.");
@@ -303,7 +303,7 @@ namespace VLaboralApi.Controllers
                 //Sluna: Obtengo la etapa Siguiente a partir de IdEstapaSiguiente de la EtapaActual. Joineo PuestosEtapaOferta.
                 var etapaSiguiente = db.EtapasOfertas
                     .Include(eo => eo.PuestosEtapaOferta)
-                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == ofertaId);
+                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == Id);
 
                 if (etapaSiguiente == null) return BadRequest("Ocurrío un error al buscar la etapa siguiente.");
 
@@ -336,7 +336,7 @@ namespace VLaboralApi.Controllers
                         }
 
                         //Sluna: Actualizo el IdEtapaActual de la Oferta
-                        db.Ofertas.FirstOrDefault(o => o.Id == ofertaId).IdEtapaActual = etapaSiguiente.Id;
+                        db.Ofertas.FirstOrDefault(o => o.Id == Id).IdEtapaActual = etapaSiguiente.Id;
 
                         db.SaveChanges();
 
