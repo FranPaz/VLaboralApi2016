@@ -303,6 +303,24 @@ namespace VLaboralApi.Migrations
             };
             context.Ofertas.AddRange(listOfertas);
             #endregion
+            
+            #region sluna: Semilla de TipoNotificacion
+            var listaTipoNotificacion = new List<TipoNotificacion>{
+                new TipoNotificacion {Nombre="Notificación de Experiencia", Descripcion="", 
+                    TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id
+                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id},
+
+                 new TipoNotificacion {Nombre="Notificación de Postulación", Descripcion="", 
+                     TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id
+                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id},
+
+                 new TipoNotificacion {Nombre="Notificación de Etapa Aprobada", Descripcion="", 
+                     TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id
+                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id},
+            };
+            context.TipoNotificaciones.AddRange(listaTipoNotificacion);
+            context.SaveChanges();
+            #endregion
 
             base.Seed(context);
         }

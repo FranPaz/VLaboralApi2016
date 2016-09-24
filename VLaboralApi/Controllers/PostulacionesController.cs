@@ -101,12 +101,11 @@ namespace VLaboralApi.Controllers
                 var postulacion =
                     postulaciones.FirstOrDefault(p => p.Id == resultadoPostulacion.Id);
 
-                if (postulacion != null)
-                {
-                    postulacion.Valoracion = resultadoPostulacion.Valoracion;
-                    postulacion.Comentario = resultadoPostulacion.Comentario;
-                    postulacion.PasaEtapa = resultadoPostulacion.PasaEtapa;
-                }
+                if (postulacion == null) continue;//sluna: if invertido para reducir anidamiento
+
+                postulacion.Valoracion = resultadoPostulacion.Valoracion;
+                postulacion.Comentario = resultadoPostulacion.Comentario;
+                postulacion.PasaEtapa = resultadoPostulacion.PasaEtapa;
             }
 
             db.SaveChanges();

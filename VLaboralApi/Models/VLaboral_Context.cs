@@ -83,6 +83,10 @@ namespace VLaboralApi.Models
         public System.Data.Entity.DbSet<VLaboralApi.Models.IdiomaConocido> IdiomaConocidoes { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.CompetenciaIdioma> CompetenciaIdiomas { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Notificacion> Notificaciones { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoNotificacion> TipoNotificaciones { get; set; }
     }
 
 }
