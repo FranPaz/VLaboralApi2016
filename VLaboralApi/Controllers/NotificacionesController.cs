@@ -23,11 +23,17 @@ namespace VLaboralApi.Controllers
         }
 
         // GET: api/Notificaciones
-        public IHttpActionResult GetNotificaciones(string UsuarioId)
+        public IHttpActionResult GetNotificaciones(string usuarioId)
         {
             var resultado = db.Notificaciones
-                .Where(n => n.ReceptorId == UsuarioId)
-                .Include(n => n.TipoNotificacion);
+                .Where(n => n.ReceptorId == usuarioId
+                    //&& n.FechaLectura == null 
+                    && n.FechaPublicacion <= DateTime.Now
+                    && n.FechaVencimiento >= DateTime.Now )
+                .Include(n => n.TipoNotificacion)
+                .Include(n => n.Emisor)
+                .Include(n => n.Receptor)
+                .OrderByDescending(n=> n.FechaPublicacion);
                
             return Ok(resultado);
         }
@@ -60,6 +66,7 @@ namespace VLaboralApi.Controllers
                 return BadRequest();
             }
 
+            notificacion.FechaLectura = DateTime.Now;
             db.Entry(notificacion).State = EntityState.Modified;
 
             try
@@ -89,6 +96,14 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            //Existe Emisor
+
+            //Existe Receptor
+
+            //Existe tipo
+
+
 
             db.Notificaciones.Add(notificacion);
             db.SaveChanges();
