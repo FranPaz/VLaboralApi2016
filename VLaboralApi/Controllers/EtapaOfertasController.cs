@@ -63,8 +63,8 @@ namespace VLaboralApi.Controllers
                         .Select(p => p.Profesional)))
                 .Include(etp => etp.PuestosEtapaOferta
                     .Select(pu => pu.Puesto)
-                    )
-                .Include(o => o.Oferta)
+                    )                
+                .Include(te => te.TipoEtapa)
                 .FirstOrDefault(e => e.Id == id);
             if (etapaOferta == null)
             {
