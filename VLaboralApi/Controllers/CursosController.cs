@@ -83,7 +83,7 @@ namespace VLaboralApi.Controllers
 
                 db.Estudios.Add(curso_Certificacion);
                 db.SaveChanges();
-                return Ok();
+                return Ok(curso_Certificacion);
             }
             catch (Exception ex)
             {

@@ -31,8 +31,8 @@ namespace VLaboralApi.Controllers
                     && n.FechaPublicacion <= DateTime.Now
                     && n.FechaVencimiento >= DateTime.Now )
                 .Include(n => n.TipoNotificacion)
-                .Include(n => n.Emisor)
-                .Include(n => n.Receptor)
+                //.Include(n => n.Emisor)
+                //.Include(n => n.Receptor)
                 .OrderByDescending(n=> n.FechaPublicacion);
                
             return Ok(resultado);
