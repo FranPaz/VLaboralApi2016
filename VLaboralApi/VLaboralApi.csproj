@@ -267,9 +267,9 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201609151909133_inicial.cs" />
-    <Compile Include="Migrations\201609151909133_inicial.Designer.cs">
-      <DependentUpon>201609151909133_inicial.cs</DependentUpon>
+    <Compile Include="Migrations\201609232338536_inicial.cs" />
+    <Compile Include="Migrations\201609232338536_inicial.Designer.cs">
+      <DependentUpon>201609232338536_inicial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -370,8 +370,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201609151909133_inicial.resx">
-      <DependentUpon>201609151909133_inicial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201609232338536_inicial.resx">
+      <DependentUpon>201609232338536_inicial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

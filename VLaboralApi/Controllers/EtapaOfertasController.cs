@@ -65,6 +65,7 @@ namespace VLaboralApi.Controllers
                     .Select(pu => pu.Puesto)
                     )
                 .Include(o => o.Oferta)
+                .Include(te => te.TipoEtapa)
                 .FirstOrDefault(e => e.Id == id);
             if (etapaOferta == null)
             {
