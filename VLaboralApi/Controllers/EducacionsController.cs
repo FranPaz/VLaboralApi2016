@@ -83,7 +83,10 @@ namespace VLaboralApi.Controllers
 
                 db.Estudios.Add(educacion);
                 db.SaveChanges();
-                return Ok();
+
+                educacion.TipoNivelEstudio = db.TipoNivelEstudios.Find(educacion.TipoNivelEstudioId);
+
+                return Ok(educacion);
             }
             catch (Exception ex)
             {

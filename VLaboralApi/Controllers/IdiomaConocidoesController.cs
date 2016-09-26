@@ -84,7 +84,10 @@ namespace VLaboralApi.Controllers
                 db.IdiomaConocidoes.Add(idiomaConocido);
                 db.SaveChanges();
 
-                return Ok();
+                idiomaConocido.Idioma = db.Idiomas.Find(idiomaConocido.IdiomaId);
+                idiomaConocido.CompetenciaIdioma = db.CompetenciaIdiomas.Find(idiomaConocido.CompetenciaIdiomaId);
+
+                return Ok(idiomaConocido);
             }
             catch (Exception ex)
             {

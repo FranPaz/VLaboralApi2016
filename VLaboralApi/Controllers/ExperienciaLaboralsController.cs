@@ -86,12 +86,13 @@ namespace VLaboralApi.Controllers
 
                 if (experienciaLaboral.EmpresaId != null)
                 {
+                    experienciaLaboral.Empresa = db.Empresas.Find(experienciaLaboral.EmpresaId);
                     //*TODO: dar de alta la notificacion de nueva experiencia laboral cargada para la validacion por parte de la empresa
                     // a partir del usuario que dio de alta la exp
                 }
 
 
-                return Ok();
+                return Ok(experienciaLaboral);
 
             }
             catch (Exception ex)

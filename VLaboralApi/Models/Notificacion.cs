@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.Identity.EntityFramework;
+using VlaboralApi.Infrastructure;
 
 namespace VLaboralApi.Models
 {
     public abstract class Notificacion
     {
         public int Id { get; set; }
+
         public string EmisorId { get; set; }
+        //public virtual IdentityUser Emisor { get; set; }
+
         public string ReceptorId { get; set; }
+        //public virtual IdentityUser Receptor { get; set; }
+
         public string Titulo { get; set; }
         public string Mensaje { get; set; }
 
@@ -45,7 +52,10 @@ namespace VLaboralApi.Models
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public string TipoEmisorId { get; set; }
+        //public virtual IdentityRole TipoEmisor { get; set; }
+
         public string TipoReceptorId { get; set; }
+        //public virtual IdentityRole TipoReceptor { get; set; }
 
         //sluna: relacion 1 a M con Notificacion (muchos)
         public virtual ICollection<Notificacion> Notificaciones { get; set; }
