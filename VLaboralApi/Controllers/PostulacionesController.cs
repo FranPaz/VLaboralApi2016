@@ -10,15 +10,19 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.UI.WebControls;
+using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Hubs;
+using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using WebGrease.Css.Extensions;
 
 namespace VLaboralApi.Controllers
 {
+  
+
     public class PostulacionesController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
-
 
         //// POST: api/Postulaciones/AptoPostulacion
         //[HttpPost]
@@ -73,6 +77,12 @@ namespace VLaboralApi.Controllers
 
                 db.Postulacions.Add(p);
                 db.SaveChanges();
+                
+                var notificacionesCtrl = new NotificacionesController();
+                notificacionesCtrl.PostNotificacionPostulacion(p.Id);
+
+                //var notificacion = new NotificacionPostulacion();
+                //notificacion.
 
                 return Ok();
 

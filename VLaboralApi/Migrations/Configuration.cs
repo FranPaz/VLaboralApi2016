@@ -55,55 +55,55 @@ namespace VLaboralApi.Migrations
             }
             #endregion
 
-            //# region fpaz: defino los usuarios por defecto para profesional y para empresa
-            //var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
+            # region fpaz: defino los usuarios por defecto para profesional y para empresa
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
 
-            //var listUsers = new List<ApplicationUser>{
-            //    new ApplicationUser {UserName = "profesional@overcodesde.com", Email = "profesional@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)},
-            //    new ApplicationUser {UserName = "empresa@overcodesde.com",Email = "empresa@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)}
+            var listUsers = new List<ApplicationUser>{
+                new ApplicationUser {UserName = "profesional@overcodesde.com", Email = "profesional@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)},
+                new ApplicationUser {UserName = "empresa@overcodesde.com",Email = "empresa@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)}
 
-            //};
+            };
 
-            //foreach (var newUser in listUsers)
-            //{
-            //    manager.Create(newUser, "qwerty123");
-            //    manager.SetLockoutEnabled(newUser.Id, false);
+            foreach (var newUser in listUsers)
+            {
+                manager.Create(newUser, "qwerty123");
+                manager.SetLockoutEnabled(newUser.Id, false);
 
-            //    if (newUser.UserName == "profesional@overcodesde.com")
-            //    {
-            //        manager.AddToRoles(newUser.Id, new string[] { "Profesional" });
+                if (newUser.UserName == "profesional@overcodesde.com")
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Profesional" });
 
-            //        var user = manager.FindByName("profesional@overcodesde.com");
+                    var user = manager.FindByName("profesional@overcodesde.com");
 
-            //        var listClaims = new List<Claim>{
-            //            new Claim ("app_usertype", "profesional"),
-            //            new Claim("profesionalId", "1")
-            //        };
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "profesional"),
+                        new Claim("profesionalId", "1")
+                    };
 
-            //        foreach (var item in listClaims)
-            //        {
-            //            manager.AddClaim(user.Id, item);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        manager.AddToRoles(newUser.Id, new string[] { "Empresa" });
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
+                else
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Empresa" });
 
-            //        var user = manager.FindByName("empresa@overcodesde.com");
+                    var user = manager.FindByName("empresa@overcodesde.com");
 
-            //        var listClaims = new List<Claim>{
-            //            new Claim ("app_usertype", "empresa"),
-            //            new Claim("empresaId", "1")
-            //        };
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "empresa"),
+                        new Claim("empresaId", "1")
+                    };
 
-            //        foreach (var item in listClaims)
-            //        {
-            //            manager.AddClaim(user.Id, item);
-            //        }
-            //    }
-                       
-            //}
-            //#endregion
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
+
+            }
+            #endregion
 
          
             #endregion
@@ -305,21 +305,17 @@ namespace VLaboralApi.Migrations
             #endregion
             
             #region sluna: Semilla de TipoNotificacion
-//            var listaTipoNotificacion = new List<TipoNotificacion>{
-//                new TipoNotificacion {Nombre="Notificación de Experiencia", Descripcion="", 
-//                    TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id
-//                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id
-//},
+            var listaTipoNotificacion = new List<TipoNotificacion>{
+                new TipoNotificacion {Valor="EXP", Descripcion="Notificación de Experiencia", 
+                    TipoEmisor = "empresa" , TipoReceptor = "profesional"},
 
-//                 new TipoNotificacion {Nombre="Notificación de Postulación", Descripcion="", 
-//                     TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id
-//                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id},
+                 new TipoNotificacion {Valor = "POS", Descripcion="Notificación de Postulación", 
+                       TipoEmisor = "profesional" , TipoReceptor = "empresa"},
 
-//                 new TipoNotificacion {Nombre="Notificación de Etapa Aprobada", Descripcion="", 
-//                     TipoEmisorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("empresa")).Id
-//                    , TipoReceptorId = context.Roles.FirstOrDefault(r=> r.Name.Contains("profesional")).Id},
-//            };
-//            context.TipoNotificaciones.AddRange(listaTipoNotificacion);
+                 new TipoNotificacion { Valor = "ETAP" ,  Descripcion="Notificación de Etapa Aprobada",
+                         TipoEmisor = "empresa" , TipoReceptor = "profesional"},
+            };
+            context.TipoNotificaciones.AddRange(listaTipoNotificacion);
             context.SaveChanges();
             #endregion
 
