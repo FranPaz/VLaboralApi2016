@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -26,37 +29,40 @@ namespace VLaboralApi.Hubs
 
         private static readonly ConnectionMapping<string> _connections =
          new ConnectionMapping<string>();
-   
+
+
 
         public override Task OnConnected()
         {
-            string name = Context.User.Identity.Name;
-            _connections.Add(name, Context.ConnectionId);
+            string idUsuario = Context.QueryString.Get("access_token");
+            _connections.Add(idUsuario, Context.ConnectionId);
 
             return base.OnConnected();
         }
-     
+
         public override Task OnDisconnected(bool stopCalled)
         {
-            string name = Context.User.Identity.Name;
+            string idUsuario = Context.QueryString.Get("access_token");
 
-            _connections.Remove(name, Context.ConnectionId);
+            _connections.Remove(idUsuario, Context.ConnectionId);
 
             return base.OnDisconnected(stopCalled);
         }
-       
+
         public override Task OnReconnected()
         {
-            string name = Context.User.Identity.Name;
+            string idUsuario = Context.QueryString.Get("access_token");
 
-            if (!_connections.GetConnections(name).Contains(Context.ConnectionId))
+            if (!_connections.GetConnections(idUsuario).Contains(Context.ConnectionId))
             {
-                _connections.Add(name, Context.ConnectionId);
+                _connections.Add(idUsuario, Context.ConnectionId);
             }
 
             return base.OnReconnected();
         }
+
     }
+
+
 }
 
-''

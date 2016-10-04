@@ -40,7 +40,7 @@ namespace VLaboralApi.Models
     public class NotificacionPostulacion : Notificacion
     {
         public int? PostulacionId { get; set; }
-        public virtual Postulacion Postulacion { get; set; }
+        //public virtual Postulacion Postulacion { get; set; }
     }
 
     //public class NotificacionNovedadesPostulacion : Notificacion

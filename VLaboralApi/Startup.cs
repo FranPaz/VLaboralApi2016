@@ -25,7 +25,7 @@ namespace VLaboralApi
 {
     public class Startup
     {
-    
+
 
         public void Configuration(IAppBuilder app)
         {
@@ -36,53 +36,53 @@ namespace VLaboralApi
             ConfigureOAuthTokenConsumption(app);
             app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
 
-            var hubConfiguration = new HubConfiguration
-            {
-                EnableDetailedErrors = true,
-                EnableJavaScriptProxies = false,
-            };
+            //var hubConfiguration = new HubConfiguration
+            //{
+            //    EnableDetailedErrors = true,
+            //    EnableJavaScriptProxies = false,
+            //};
 
-            app.MapSignalR("/signalr", hubConfiguration);
+            //app.MapSignalR("/signalr", hubConfiguration);
 
-           // app.MapSignalR();
+            // app.MapSignalR();
 
             ConfigureWebApi(httpConfig);
-            
+
             app.UseWebApi(httpConfig);
 
-            //app.Map("/signalr", map =>
-            //{
-            //    map.UseCors(CorsOptions.AllowAll);
+            app.Map("/signalr", map =>
+            {
+                map.UseCors(CorsOptions.AllowAll);
 
-            //    map.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions()
-            //    {
-            //        Provider = new QueryStringOAuthBearerProvider()
-            //    });
+                map.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions()
+                {
+                    Provider = new QueryStringOAuthBearerProvider()
+                });
 
-            //    var hubConfiguration = new HubConfiguration
-            //    {
-            //        Resolver = GlobalHost.DependencyResolver,
-            //    };
-            //    map.RunSignalR(hubConfiguration);
-            //});
+                var hubConfiguration = new HubConfiguration
+                {
+                    Resolver = GlobalHost.DependencyResolver,
+                };
+                map.RunSignalR(hubConfiguration);
+            });
 
 
         }
 
-        //public class QueryStringOAuthBearerProvider : OAuthBearerAuthenticationProvider
-        //{
-        //    public override Task RequestToken(OAuthRequestTokenContext context)
-        //    {
-        //        var value = context.Request.Query.Get("access_token");
+        public class QueryStringOAuthBearerProvider : OAuthBearerAuthenticationProvider
+        {
+            public override Task RequestToken(OAuthRequestTokenContext context)
+            {
+                var value = context.Request.Query.Get("access_token");
 
-        //        if (!string.IsNullOrEmpty(value))
-        //        {
-        //            context.Token = value;
-        //        }
+                if (!string.IsNullOrEmpty(value))
+                {
+                    context.Token = value;
+                }
 
-        //        return Task.FromResult<object>(null);
-        //    }
-        //}
+                return Task.FromResult<object>(null);
+            }
+        }
 
         private void ConfigureOAuthTokenGeneration(IAppBuilder app)
         {

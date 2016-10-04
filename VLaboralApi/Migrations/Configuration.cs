@@ -307,12 +307,17 @@ namespace VLaboralApi.Migrations
             #region sluna: Semilla de TipoNotificacion
             var listaTipoNotificacion = new List<TipoNotificacion>{
                 new TipoNotificacion {Valor="EXP", Descripcion="Notificación de Experiencia", 
+                    Titulo = "Notificación de experiencia laboral", Mensaje = "Una empresa a cargado una experiencia laboral tuya.",
                     TipoEmisor = "empresa" , TipoReceptor = "profesional"},
 
                  new TipoNotificacion {Valor = "POS", Descripcion="Notificación de Postulación", 
+                        Titulo = "Notificación de postulación", 
+                        Mensaje = "Un profesional se ha postulado a un puesto de una oferta.",
                        TipoEmisor = "profesional" , TipoReceptor = "empresa"},
 
                  new TipoNotificacion { Valor = "ETAP" ,  Descripcion="Notificación de Etapa Aprobada",
+                        Titulo = "Notificación de etapa aprobado",
+                        Mensaje = "Felicitaciones, has aprobado la etapa actual.",
                          TipoEmisor = "empresa" , TipoReceptor = "profesional"},
             };
             context.TipoNotificaciones.AddRange(listaTipoNotificacion);
