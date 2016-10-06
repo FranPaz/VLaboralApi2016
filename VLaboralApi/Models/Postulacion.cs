@@ -20,6 +20,9 @@ namespace VLaboralApi.Models
         //fpaz: relacion 1 a m con profesional (uno)
         public int ProfesionalId { get; set; }
         public virtual Profesional Profesional { get; set; }
+
+        //sluna:Relacion 1 a M con puestos (Muchos)
+        public virtual ICollection<NotificacionPostulacion> Notificaciones { get; set; }
     }
 
     public class NuevaPostulacion

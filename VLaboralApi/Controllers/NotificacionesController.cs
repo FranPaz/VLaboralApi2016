@@ -38,8 +38,8 @@ namespace VLaboralApi.Controllers
     {
         private VLaboral_Context db = new VLaboral_Context();
 
-        private static readonly ConnectionMapping<string> _connections =
-            new ConnectionMapping<string>();
+          private static readonly ConnectionMapping<string> _connections =
+         new ConnectionMapping<string>();
 
         // GET: api/Notificaciones
         public IQueryable<Notificacion> GetNotificaciones()
@@ -214,18 +214,21 @@ namespace VLaboralApi.Controllers
                 db.Notificaciones.Add(notificacion);
                 db.SaveChanges();
 
-                var usuarioId = notificacion.ReceptorId; //en realidad hay que buscar el UsuarioId
+               var notificacionPostulacion =
+                    db.Notificaciones.OfType<NotificacionPostulacion>().FirstOrDefault(n => n.Id == notificacion.Id);
+
+               // var usuarioId = notificacion.ReceptorId; //en realidad hay que buscar el UsuarioId
 
                 var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
                 foreach (var usuario in manager.Users.ToList())
                 {
-                    var app_usertype = false;
+                    var appUsertype = false;
                     var empresaId = false;
                     foreach (var claim in manager.GetClaims(usuario.Id))
                     {
                         if (claim.Type == "app_usertype" && claim.Value == notificacion.TipoNotificacion.TipoReceptor)
                         {
-                            app_usertype = true;
+                            appUsertype = true;
                            
                         }
                         if (claim.Type == "empresaId" && claim.Value == notificacion.ReceptorId.ToString())
@@ -233,11 +236,11 @@ namespace VLaboralApi.Controllers
                             empresaId = true;
                         }
                     }
-                    if (!empresaId || !app_usertype) continue;
-
+                    if (!empresaId || !appUsertype) continue;
+                    
                     foreach (var connectionId in _connections.GetConnections(usuario.Id))
                     {
-                        Hub.Clients.Client(connectionId).enviarNotificacion(notificacion);
+                        Hub.Clients.Client(connectionId).enviarNotificacion(notificacionPostulacion);
                     }
                     break;
                 }
