@@ -14,17 +14,22 @@ using Microsoft.AspNet.SignalR.Hubs;
 using Microsoft.AspNet.SignalR.Owin;
 using VLaboralApi.Controllers;
 using VLaboralApi.Models;
+using VLaboralApi.ClasesAuxiliares;
 
 namespace VLaboralApi.Hubs
 {
     public class NotificacionesHub : Hub
     {
-        public void Enviar(int  NotificacionId)
+        public void EnviarNotificacionPostulacion(NotificacionPostulacion prmNotificacion)
         {
-            //var notificaciones = D
-            Clients.All.actualizarNotificaciones(NotificacionId);
+            var notificacionHelper = new NotificacionesHelper();
 
+            var listadoConexiones = notificacionHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
 
+            foreach (var connectionId in listadoConexiones)
+            {
+                Clients.Client(connectionId).enviarNotificacion(prmNotificacion);
+            }
         }
 
         private static readonly ConnectionMapping<string> _connections =
@@ -34,7 +39,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnConnected()
         {
-            string idUsuario = Context.QueryString.Get("access_token");
+            string idUsuario = Context.QueryString.Get("userId");
             _connections.Add(idUsuario, Context.ConnectionId);
 
             return base.OnConnected();
@@ -42,7 +47,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            string idUsuario = Context.QueryString.Get("access_token");
+            string idUsuario = Context.QueryString.Get("userId");
 
             _connections.Remove(idUsuario, Context.ConnectionId);
 
@@ -51,7 +56,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnReconnected()
         {
-            string idUsuario = Context.QueryString.Get("access_token");
+            string idUsuario = Context.QueryString.Get("userId");
 
             if (!_connections.GetConnections(idUsuario).Contains(Context.ConnectionId))
             {

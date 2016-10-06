@@ -15,6 +15,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using WebGrease.Css.Extensions;
+using VLaboralApi.ClasesAuxiliares;
 
 namespace VLaboralApi.Controllers
 {
@@ -77,14 +78,15 @@ namespace VLaboralApi.Controllers
 
                 db.Postulacions.Add(p);
                 db.SaveChanges();
-                
-                var notificacionesCtrl = new NotificacionesController();
-                notificacionesCtrl.PostNotificacionPostulacion(p.Id);
 
-                //var notificacion = new NotificacionPostulacion();
-                //notificacion.
+                //var notificacionesCtrl = new NotificacionesController();
+                //notificacionesCtrl.PostNotificacionPostulacion(p.Id);
 
-                return Ok();
+                var notificacionHelper = new NotificacionesHelper(); ;
+
+                var notificacion = notificacionHelper.generarNotificacionPostulacion(p.Id);
+
+                return Ok(notificacion);
 
             }
             catch (Exception ex)

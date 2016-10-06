@@ -178,81 +178,6 @@ namespace VLaboralApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Notificaciones
-        [ResponseType(typeof(Notificacion))]
-        public IHttpActionResult PostNotificacionPostulacion(int postulacionId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var postulacion = db.Postulacions
-                                    .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta)
-                        .FirstOrDefault(p => p.Id == postulacionId);
-
-
-            if (postulacion == null) return BadRequest(ModelState);
-
-            var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "POS");
-
-            if (tipoNotificacion == null) return BadRequest(ModelState);
-            {
-                var notificacion = new NotificacionPostulacion
-                {
-                    PostulacionId = postulacion.Id,
-                   // EtapaOfertaId = postulacion.PuestoEtapaOferta.EtapaOfertaId,
-                    FechaCreacion = DateTime.Now,
-                    FechaPublicacion = DateTime.Now,
-                    Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
-                    Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
-                    TipoNotificacionId = tipoNotificacion.Id,
-                    EmisorId = postulacion.ProfesionalId,
-                    ReceptorId = postulacion.PuestoEtapaOferta.EtapaOferta.Oferta.EmpresaId
-                };
-
-                db.Notificaciones.Add(notificacion);
-                db.SaveChanges();
-
-               var notificacionPostulacion =
-                    db.Notificaciones.OfType<NotificacionPostulacion>().FirstOrDefault(n => n.Id == notificacion.Id);
-
-               // var usuarioId = notificacion.ReceptorId; //en realidad hay que buscar el UsuarioId
-
-                var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
-                foreach (var usuario in manager.Users.ToList())
-                {
-                    var appUsertype = false;
-                    var empresaId = false;
-                    foreach (var claim in manager.GetClaims(usuario.Id))
-                    {
-                        if (claim.Type == "app_usertype" && claim.Value == notificacion.TipoNotificacion.TipoReceptor)
-                        {
-                            appUsertype = true;
-                           
-                        }
-                        if (claim.Type == "empresaId" && claim.Value == notificacion.ReceptorId.ToString())
-                        {
-                            empresaId = true;
-                        }
-                    }
-                    if (!empresaId || !appUsertype) continue;
-                    
-                    foreach (var connectionId in _connections.GetConnections(usuario.Id))
-                    {
-                        Hub.Clients.Client(connectionId).enviarNotificacion(notificacionPostulacion);
-                    }
-                    break;
-                }
-
-                //var notificacionesHub = new NotificacionesHub();
-                //notificacionesHub.Enviar(notificacion.Id);
-
-                return Ok();
-                //  return CreatedAtRoute("DefaultApi", new { id = notificacion.Id }, notificacion);
-            }
-        }
-
         private void SendNotificacion(string who, Notificacion notificacion)
         {
           
@@ -356,4 +281,6 @@ namespace VLaboralApi.Controllers
             return db.Notificaciones.Count(e => e.Id == id) > 0;
         }
     }
+
+   
 }
