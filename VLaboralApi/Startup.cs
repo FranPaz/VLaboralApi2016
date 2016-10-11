@@ -9,11 +9,15 @@ using Microsoft.Owin.Security.OAuth;
 using System.Net.Http.Formatting;
 using Newtonsoft.Json.Serialization;
 using System.Configuration;
+using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Cors;
 using Microsoft.Owin.Security.DataHandler.Encoder;
 using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security;
 using VlaboralApi.Infrastructure;
 using VlaboralApi.Providers;
+using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 
 [assembly: OwinStartup(typeof(VLaboralApi.Startup))] // en este atributo indico la clase que se dispara una vez que arranca el servidor
@@ -21,20 +25,63 @@ namespace VLaboralApi
 {
     public class Startup
     {
+
+
         public void Configuration(IAppBuilder app)
         {
-            HttpConfiguration httpConfig = new HttpConfiguration();
+            var httpConfig = new HttpConfiguration();
 
             ConfigureOAuthTokenGeneration(app);
 
             ConfigureOAuthTokenConsumption(app);
+            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+
+            //var hubConfiguration = new HubConfiguration
+            //{
+            //    EnableDetailedErrors = true,
+            //    EnableJavaScriptProxies = false,
+            //};
+
+            //app.MapSignalR("/signalr", hubConfiguration);
+
+            // app.MapSignalR();
 
             ConfigureWebApi(httpConfig);
 
-            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
-
             app.UseWebApi(httpConfig);
 
+            app.Map("/signalr", map =>
+            {
+                map.UseCors(CorsOptions.AllowAll);
+
+                map.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions()
+                {
+                    Provider = new QueryStringOAuthBearerProvider()
+                });
+
+                var hubConfiguration = new HubConfiguration
+                {
+                    Resolver = GlobalHost.DependencyResolver,
+                };
+                map.RunSignalR(hubConfiguration);
+            });
+
+
+        }
+
+        public class QueryStringOAuthBearerProvider : OAuthBearerAuthenticationProvider
+        {
+            public override Task RequestToken(OAuthRequestTokenContext context)
+            {
+                var value = context.Request.Query.Get("access_token");
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    context.Token = value;
+                }
+
+                return Task.FromResult<object>(null);
+            }
         }
 
         private void ConfigureOAuthTokenGeneration(IAppBuilder app)

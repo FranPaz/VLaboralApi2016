@@ -11,10 +11,10 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
 
-        public string EmisorId { get; set; }
+        public int EmisorId { get; set; }
         //public virtual IdentityUser Emisor { get; set; }
 
-        public string ReceptorId { get; set; }
+        public int ReceptorId { get; set; }
         //public virtual IdentityUser Receptor { get; set; }
 
         public string Titulo { get; set; }
@@ -40,24 +40,32 @@ namespace VLaboralApi.Models
     public class NotificacionPostulacion : Notificacion
     {
         public int? PostulacionId { get; set; }
-        public virtual Postulacion Postulacion { get; set; }
-
-        public int? EtapaOfertaId { get; set; }
-        public virtual EtapaOferta EtapaOferta { get; set; }
+        //public virtual Postulacion Postulacion { get; set; }
     }
+
+    //public class NotificacionNovedadesPostulacion : Notificacion
+    //{
+    //    public int? EtapaOfertaId { get; set; }
+    //    public virtual EtapaOferta EtapaOferta { get; set; }
+    //}
 
     public class TipoNotificacion
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        public string Valor { get; set; } // NP: Notificacion Postulacion, NE: NotificacionExperiencia, etc
         public string Descripcion { get; set; }
-        public string TipoEmisorId { get; set; }
+
+        public string Titulo { get; set; }
+        public string Mensaje { get; set; }
+
+        public string TipoEmisor { get; set; } //sluna: E: Empresa, P: profesional, A: administracion
         //public virtual IdentityRole TipoEmisor { get; set; }
 
-        public string TipoReceptorId { get; set; }
+        public string TipoReceptor { get; set; } //sluna: E: Empresa, P: profesional, A: administracion
         //public virtual IdentityRole TipoReceptor { get; set; }
 
+        
         //sluna: relacion 1 a M con Notificacion (muchos)
-        public virtual ICollection<Notificacion> Notificaciones { get; set; }
+        //public virtual ICollection<Notificacion> Notificaciones { get; set; }
     }
 }
