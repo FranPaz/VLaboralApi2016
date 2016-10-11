@@ -26,5 +26,8 @@ namespace VLaboralApi.Models
         public virtual Profesional Profesional { get; set; }
 
         public string idUsuarioCreacion { get; set; }
+
+        //iafar: relacion 1 a 1..0 con Verificacion de Experiencia laboral (1..0)
+        public virtual VerificacionExperienciaLaboral VerificacionExperienciaLaboral { get; set; }
     }
 }

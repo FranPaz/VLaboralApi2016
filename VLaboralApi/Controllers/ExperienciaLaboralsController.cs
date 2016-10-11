@@ -22,11 +22,47 @@ namespace VLaboralApi.Controllers
             return db.ExperienciaLaborals;
         }
 
+        [Route("api/ExperienciaLaboral/Verificacion")]
+        public IHttpActionResult GetExperienciaLaboral(int idEmpresa , int idProfesional)
+        {
+            try 
+	        {
+                var listExperienciasPro = (from exp in db.ExperienciaLaborals
+                                        where (exp.EmpresaId == idEmpresa)
+                                        && (exp.ProfesionalId == idProfesional)
+                                        && (exp.isVerificada == false)
+                                        select exp)
+                                       .ToList();
+               
+                                     
+                if (listExperienciasPro== null)
+                {
+                    return NotFound();
+                }
+
+             
+
+                return Ok(listExperienciasPro);
+	        }
+	            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); //iafar: esto detiene la ejecucion, quedeberia ir?
+            }
+          
+        }
+
+
         // GET: api/ExperienciaLaborals/5
         [ResponseType(typeof(ExperienciaLaboral))]
         public IHttpActionResult GetExperienciaLaboral(int id)
         {
-            ExperienciaLaboral experienciaLaboral = db.ExperienciaLaborals.Find(id);
+            var experienciaLaboral = (from el in db.ExperienciaLaborals
+                                      where el.Id == id
+                                      select el)
+                                    .Include(elv => elv.VerificacionExperienciaLaboral)
+                                    .FirstOrDefault();
+
+            //ExperienciaLaboral experienciaLaboral = db.ExperienciaLaborals.Find(id);
             if (experienciaLaboral == null)
             {
                 return NotFound();
@@ -98,8 +134,8 @@ namespace VLaboralApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }            
-            
+            }
+
         }
 
         // DELETE: api/ExperienciaLaborals/5

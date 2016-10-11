@@ -87,7 +87,10 @@ namespace VLaboralApi.Models
         public System.Data.Entity.DbSet<VLaboralApi.Models.Notificacion> Notificaciones { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoNotificacion> TipoNotificaciones { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.VerificacionExperienciaLaboral> VerificacionExperienciaLaborals { get; set; }
     }
+
 
 }
 
