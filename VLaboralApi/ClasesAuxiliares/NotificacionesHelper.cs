@@ -58,6 +58,45 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
+        public NotificacionExperiencia generarNotificacionExperiencia(int experienciaId) //fpaz: devuelve una otificacion  de nueva Experiencia Cargada
+        {
+            try
+            {
+                var experiencia = db.ExperienciaLaborals  
+                            .Include(prmEmp => prmEmp.Empresa)                  
+                            .FirstOrDefault(p => p.Id == experienciaId);
+
+
+                if (experiencia == null) return null;
+
+                var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "EXP");
+
+                if (tipoNotificacion == null) return null;
+                {
+                    var notificacion = new NotificacionExperiencia
+                    {
+                        ExperienciaId = experiencia.Id,
+                        // EtapaOfertaId = postulacion.PuestoEtapaOferta.EtapaOfertaId,
+                        FechaCreacion = DateTime.Now,
+                        FechaPublicacion = DateTime.Now,
+                        Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
+                        Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
+                        TipoNotificacionId = tipoNotificacion.Id,
+                        EmisorId = experiencia.ProfesionalId,
+                        ReceptorId = experiencia.Empresa.Id
+                    };
+
+                    db.Notificaciones.Add(notificacion);
+                    db.SaveChanges();
+                    return notificacion;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public List<string> GetConnectionIds(string tipoReceptor, string receptorId)
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));

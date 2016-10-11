@@ -32,6 +32,18 @@ namespace VLaboralApi.Hubs
             }
         }
 
+        public void EnviarNotificacionExperiencia(NotificacionExperiencia prmNotificacion)
+        {
+            var notificacionHelper = new NotificacionesHelper();
+
+            var listadoConexiones = notificacionHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
+
+            foreach (var connectionId in listadoConexiones)
+            {
+                Clients.Client(connectionId).enviarNotificacion(prmNotificacion);
+            }
+        }
+
         private static readonly ConnectionMapping<string> _connections =
          new ConnectionMapping<string>();
 

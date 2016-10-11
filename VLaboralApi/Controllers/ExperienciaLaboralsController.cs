@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
 
 namespace VLaboralApi.Controllers
@@ -89,11 +90,16 @@ namespace VLaboralApi.Controllers
                     experienciaLaboral.Empresa = db.Empresas.Find(experienciaLaboral.EmpresaId);
                     //*TODO: dar de alta la notificacion de nueva experiencia laboral cargada para la validacion por parte de la empresa
                     // a partir del usuario que dio de alta la exp
+                    var notificacionHelper = new NotificacionesHelper(); 
+
+                    var notificacion = notificacionHelper.generarNotificacionExperiencia(experienciaLaboral.Id);
+
+                    return Ok(notificacion);
                 }
-
-
-                return Ok(experienciaLaboral);
-
+                else
+                {
+                    return Ok(experienciaLaboral);
+                }
             }
             catch (Exception ex)
             {
