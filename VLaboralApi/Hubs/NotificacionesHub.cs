@@ -20,20 +20,21 @@ namespace VLaboralApi.Hubs
 {
     public class NotificacionesHub : Hub
     {
+        private static readonly ConnectionMapping<string> _connections =
+      new ConnectionMapping<string>();
+
         public void EnviarNotificacionPostulacion(NotificacionPostulacion prmNotificacion)
         {
-            var notificacionHelper = new NotificacionesHelper();
-
-            var listadoConexiones = notificacionHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
-
-            foreach (var connectionId in listadoConexiones)
-            {
-                Clients.Client(connectionId).enviarNotificacion(prmNotificacion);
-            }
+            EnviarNotificacion(prmNotificacion);
         }
 
         public void EnviarNotificacionExperiencia(NotificacionExperiencia prmNotificacion)
         {
+            EnviarNotificacion(prmNotificacion);
+        }
+
+        private void EnviarNotificacion<T>(T prmNotificacion) where T : Notificacion
+        {
             var notificacionHelper = new NotificacionesHelper();
 
             var listadoConexiones = notificacionHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
@@ -43,11 +44,6 @@ namespace VLaboralApi.Hubs
                 Clients.Client(connectionId).enviarNotificacion(prmNotificacion);
             }
         }
-
-        private static readonly ConnectionMapping<string> _connections =
-         new ConnectionMapping<string>();
-
-
 
         public override Task OnConnected()
         {
