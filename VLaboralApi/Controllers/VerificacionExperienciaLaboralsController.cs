@@ -83,7 +83,18 @@ namespace VLaboralApi.Controllers
 
             try
             {
+
                 db.SaveChanges();
+
+                //iafar: busco la experiencia a la que estoy verificando y la marco como verificada
+               ExperienciaLaboral experienciaLaboralMod = (from exp in db.ExperienciaLaborals
+                                         where exp.Id == verificacionExperienciaLaboral.Id
+                                         select exp)
+                                        .FirstOrDefault();
+               experienciaLaboralMod.isVerificada = true;
+               db.Entry(experienciaLaboralMod).State = EntityState.Modified;
+               db.SaveChanges();
+
             }
             catch (DbUpdateException)
             {
@@ -93,11 +104,11 @@ namespace VLaboralApi.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest();
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = verificacionExperienciaLaboral.Id }, verificacionExperienciaLaboral);
+            return Ok();
         }
 
         // DELETE: api/VerificacionExperienciaLaborals/5
