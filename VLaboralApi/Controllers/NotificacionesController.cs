@@ -49,7 +49,7 @@ namespace VLaboralApi.Controllers
             switch (tipoNotificacion)
             {
                 case "EXP":
-                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n=> n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
+                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
                 case "EXPVER":
                     return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
                 case "POS":
@@ -68,7 +68,7 @@ namespace VLaboralApi.Controllers
             switch (tipoReceptor)
             {
                 case "profesional":
-                    return 
+                    return
                         Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "profesionalId").Value);
                 case "empresa":
                     return Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "empresaId").Value);
@@ -169,7 +169,7 @@ namespace VLaboralApi.Controllers
         //    return Ok(resultado.ToList());
         //}
 
-     
+
 
         // PUT: api/Notificaciones/5
         [ResponseType(typeof(void))]
