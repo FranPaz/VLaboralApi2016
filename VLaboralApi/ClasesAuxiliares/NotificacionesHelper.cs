@@ -19,7 +19,7 @@ namespace VLaboralApi.ClasesAuxiliares
         private static readonly ConnectionMapping<string> _connections =
         new ConnectionMapping<string>();
 
-        public NotificacionPostulacion generarNotificacionPostulacion(int postulacionId)
+        public NotificacionPostulacion GenerarNotificacionPostulacion(int postulacionId)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
-        public NotificacionExperiencia generarNotificacionExperiencia(int experienciaId) //fpaz: devuelve una otificacion  de nueva Experiencia Cargada
+        public NotificacionExperiencia GenerarNotificacionExperiencia(int experienciaId) //fpaz: devuelve una otificacion  de nueva Experiencia Cargada
         {
             try
             {
@@ -97,7 +97,47 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
-        public List<string> GetConnectionIds(string tipoReceptor, string receptorId)
+        public IEnumerable<NotificacionPostulacion> GenerarNotificacionesPostulantesPasanEtapa(int ofertaId) 
+        {
+            try
+            {
+                var postulaciones = db.Postulacions
+                                        .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta)
+                            .Where(p => p.PuestoEtapaOferta.EtapaOferta.Oferta.Id == ofertaId && p.PuestoEtapaOferta.EtapaOfertaId == p.PuestoEtapaOferta.EtapaOferta.Oferta.IdEtapaActual);
+                
+                var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "ETAP");
+
+                if (tipoNotificacion == null) return null;
+                {
+                    var notificaciones = new List<NotificacionPostulacion>();
+                    foreach (var postulante in postulaciones)
+                    {
+                        var notificacion = new NotificacionPostulacion
+                        {
+                            PostulacionId = postulante.Id,
+                            FechaCreacion = DateTime.Now,
+                            FechaPublicacion = DateTime.Now,
+                            Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
+                            Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
+                            TipoNotificacionId = tipoNotificacion.Id,
+                            EmisorId = postulante.ProfesionalId,
+                            ReceptorId = postulante.PuestoEtapaOferta.EtapaOferta.Oferta.EmpresaId
+                        };
+
+                      notificaciones.Add(notificacion);
+                    }
+                    db.Notificaciones.AddRange(notificaciones);
+                    db.SaveChanges();
+                    return notificaciones;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static IEnumerable<string> GetConnectionIds(string tipoReceptor, string receptorId)
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
             foreach (var usuario in manager.Users.Where(u => u.EmailConfirmed).ToList()) //sluna: hay que restringir más el where para obtener una lista más corta.

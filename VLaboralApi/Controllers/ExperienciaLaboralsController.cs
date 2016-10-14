@@ -23,31 +23,59 @@ namespace VLaboralApi.Controllers
             return db.ExperienciaLaborals;
         }
 
-        [Route("api/ExperienciaLaboral/Verificacion")]
-        public IHttpActionResult GetExperienciaLaboral(int idEmpresa , int idProfesional)
+        [Route("api/ExperienciaLaboral/PendientesValidar")] //iafar: trae todas las experiencias que necesiten ser validadas por mi empresa
+        public IHttpActionResult GetExperienciaLaboralPendiente(int idEmpresa)
         {
-            try 
-	        {
+            try
+            {
                 var listExperienciasPro = (from exp in db.ExperienciaLaborals
-                                        where (exp.EmpresaId == idEmpresa)
-                                        && (exp.ProfesionalId == idProfesional)
-                                        && (exp.isVerificada == false)
-                                        select exp)
+                                           where (exp.EmpresaId == idEmpresa)
+                                           && (exp.isVerificada == false)
+                                           select exp)
                                        .ToList();
-               
-                                     
-                if (listExperienciasPro== null)
+
+
+                if (listExperienciasPro == null)
                 {
                     return NotFound();
                 }
 
-             
+
 
                 return Ok(listExperienciasPro);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+
+        }
+
+
+
+        [Route("api/ExperienciaLaboral/Verificacion")] //iafar: obtiene el detalle de una experiencia en particular
+        public IHttpActionResult GetExperienciaLaboralVerificar(int idExperiencia)
+        {
+            try 
+	        {
+                var experienciaPro = (from exp in db.ExperienciaLaborals
+                                        where (exp.Id== idExperiencia)
+                                        select exp)
+                                        .Include(pro => pro.Profesional)
+                                       .FirstOrDefault();
+               
+                
+                                     
+                if (experienciaPro== null)
+                {
+                    return NotFound();
+                }
+                experienciaPro.Profesional.ExperienciasLaborales = null;
+                return Ok(experienciaPro);
 	        }
 	            catch (Exception ex)
             {
-                return BadRequest(ex.Message); //iafar: esto detiene la ejecucion, quedeberia ir?
+                return BadRequest(ex.Message);
             }
           
         }
@@ -76,6 +104,7 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutExperienciaLaboral(int id, ExperienciaLaboral experienciaLaboral)
         {
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -91,6 +120,8 @@ namespace VLaboralApi.Controllers
             try
             {
                 db.SaveChanges();
+                //iafar: generar notificacion de experiencia validada para profesional
+                return Ok();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,11 +131,11 @@ namespace VLaboralApi.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest();
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+          
         }
 
         // POST: api/ExperienciaLaborals
@@ -128,7 +159,7 @@ namespace VLaboralApi.Controllers
                     // a partir del usuario que dio de alta la exp
                     var notificacionHelper = new NotificacionesHelper(); 
 
-                    var notificacion = notificacionHelper.generarNotificacionExperiencia(experienciaLaboral.Id);
+                    var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
 
                     return Ok(notificacion);
                 }

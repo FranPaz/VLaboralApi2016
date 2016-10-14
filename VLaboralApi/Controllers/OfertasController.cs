@@ -8,6 +8,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using VLaboralApi.ClasesAuxiliares;
+using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
 
@@ -280,15 +282,15 @@ namespace VLaboralApi.Controllers
         }
 
 
-        [Route("api/Ofertas/PasarSiguienteEtapa/{ofertaId}")]
+        [Route("api/Ofertas/PasarSiguienteEtapa/{id}")]
         [ResponseType(typeof(Postulacion))]
-        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int Id)
+        public IHttpActionResult PostOfertaPasarSiguienteEtapa(int id)
         {
             //Sluna: Obtengo la etapa actual a partir de IdEtapaActual de la Oferta. Joineo PuestosEtapaOferta y Postulaciones.
             var etapaActual = db.EtapasOfertas
                 .Include(eo => eo.PuestosEtapaOferta
                     .Select(peo => peo.Postulaciones))
-                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == Id);
+                .FirstOrDefault(eo => eo.Id == eo.Oferta.IdEtapaActual && eo.Oferta.Id == id);
 
 
             if (etapaActual == null) return BadRequest("Ocurrió un error al buscar la etapa actual.");
@@ -303,7 +305,7 @@ namespace VLaboralApi.Controllers
                 //Sluna: Obtengo la etapa Siguiente a partir de IdEstapaSiguiente de la EtapaActual. Joineo PuestosEtapaOferta.
                 var etapaSiguiente = db.EtapasOfertas
                     .Include(eo => eo.PuestosEtapaOferta)
-                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == Id);
+                    .FirstOrDefault(eo => eo.Id == etapaActual.IdEstapaSiguiente && eo.Oferta.Id == id);
 
                 if (etapaSiguiente == null) return BadRequest("Ocurrío un error al buscar la etapa siguiente.");
 
@@ -336,12 +338,21 @@ namespace VLaboralApi.Controllers
                         }
 
                         //Sluna: Actualizo el IdEtapaActual de la Oferta
-                        db.Ofertas.FirstOrDefault(o => o.Id == Id).IdEtapaActual = etapaSiguiente.Id;
+                        db.Ofertas.FirstOrDefault(o => o.Id == id).IdEtapaActual = etapaSiguiente.Id;
 
                         db.SaveChanges();
 
                         //Cierro la transacción
                         dbTransaction.Commit();
+
+                        var notificacionHelper = new NotificacionesHelper();
+                        var notificaciones = notificacionHelper.GenerarNotificacionesPostulantesPasanEtapa(id);
+                        
+                        var notificacionesHub = new NotificacionesHub();
+                        foreach (var notificacion in notificaciones)
+                        {
+                            notificacionesHub.EnviarNotificacionPostulanteEtapaAprobada(notificacion); 
+                        }
                         return Ok();
                     }
                     catch (Exception ex)
