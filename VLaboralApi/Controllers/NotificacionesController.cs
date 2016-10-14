@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -18,74 +19,113 @@ using Microsoft.AspNet.SignalR.Hubs;
 using VlaboralApi.Infrastructure;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
+using VLaboralApi.Services;
 
 namespace VLaboralApi.Controllers
 {
-    public abstract class ApiControllerWithHub<THub> : ApiController
-      where THub : IHub
-    {
-        Lazy<IHubContext> hub = new Lazy<IHubContext>(
-            () => GlobalHost.ConnectionManager.GetHubContext<THub>()
-        );
+    //public abstract class ApiControllerWithHub<THub> : ApiController
+    //  where THub : IHub
+    //{
+    //    Lazy<IHubContext> hub = new Lazy<IHubContext>(
+    //        () => GlobalHost.ConnectionManager.GetHubContext<THub>()
+    //    );
 
-        protected IHubContext Hub
-        {
-            get { return hub.Value; }
-        }
-    }
+    //    protected IHubContext Hub
+    //    {
+    //        get { return hub.Value; }
+    //    }
+    //}
 
-    public class NotificacionesController : ApiControllerWithHub<NotificacionesHub>
+    //public class NotificacionesController : ApiControllerWithHub<NotificacionesHub>
+
+    public class NotificacionesController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
 
-          private static readonly ConnectionMapping<string> _connections =
-         new ConnectionMapping<string>();
-
-        // GET: api/Notificaciones
-        public IQueryable<Notificacion> GetNotificaciones()
+        // GET: api/Notificaciones/5
+        //[ResponseType(typeof(Notificacion))]
+        public IHttpActionResult GetNotificacion(int id, string tipoNotificacion)
         {
-            return db.Notificaciones;
+            switch (tipoNotificacion)
+            {
+                case "EXP":
+                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n=> n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
+                case "EXPVER":
+                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
+                case "POS":
+                    return Ok(db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id));
+                case "ETAP":
+                    return Ok(db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id));
+                default:
+                    return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
+            }
+        }
+
+        private int? GetReceptorId(string tipoReceptor)
+        {
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
+            var usuarioId = User.Identity.GetUserId();
+            switch (tipoReceptor)
+            {
+                case "profesional":
+                    return 
+                        Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "profesionalId").Value);
+                case "empresa":
+                    return Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "empresaId").Value);
+                case "administracion":
+                    return null;
+            }
+            return null;
+        }
+
+        private string GetTipoReceptor()
+        {
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
+            var usuarioId = User.Identity.GetUserId();
+            var appUsertype = manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "app_usertype");
+            return appUsertype == null ? null : appUsertype.Value;
         }
 
         // GET: api/Notificaciones
         //[Authorize]
-       // [ResponseType(typeof(List<Notificacion>))]
-        public List<Notificacion> GetNotificacionesRecibidas()
+        // [ResponseType(typeof(List<Notificacion>))]
+        [ResponseType(typeof(CustomPaginateResult<Oferta>))]
+        public IHttpActionResult GetNotificacionesRecibidas(int page, int rows)
         {
-            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
+            var tipoReceptor = GetTipoReceptor();
+            if (tipoReceptor == null) return null;
 
-            var usuarioId = User.Identity.GetUserId();
-            var appUsertype = manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "app_usertype");
-            if (appUsertype == null) return null;
-
-            var tipoReceptor = appUsertype.Value;
-            int? receptorId = null;
-
-            switch (tipoReceptor)
-            {
-                case "profesional":
-                    receptorId =
-                        Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "profesionalId").Value);
-                    break;
-
-                case "empresa":
-                    receptorId = Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "empresaId").Value);
-                    break;
-                case "administracion":
-                    break;
-            }
-
+            var receptorId = GetReceptorId(tipoReceptor);
             if (receptorId == null) return null;
 
-            var resultado = db.Notificaciones
-                    .Where(n => n.ReceptorId == receptorId
+            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
+                                && n.FechaPublicacion <= DateTime.Now
+                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+                                && n.TipoNotificacion.TipoReceptor == tipoReceptor);
+
+            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+
+            var results = db.Notificaciones
+                .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
                                 && n.TipoNotificacion.TipoReceptor == tipoReceptor)
-                    .Include(n => n.TipoNotificacion)
-                    .OrderByDescending(n => n.FechaPublicacion);
+                                .Include(n => n.TipoNotificacion)
+                                .OrderByDescending(n => n.FechaPublicacion)
+                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                .Take(rows)
+                .ToList();
 
-            return resultado.ToList();
+            var result = new CustomPaginateResult<Notificacion>()
+            {
+                PageSize = rows,
+                TotalRows = totalRows,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                Results = results
+            };
+
+            return Ok(result);
         }
 
         // GET: api/Notificaciones
@@ -129,18 +169,7 @@ namespace VLaboralApi.Controllers
         //    return Ok(resultado.ToList());
         //}
 
-        // GET: api/Notificaciones/5
-        [ResponseType(typeof(Notificacion))]
-        public IHttpActionResult GetNotificacion(int id)
-        {
-            var notificacion = db.Notificaciones.Find(id);
-            if (notificacion == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(notificacion);
-        }
+     
 
         // PUT: api/Notificaciones/5
         [ResponseType(typeof(void))]
@@ -180,9 +209,9 @@ namespace VLaboralApi.Controllers
 
         private void SendNotificacion(string who, Notificacion notificacion)
         {
-          
 
-           
+
+
         }
 
         // POST: api/Notificaciones
@@ -208,7 +237,7 @@ namespace VLaboralApi.Controllers
                 var notificacion = new NotificacionPostulacion()
                 {
                     PostulacionId = postulacion.Id,
-                   // EtapaOfertaId = postulacion.PuestoEtapaOferta.EtapaOfertaId,
+                    // EtapaOfertaId = postulacion.PuestoEtapaOferta.EtapaOfertaId,
                     FechaCreacion = DateTime.Now,
                     FechaPublicacion = DateTime.Now,
                     Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
@@ -282,5 +311,5 @@ namespace VLaboralApi.Controllers
         }
     }
 
-   
+
 }

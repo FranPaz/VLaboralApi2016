@@ -128,7 +128,7 @@ namespace VLaboralApi.Controllers
                     // a partir del usuario que dio de alta la exp
                     var notificacionHelper = new NotificacionesHelper(); 
 
-                    var notificacion = notificacionHelper.generarNotificacionExperiencia(experienciaLaboral.Id);
+                    var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
 
                     return Ok(notificacion);
                 }
