@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
@@ -94,31 +95,41 @@ namespace VLaboralApi.Controllers
 
         // PUT: api/Postulaciones/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutPostulacion(ResultadoPostulacion resultado)
+        public IHttpActionResult PutPostulacion(Postulacion postulacion)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            
+
+         //   var resultadoPostulacion = new JavaScriptSerializer().Deserialize<ResultadoPostulacion>(resultado);
+
+
             //sluna: Actualizo los atributos de las postulaciones.
 
-            var postulaciones = db.Postulacions.Where(p => p.PuestoEtapaOfertaId == resultado.PuestoEstapaOfertaId);
-            foreach (var resultadoPostulacion in resultado.Postulaciones)
+            var _postulacion = db.Postulacions.FirstOrDefault(p => p.Id == postulacion.Id);
+            if (_postulacion != null)
             {
-                var postulacion =
-                    postulaciones.FirstOrDefault(p => p.Id == resultadoPostulacion.Id);
-
-                if (postulacion == null) continue;//sluna: if invertido para reducir anidamiento
-
-                postulacion.Valoracion = resultadoPostulacion.Valoracion;
-                postulacion.Comentario = resultadoPostulacion.Comentario;
-                postulacion.PasaEtapa = resultadoPostulacion.PasaEtapa;
+                _postulacion.Valoracion = postulacion.Valoracion;
+                _postulacion.Comentario = postulacion.Comentario;
+                _postulacion.PasaEtapa = postulacion.PasaEtapa;
+                db.SaveChanges();
             }
-
-            db.SaveChanges();
-
             return Ok();
+            //var postulaciones = db.Postulacions.Where(p => p.PuestoEtapaOfertaId == resultadoPostulacion.PuestoEstapaOfertaId);
+            //foreach (var postulacion in resultadoPostulacion.Postulaciones)
+            //{
+            //    var postulacionBd =
+            //        postulaciones.FirstOrDefault(p => p.Id == postulacion.Id);
+
+            //    if (postulacion == null) continue;//sluna: if invertido para reducir anidamiento
+
+            //    postulacion.Valoracion = postulacionBd.Valoracion;
+            //    postulacion.Comentario = postulacionBd.Comentario;
+            //    postulacion.PasaEtapa = postulacionBd.PasaEtapa;
+            //}
+
+           
         }
         
       
