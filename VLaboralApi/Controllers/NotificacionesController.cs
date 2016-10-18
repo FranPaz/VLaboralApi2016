@@ -53,7 +53,11 @@ namespace VLaboralApi.Controllers
                 case "EXPVER":
                     return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
                 case "POS":
-                    return Ok(db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id));
+                    var notifPostulacion = db.Notificaciones.OfType<NotificacionPostulacion>()
+                        .Include(n => n.Postulacion.PuestoEtapaOferta.Puesto.Oferta)                        
+                        .Include(p => p.Postulacion.Profesional)
+                        .FirstOrDefault(n => n.Id == id);
+                    return Ok(notifPostulacion);
                 case "ETAP":
                     return Ok(db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id));
                 default:
