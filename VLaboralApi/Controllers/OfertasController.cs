@@ -337,6 +337,9 @@ namespace VLaboralApi.Controllers
                             db.Postulacions.AddRange(postulantesAprobados);
                         }
 
+                        //Sluna: Pongo fechaFin a la etapa actual
+                        etapaActual.FechaFin = DateTime.Now;
+
                         //Sluna: Actualizo el IdEtapaActual de la Oferta
                         db.Ofertas.FirstOrDefault(o => o.Id == id).IdEtapaActual = etapaSiguiente.Id;
 
