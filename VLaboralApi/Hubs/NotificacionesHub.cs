@@ -33,11 +33,14 @@ namespace VLaboralApi.Hubs
             EnviarNotificacion(prmNotificacion);
         }
 
+        public void EnviarNotificacionPostulanteEtapaAprobada(NotificacionPostulacion prmNotificacion)
+        {
+            EnviarNotificacion(prmNotificacion);
+        }
+
         private void EnviarNotificacion<T>(T prmNotificacion) where T : Notificacion
         {
-            var notificacionHelper = new NotificacionesHelper();
-
-            var listadoConexiones = notificacionHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
+            var listadoConexiones = NotificacionesHelper.GetConnectionIds(prmNotificacion.TipoNotificacion.TipoReceptor, prmNotificacion.ReceptorId.ToString());
 
             foreach (var connectionId in listadoConexiones)
             {
@@ -47,7 +50,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnConnected()
         {
-            string idUsuario = Context.QueryString.Get("userId");
+            var idUsuario = Context.QueryString.Get("userId");
             _connections.Add(idUsuario, Context.ConnectionId);
 
             return base.OnConnected();
@@ -55,7 +58,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            string idUsuario = Context.QueryString.Get("userId");
+            var idUsuario = Context.QueryString.Get("userId");
 
             _connections.Remove(idUsuario, Context.ConnectionId);
 
@@ -64,7 +67,7 @@ namespace VLaboralApi.Hubs
 
         public override Task OnReconnected()
         {
-            string idUsuario = Context.QueryString.Get("userId");
+            var idUsuario = Context.QueryString.Get("userId");
 
             if (!_connections.GetConnections(idUsuario).Contains(Context.ConnectionId))
             {
