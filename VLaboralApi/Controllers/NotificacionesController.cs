@@ -44,25 +44,46 @@ namespace VLaboralApi.Controllers
 
         // GET: api/Notificaciones/5
         //[ResponseType(typeof(Notificacion))]
-        public IHttpActionResult GetNotificacion(int id, string tipoNotificacion)
+        public IHttpActionResult GetNotificacion(int id, string tipoNotificacion) //fpaz: funcion que devuelve la notificacion y sus objetos asociados, y tambien actualiza la fecha de lectura
         {
-            switch (tipoNotificacion)
-            {
-                case "EXP":
-                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
-                case "EXPVER":
-                    return Ok(db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id));
-                case "POS":
-                    var notifPostulacion = db.Notificaciones.OfType<NotificacionPostulacion>()
-                        .Include(n => n.Postulacion.PuestoEtapaOferta.Puesto.Oferta)                        
-                        .Include(p => p.Postulacion.Profesional)
-                        .FirstOrDefault(n => n.Id == id);
-                    return Ok(notifPostulacion);
-                case "ETAP":
-                    return Ok(db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id));
-                default:
-                    return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
+            try
+            {               
+
+                switch (tipoNotificacion)
+                {
+                    case "EXP":
+                        var notifExp = db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id);
+                        notifExp.FechaLectura = notifExp.FechaLectura == null ? DateTime.Now : notifExp.FechaLectura;
+                        db.SaveChanges();
+                        return Ok(notifExp);
+                    case "EXPVER":
+                        var notifExpVer = db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id);
+                        notifExpVer.FechaLectura = notifExpVer.FechaLectura == null ? DateTime.Now : notifExpVer.FechaLectura;
+                        db.SaveChanges();
+                        return Ok(notifExpVer);
+                    case "POS":
+                        var notifPos = db.Notificaciones.OfType<NotificacionPostulacion>()
+                            .Include(n => n.Postulacion.PuestoEtapaOferta.Puesto.Oferta)
+                            .Include(p => p.Postulacion.Profesional)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifPos.FechaLectura = notifPos.FechaLectura==null ? DateTime.Now : notifPos.FechaLectura;
+                        db.SaveChanges();
+                        return Ok(notifPos);
+                    case "ETAP":
+                        var notifEtap = db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id);
+                        notifEtap.FechaLectura = notifEtap.FechaLectura == null ? DateTime.Now : notifEtap.FechaLectura;
+                        db.SaveChanges();
+                        return Ok(notifEtap);
+                    default:
+                        return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
+                };
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+            
+
         }
 
         private int? GetReceptorId(string tipoReceptor)
@@ -132,50 +153,8 @@ namespace VLaboralApi.Controllers
             return Ok(result);
         }
 
-        // GET: api/Notificaciones
-        //[Authorize]
-        //public IHttpActionResult GetNotificacionesEnviadas()
-        //{
+        
 
-        //    var claimsIdentity = User.Identity as ClaimsIdentity;
-        //    if (claimsIdentity == null) return BadRequest();
-
-        //    int? emisorId = null;
-
-        //    var appUsertype = claimsIdentity.Claims.FirstOrDefault(r => r.Type == "app_usertype");
-        //    if (appUsertype == null) return BadRequest();
-
-        //    var tipoEmisor = appUsertype.Value;
-        //    switch (tipoEmisor)
-        //    {
-        //        case "profesional":
-        //            emisorId =
-        //                Convert.ToInt32(claimsIdentity.Claims.FirstOrDefault(r => r.Type == "profesionalId").Value);
-        //            break;
-
-        //        case "empresa":
-        //            emisorId = Convert.ToInt32(claimsIdentity.Claims.FirstOrDefault(r => r.Type == "empresaId").Value);
-        //            break;
-        //        case "administracion":
-        //            break;
-        //    }
-
-        //    if (emisorId == null) return BadRequest();
-
-        //    var resultado = db.Notificaciones
-        //            .Where(n => n.EmisorId == emisorId
-        //                        && n.FechaPublicacion <= DateTime.Now
-        //                        && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-        //                        && n.TipoNotificacion.TipoEmisor == tipoEmisor)
-        //            .Include(n => n.TipoNotificacion)
-        //            .OrderByDescending(n => n.FechaPublicacion);
-
-        //    return Ok(resultado.ToList());
-        //}
-
-
-
-        // PUT: api/Notificaciones/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutNotificacion(int id, Notificacion notificacion)
         {
