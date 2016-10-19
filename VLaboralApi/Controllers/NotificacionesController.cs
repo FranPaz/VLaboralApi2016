@@ -42,10 +42,10 @@ namespace VLaboralApi.Controllers
          new ConnectionMapping<string>();
 
         // GET: api/Notificaciones
-        public IQueryable<Notificacion> GetNotificaciones()
-        {
-            return db.Notificaciones;
-        }
+        //public IQueryable<Notificacion> GetNotificaciones()
+        //{
+        //    return db.Notificaciones;
+        //}
 
         // GET: api/Notificaciones
         //[Authorize]
