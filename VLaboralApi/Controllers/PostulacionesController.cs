@@ -101,21 +101,24 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-         //   var resultadoPostulacion = new JavaScriptSerializer().Deserialize<ResultadoPostulacion>(resultado);
-
-
-            //sluna: Actualizo los atributos de las postulaciones.
-
+            
             var _postulacion = db.Postulacions.FirstOrDefault(p => p.Id == postulacion.Id);
-            if (_postulacion != null)
-            {
-                _postulacion.Valoracion = postulacion.Valoracion;
-                _postulacion.Comentario = postulacion.Comentario;
-                _postulacion.PasaEtapa = postulacion.PasaEtapa;
-                db.SaveChanges();
-            }
-            return Ok();
+
+
+            //sluna: Primero valido que la etapaOferta esté abierta, es decir, FechaFin == null
+            var etapaOferta =
+                db.EtapasOfertas.FirstOrDefault(
+                    eo => eo.PuestosEtapaOferta.Any(peo => peo.Id == postulacion.PuestoEtapaOfertaId));
+
+            if (etapaOferta.FechaFin != null){return BadRequest("La postulación que desea modificar pertence a una etapa que ya está cerrada y por lo tanto no puede ser modificada.");}
+
+            if (_postulacion == null) return BadRequest("No se ha encontrado la postulación");
+            //sluna: Actualizo los atributos de las postulaciones.
+            _postulacion.Valoracion = postulacion.Valoracion;
+            _postulacion.Comentario = postulacion.Comentario;
+            _postulacion.PasaEtapa = postulacion.PasaEtapa;
+            db.SaveChanges();
+            return Ok(db.Postulacions.Find(_postulacion.Id));
             //var postulaciones = db.Postulacions.Where(p => p.PuestoEtapaOfertaId == resultadoPostulacion.PuestoEstapaOfertaId);
             //foreach (var postulacion in resultadoPostulacion.Postulaciones)
             //{
