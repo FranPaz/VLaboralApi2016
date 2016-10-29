@@ -160,7 +160,7 @@ namespace VLaboralApi.Controllers
                     var notificacionHelper = new NotificacionesHelper(); 
 
                     var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
-
+                    notificacion.ExperienciaLaboral = experienciaLaboral;
                     return Ok(notificacion);
                 }
                 else

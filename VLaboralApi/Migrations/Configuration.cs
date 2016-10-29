@@ -24,89 +24,89 @@ namespace VLaboralApi.Migrations
         {
             //fpaz:Semillas para el llenado inicial de la bd
 
-            //#region Carga de Profesional Y Empresas Por Defecto           
-            
-            ////fpaz: doy de alta las instancias de Profesional y de Empresa que van a estar relacionada con los ususarios de la aplicacion por defecto            
-            //var prof = new Profesional
-            //{
-            //    Nombre = "Nombre Profesional Prueba",
-            //    Apellido = "Apellidod Profesional Prueba",
-            //    IdentidadVerificada = true,
-            //    Sexo = "Masculino",
-            //    FechaNac = new DateTime(2016, 4, 30)
-            //};
-            //context.Profesionals.Add(prof);
+            #region Carga de Profesional Y Empresas Por Defecto           
 
-            //var emp = new Empresa
-            //{
-            //    RazonSocial = "Empresa de prueba",
-            //    NombreFantasia = "Empresa de Fantasia"
-            //};
+            //fpaz: doy de alta las instancias de Profesional y de Empresa que van a estar relacionada con los ususarios de la aplicacion por defecto            
+            var prof = new Profesional
+            {
+                Nombre = "Nombre Profesional Prueba",
+                Apellido = "Apellidod Profesional Prueba",
+                IdentidadVerificada = true,
+                Sexo = "Masculino",
+                FechaNac = new DateTime(2016, 4, 30)
+            };
+            context.Profesionals.Add(prof);
 
-            //context.Empresas.Add(emp);
+            var emp = new Empresa
+            {
+                RazonSocial = "Empresa de prueba",
+                NombreFantasia = "Empresa de Fantasia"
+            };
+
+            context.Empresas.Add(emp);
 
 
-            //#region fpaz: defino y guardo los tipos de Roles
-            //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new VLaboral_Context()));
-            //if (roleManager.Roles.Count() == 0)
-            //{
-            //    roleManager.Create(new IdentityRole { Name = "Empresa" });
-            //    roleManager.Create(new IdentityRole { Name = "Profesional" });
-            //}
-            //#endregion
+            #region fpaz: defino y guardo los tipos de Roles
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(new VLaboral_Context()));
+            if (roleManager.Roles.Count() == 0)
+            {
+                roleManager.Create(new IdentityRole { Name = "Empresa" });
+                roleManager.Create(new IdentityRole { Name = "Profesional" });
+            }
+            #endregion
 
-            //# region fpaz: defino los usuarios por defecto para profesional y para empresa
-            //var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
+            # region fpaz: defino los usuarios por defecto para profesional y para empresa
+            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
 
-            //var listUsers = new List<ApplicationUser>{
-            //    new ApplicationUser {UserName = "profesional@overcodesde.com", Email = "profesional@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)},
-            //    new ApplicationUser {UserName = "empresa@overcodesde.com",Email = "empresa@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)}
+            var listUsers = new List<ApplicationUser>{
+                new ApplicationUser {UserName = "profesional@overcodesde.com", Email = "profesional@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)},
+                new ApplicationUser {UserName = "empresa@overcodesde.com",Email = "empresa@overcodesde.com",EmailConfirmed = true,FechaAlta = DateTime.Now.AddYears(-3)}
 
-            //};
+            };
 
-            //foreach (var newUser in listUsers)
-            //{
-            //    manager.Create(newUser, "qwerty123");
-            //    manager.SetLockoutEnabled(newUser.Id, false);
+            foreach (var newUser in listUsers)
+            {
+                manager.Create(newUser, "qwerty123");
+                manager.SetLockoutEnabled(newUser.Id, false);
 
-            //    if (newUser.UserName == "profesional@overcodesde.com")
-            //    {
-            //        manager.AddToRoles(newUser.Id, new string[] { "Profesional" });
+                if (newUser.UserName == "profesional@overcodesde.com")
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Profesional" });
 
-            //        var user = manager.FindByName("profesional@overcodesde.com");
+                    var user = manager.FindByName("profesional@overcodesde.com");
 
-            //        var listClaims = new List<Claim>{
-            //            new Claim ("app_usertype", "profesional"),
-            //            new Claim("profesionalId", "1")
-            //        };
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "profesional"),
+                        new Claim("profesionalId", "1")
+                    };
 
-            //        foreach (var item in listClaims)
-            //        {
-            //            manager.AddClaim(user.Id, item);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        manager.AddToRoles(newUser.Id, new string[] { "Empresa" });
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
+                else
+                {
+                    manager.AddToRoles(newUser.Id, new string[] { "Empresa" });
 
-            //        var user = manager.FindByName("empresa@overcodesde.com");
+                    var user = manager.FindByName("empresa@overcodesde.com");
 
-            //        var listClaims = new List<Claim>{
-            //            new Claim ("app_usertype", "empresa"),
-            //            new Claim("empresaId", "1")
-            //        };
+                    var listClaims = new List<Claim>{
+                        new Claim ("app_usertype", "empresa"),
+                        new Claim("empresaId", "1")
+                    };
 
-            //        foreach (var item in listClaims)
-            //        {
-            //            manager.AddClaim(user.Id, item);
-            //        }
-            //    }
+                    foreach (var item in listClaims)
+                    {
+                        manager.AddClaim(user.Id, item);
+                    }
+                }
 
-            //}
-            //#endregion
+            }
+            #endregion
 
-         
-            //#endregion
+
+            #endregion
 
             #region fpaz: Semilla para Tipos de Disponibilidad
             var listTiposList = new List<TipoDisponibilidad>{
