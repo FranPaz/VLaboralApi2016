@@ -35,13 +35,15 @@ namespace VLaboralApi.Controllers
                 //Sluna: Para que sea una oferta vigente, la fecha actual tiene que estar dentro de las fechas de inicio y fin de convocatoria,
                 //sluna: además, la etapaActual de la oferta tiene que ser la primera, es decir, que la etapaActual tiene que tener idEstapaAnterior = 0
                 var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+                     && o.Publica 
+                     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
                 //var totalRows = 10;
                 var totalPages = (int)Math.Ceiling((double)totalRows / rows);
                 var results = db.Ofertas
                     .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                        && o.Publica
+                        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
                     .OrderBy(o => o.Id)
                     .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
                     .Take(rows)
