@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
@@ -18,7 +19,7 @@ namespace VLaboralApi.Controllers
     public class OfertasController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
-
+    
         // GET: api/Ofertas
         public IQueryable<Oferta> GetOfertas()
         {
@@ -31,35 +32,54 @@ namespace VLaboralApi.Controllers
         {
             try
             {
-                //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
-                //Sluna: Para que sea una oferta vigente, la fecha actual tiene que estar dentro de las fechas de inicio y fin de convocatoria,
-                //sluna: además, la etapaActual de la oferta tiene que ser la primera, es decir, que la etapaActual tiene que tener idEstapaAnterior = 0
-                var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                     && o.Publica 
-                     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                    , db.Ofertas
+                          .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                                && o.Publica
+                                 && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                    , order => order.OrderBy(c => c.Id));
+                return Ok(data);
+            }
+            catch (Exception ex)
+            { return BadRequest(ex.Message); }
+        }
 
-                //var totalRows = 10;
-                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-                var results = db.Ofertas
-                    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                        && o.Publica
-                        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    .OrderBy(o => o.Id)
-                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                    .Take(rows)
-                    .ToList();
-                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+        // GET: api/OfertasPrivadas?page=4&rows=50
+         [Route("api/OfertasPrivadas")]
+        [ResponseType(typeof(CustomPaginateResult<Oferta>))]
+        public IHttpActionResult GetOfertasPrivadas(int page, int rows)
+        {
+            try
+            {
+                return null; //sluna: falta todavia
+                //var idProfesional = Utiles.GetProfesionalId(User.Identity.GetUserId());
 
-                var result = new CustomPaginateResult<Oferta>()
-                {
-                    PageSize = rows,
-                    TotalRows = totalRows,
-                    TotalPages = totalPages,
-                    CurrentPage = page,
-                    Results = results
-                };
+                //var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                //     && !o.Publica
+                //     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
-                return Ok(result);
+                ////var totalRows = 10;
+                //var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+                //var results = db.Ofertas
+                //    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                //        && o.Publica
+                //        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                //    .OrderBy(o => o.Id)
+                //    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                //    .Take(rows)
+                //    .ToList();
+                ////if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+
+                //var result = new CustomPaginateResult<Oferta>()
+                //{
+                //    PageSize = rows,
+                //    TotalRows = totalRows,
+                //    TotalPages = totalPages,
+                //    CurrentPage = page,
+                //    Results = results
+                //};
+
+                //return Ok(result);
             }
             catch (Exception ex)
             { return BadRequest(ex.Message); }

@@ -8,7 +8,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
+using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.Services;
 
 namespace VLaboralApi.Controllers
 {
@@ -17,10 +20,23 @@ namespace VLaboralApi.Controllers
         private VLaboral_Context db = new VLaboral_Context();
 
         // GET: api/Profesionals
-        public IQueryable<Profesional> GetProfesionals()
+           [ResponseType(typeof(CustomPaginateResult<Profesional>))]
+        public IHttpActionResult GetProfesionals(int page, int rows)
         {
-            return db.Profesionals;
+            try
+            {
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                    , db.Profesionals
+                    , order => order.OrderBy(c => c.Id));
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
+      
 
         // GET: api/Profesionals/5
         [ResponseType(typeof(Profesional))]

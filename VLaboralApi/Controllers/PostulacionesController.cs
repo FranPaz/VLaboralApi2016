@@ -11,12 +11,16 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
+using VlaboralApi.Infrastructure;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using WebGrease.Css.Extensions;
 using VLaboralApi.ClasesAuxiliares;
+using VLaboralApi.Services;
 
 namespace VLaboralApi.Controllers
 {
@@ -25,7 +29,7 @@ namespace VLaboralApi.Controllers
     public class PostulacionesController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
-
+       
         //// POST: api/Postulaciones/AptoPostulacion
         //[HttpPost]
         //[Route("AptoPostulacion")]
@@ -42,6 +46,31 @@ namespace VLaboralApi.Controllers
 
         //    return Ok();
         //}
+
+
+        // GET: api/Postulaciones
+        [ResponseType(typeof(CustomPaginateResult<Postulacion>))]
+        public IHttpActionResult GetPostulaciones(int page, int rows)
+        {
+            try
+            {
+                var idProfesional = Utiles.GetProfesionalId(User.Identity.GetUserId());
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                    , db.Postulacions
+                           .Where(p => p.ProfesionalId == idProfesional)
+                    .Include(p => p.PuestoEtapaOferta.EtapaOferta)
+                    .Include(p => p.PuestoEtapaOferta.Puesto)
+                    .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta)
+                    , order => order.OrderBy(c => c.Id));
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+           
+     
 
         // POST: api/Postulaciones
         [ResponseType(typeof(Postulacion))]
