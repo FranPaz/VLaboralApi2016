@@ -43,6 +43,12 @@ namespace VLaboralApi.Models
         public virtual Postulacion Postulacion { get; set; }
     }
 
+    public class NotificacionInvitacionOferta : Notificacion
+    {
+        public int? OfertaId { get; set; }
+        public virtual Oferta Oferta { get; set; }
+    }
+
     //public class NotificacionNovedadesPostulacion : Notificacion
     //{
     //    public int? EtapaOfertaId { get; set; }

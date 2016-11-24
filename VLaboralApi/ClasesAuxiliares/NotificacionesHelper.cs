@@ -137,6 +137,54 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
+        public List<NotificacionInvitacionOferta> GenerarNotificacionesInvitacionesOferta(int ofertaId, List<int> profesionales) //fpaz: devuelve el listado de notificaciones con invitaciones a ofertas privadas
+        {
+            try
+            {
+                var oferta = db.Ofertas.Find(ofertaId);
+
+                if (oferta != null) {
+                    var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "INV_OFER_PRIV");
+
+                    if (tipoNotificacion != null) {
+
+                        List<NotificacionInvitacionOferta> notificacionesGeneradas = new List<NotificacionInvitacionOferta>();
+                        foreach (var profesionalId in profesionales)
+                        {
+                            var notificacion = new NotificacionInvitacionOferta
+                            {
+                                OfertaId = oferta.Id,
+                                FechaCreacion = DateTime.Now,
+                                FechaPublicacion = DateTime.Now,
+                                Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
+                                Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
+                                TipoNotificacionId = tipoNotificacion.Id,
+                                EmisorId = oferta.EmpresaId,
+                                ReceptorId = profesionalId
+                            };
+                            notificacionesGeneradas.Add(notificacion);
+                            db.Notificaciones.Add(notificacion);
+                        }                        
+                        db.SaveChanges();
+                        return notificacionesGeneradas;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                        
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public static IEnumerable<string> GetConnectionIds(string tipoReceptor, string receptorId)
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));

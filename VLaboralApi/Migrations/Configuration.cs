@@ -220,7 +220,7 @@ namespace VLaboralApi.Migrations
 
                 #region TipoRequisito Edad
                  new ValoresTipoRequisito{Valor ="Mayores de 40 años", Desde = 40, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
-		         new ValoresTipoRequisito{Valor ="Mayores de 30 años", Desde = 30, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
+                 new ValoresTipoRequisito{Valor ="Mayores de 30 años", Desde = 30, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
                  new ValoresTipoRequisito{Valor ="Mayores de 18 años", Desde = 18, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
                  new ValoresTipoRequisito{Valor ="Menores de 25 años", Desde = 18, Hasta=25, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
                  new ValoresTipoRequisito{Valor ="Menores de 30 años", Desde = 18, Hasta=30, TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Edad")).Id},
@@ -229,7 +229,7 @@ namespace VLaboralApi.Migrations
 
                  #region TipoRequisito Sexo
                  new ValoresTipoRequisito{Valor ="Masculino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
-		         new ValoresTipoRequisito{Valor ="Femenino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
+                 new ValoresTipoRequisito{Valor ="Femenino", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
                 // new ValoresTipoRequisito{Valor ="Otro", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Sexo")).Id},
 	            #endregion
 
@@ -247,7 +247,7 @@ namespace VLaboralApi.Migrations
 
                 #region TipoRequisito Idiomas
                  new ValoresTipoRequisito{Valor ="Español", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
-		         new ValoresTipoRequisito{Valor ="Inglés", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
+                 new ValoresTipoRequisito{Valor ="Inglés", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
                  new ValoresTipoRequisito{Valor ="Portugués", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
                  new ValoresTipoRequisito{Valor ="Alemán", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
                  new ValoresTipoRequisito{Valor ="Francés", TipoRequisitoId = context.TipoRequisitoes.FirstOrDefault(t=> t.Nombre.Contains("Idioma")).Id},
@@ -303,25 +303,30 @@ namespace VLaboralApi.Migrations
             };
             context.Ofertas.AddRange(listOfertas);
             #endregion
-            
+
             #region sluna: Semilla de TipoNotificacion
             var listaTipoNotificacion = new List<TipoNotificacion>{
-                new TipoNotificacion {Valor="EXP", Descripcion="Notificación de Experiencia", 
+                new TipoNotificacion {Valor="EXP", Descripcion="Notificación de Experiencia",
                     Titulo = "Notificación de experiencia laboral", Mensaje = "sdasdasdasd.",
                     TipoEmisor = "profesional" , TipoReceptor = "empresa"},
 
-                     new TipoNotificacion {Valor="EXPVER", Descripcion="Notificación de Experiencia", 
+                     new TipoNotificacion {Valor="EXPVER", Descripcion="Notificación de Experiencia",
                     Titulo = "Notificación de experiencia laboral verificada", Mensaje = "Una empresa a verificado una experiencia laboral.",
                     TipoEmisor = "empresa" , TipoReceptor = "profesional"},
 
-                 new TipoNotificacion {Valor = "POS", Descripcion="Notificación de Postulación", 
-                        Titulo = "Notificación de postulación", 
+                 new TipoNotificacion {Valor = "POS", Descripcion="Notificación de Postulación",
+                        Titulo = "Notificación de postulación",
                         Mensaje = "Un profesional se ha postulado a un puesto de una oferta.",
                        TipoEmisor = "profesional" , TipoReceptor = "empresa"},
 
                  new TipoNotificacion { Valor = "ETAP" ,  Descripcion="Notificación de Etapa Aprobada",
                         Titulo = "Notificación de etapa aprobado",
                         Mensaje = "Felicitaciones, has aprobado la etapa actual.",
+                         TipoEmisor = "empresa" , TipoReceptor = "profesional"},
+
+                 new TipoNotificacion { Valor = "INV_OFER_PRIV" ,  Descripcion="Notificación de Invitacion de Oferta Privada",
+                        Titulo = "Invitacion de Oferta Privada",
+                        Mensaje = "Una empresa lo invito a participar de una oferta laboral",
                          TipoEmisor = "empresa" , TipoReceptor = "profesional"},
             };
             context.TipoNotificaciones.AddRange(listaTipoNotificacion);
