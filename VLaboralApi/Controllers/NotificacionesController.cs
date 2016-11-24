@@ -17,6 +17,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using VlaboralApi.Infrastructure;
+using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
@@ -52,13 +53,17 @@ namespace VLaboralApi.Controllers
                 switch (tipoNotificacion)
                 {
                     case "EXP":
-                        var notifExp = db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id);
-                        notifExp.FechaLectura = notifExp.FechaLectura == null ? DateTime.Now : notifExp.FechaLectura;
+                        var notifExp = db.Notificaciones.OfType<NotificacionExperiencia>()
+                            .Include(n => n.ExperienciaLaboral.Empresa)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifExp.FechaLectura = notifExp.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifExp);
                     case "EXPVER":
-                        var notifExpVer = db.Notificaciones.OfType<NotificacionExperiencia>().Include(n => n.ExperienciaLaboral.Empresa).FirstOrDefault(n => n.Id == id);
-                        notifExpVer.FechaLectura = notifExpVer.FechaLectura == null ? DateTime.Now : notifExpVer.FechaLectura;
+                        var notifExpVer = db.Notificaciones.OfType<NotificacionExperiencia>()
+                            .Include(n => n.ExperienciaLaboral.Empresa)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifExpVer.FechaLectura = notifExpVer.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifExpVer);
                     case "POS":
@@ -66,12 +71,14 @@ namespace VLaboralApi.Controllers
                             .Include(n => n.Postulacion.PuestoEtapaOferta.Puesto.Oferta)
                             .Include(p => p.Postulacion.Profesional)
                             .FirstOrDefault(n => n.Id == id);
-                        notifPos.FechaLectura = notifPos.FechaLectura==null ? DateTime.Now : notifPos.FechaLectura;
+                        notifPos.FechaLectura = notifPos.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifPos);
                     case "ETAP":
-                        var notifEtap = db.Notificaciones.OfType<NotificacionPostulacion>().Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta).FirstOrDefault(n => n.Id == id);
-                        notifEtap.FechaLectura = notifEtap.FechaLectura == null ? DateTime.Now : notifEtap.FechaLectura;
+                        var notifEtap = db.Notificaciones.OfType<NotificacionPostulacion>()
+                            .Include(n => n.Postulacion.PuestoEtapaOferta.EtapaOferta.Oferta)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifEtap.FechaLectura = notifEtap.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifEtap);
                     default:
@@ -82,34 +89,9 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ex.Message); 
             }
-            
-
         }
 
-        private int? GetReceptorId(string tipoReceptor)
-        {
-            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
-            var usuarioId = User.Identity.GetUserId();
-            switch (tipoReceptor)
-            {
-                case "profesional":
-                    return
-                        Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "profesionalId").Value);
-                case "empresa":
-                    return Convert.ToInt32(manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "empresaId").Value);
-                case "administracion":
-                    return null;
-            }
-            return null;
-        }
-
-        private string GetTipoReceptor()
-        {
-            var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
-            var usuarioId = User.Identity.GetUserId();
-            var appUsertype = manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "app_usertype");
-            return appUsertype == null ? null : appUsertype.Value;
-        }
+       
 
         // GET: api/Notificaciones
         //[Authorize]
@@ -117,40 +99,21 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(CustomPaginateResult<Oferta>))]
         public IHttpActionResult GetNotificacionesRecibidas(int page, int rows)
         {
-            var tipoReceptor = GetTipoReceptor();
+            var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
             if (tipoReceptor == null) return null;
 
-            var receptorId = GetReceptorId(tipoReceptor);
+            var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
-            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
-                                && n.FechaPublicacion <= DateTime.Now
-                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoReceptor);
-
-            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-
-            var results = db.Notificaciones
-                .Where(n => n.ReceptorId == receptorId
+            var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                ,db.Notificaciones
+                     .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
                                 && n.TipoNotificacion.TipoReceptor == tipoReceptor)
-                                .Include(n => n.TipoNotificacion)
-                                .OrderByDescending(n => n.FechaPublicacion)
-                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                .Take(rows)
-                .ToList();
-
-            var result = new CustomPaginateResult<Notificacion>()
-            {
-                PageSize = rows,
-                TotalRows = totalRows,
-                TotalPages = totalPages,
-                CurrentPage = page,
-                Results = results
-            };
-
-            return Ok(result);
+                     .Include(n => n.TipoNotificacion)
+                , order => order.OrderByDescending(c => c.FechaPublicacion));
+            return Ok(data);
         }
 
         
