@@ -81,6 +81,13 @@ namespace VLaboralApi.Controllers
                         notifEtap.FechaLectura = notifEtap.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifEtap);
+                    case "INV_OFER_PRIV":
+                        var notifInvitacion = db.Notificaciones.OfType<NotificacionInvitacionOferta>()
+                            .Include(n => n.Oferta)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifInvitacion.FechaLectura = notifInvitacion.FechaLectura ?? DateTime.Now;
+                        db.SaveChanges();
+                        return Ok(notifInvitacion);
                     default:
                         return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
                 };
@@ -99,21 +106,58 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(CustomPaginateResult<Oferta>))]
         public IHttpActionResult GetNotificacionesRecibidas(int page, int rows)
         {
+            //fpaz: comento lo ultimo que hizo santi porque no esta devolviendo resultados que deberia traer
+
+            //var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
+            //if (tipoReceptor == null) return null;
+
+            //var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
+            //if (receptorId == null) return null;
+
+            //var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+            //    ,db.Notificaciones
+            //         .Where(n => n.ReceptorId == receptorId
+            //                    && n.FechaPublicacion <= DateTime.Now
+            //                    && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+            //                    && n.TipoNotificacion.TipoReceptor == tipoReceptor)
+            //         .Include(n => n.TipoNotificacion)
+            //    , order => order.OrderByDescending(c => c.FechaPublicacion));
+            //return Ok(data);
+
             var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
             if (tipoReceptor == null) return null;
 
             var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
-            var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                ,db.Notificaciones
-                     .Where(n => n.ReceptorId == receptorId
+            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
+                                && n.FechaPublicacion <= DateTime.Now
+                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+                                && n.TipoNotificacion.TipoReceptor == tipoReceptor);
+
+            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+
+            var results = db.Notificaciones
+                .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
                                 && n.TipoNotificacion.TipoReceptor == tipoReceptor)
-                     .Include(n => n.TipoNotificacion)
-                , order => order.OrderByDescending(c => c.FechaPublicacion));
-            return Ok(data);
+                                .Include(n => n.TipoNotificacion)
+                                .OrderByDescending(n => n.FechaPublicacion)
+                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                .Take(rows)
+                .ToList();
+
+            var result = new CustomPaginateResult<Notificacion>()
+            {
+                PageSize = rows,
+                TotalRows = totalRows,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                Results = results
+            };
+
+            return Ok(result);
         }
 
         

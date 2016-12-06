@@ -45,45 +45,45 @@ namespace VLaboralApi.Controllers
         }
 
         // GET: api/OfertasPrivadas?page=4&rows=50
-         [Route("api/OfertasPrivadas")]
-        [ResponseType(typeof(CustomPaginateResult<Oferta>))]
-        public IHttpActionResult GetOfertasPrivadas(int page, int rows)
-        {
-            try
-            {
-                return null; //sluna: falta todavia
-                //var idProfesional = Utiles.GetProfesionalId(User.Identity.GetUserId());
+        //[Route("api/OfertasPrivadas")]
+        //[ResponseType(typeof(CustomPaginateResult<Oferta>))]
+        //public IHttpActionResult GetOfertasPrivadas(int page, int rows)
+        //{
+        //    try
+        //    {
+        //        return null; //sluna: falta todavia
+        //        //var idProfesional = Utiles.GetProfesionalId(User.Identity.GetUserId());
 
-                //var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                //     && !o.Publica
-                //     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+        //        //var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+        //        //     && !o.Publica
+        //        //     && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
 
-                ////var totalRows = 10;
-                //var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-                //var results = db.Ofertas
-                //    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                //        && o.Publica
-                //        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                //    .OrderBy(o => o.Id)
-                //    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                //    .Take(rows)
-                //    .ToList();
-                ////if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+        //        ////var totalRows = 10;
+        //        //var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+        //        //var results = db.Ofertas
+        //        //    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+        //        //        && o.Publica
+        //        //        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+        //        //    .OrderBy(o => o.Id)
+        //        //    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+        //        //    .Take(rows)
+        //        //    .ToList();
+        //        ////if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
 
-                //var result = new CustomPaginateResult<Oferta>()
-                //{
-                //    PageSize = rows,
-                //    TotalRows = totalRows,
-                //    TotalPages = totalPages,
-                //    CurrentPage = page,
-                //    Results = results
-                //};
+        //        //var result = new CustomPaginateResult<Oferta>()
+        //        //{
+        //        //    PageSize = rows,
+        //        //    TotalRows = totalRows,
+        //        //    TotalPages = totalPages,
+        //        //    CurrentPage = page,
+        //        //    Results = results
+        //        //};
 
-                //return Ok(result);
-            }
-            catch (Exception ex)
-            { return BadRequest(ex.Message); }
-        }
+        //        //return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    { return BadRequest(ex.Message); }
+        //}
 
         // GET: api/Ofertas/5
         [ResponseType(typeof(Oferta))]
@@ -286,6 +286,103 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+       
+        // POST: api/OfertasPrivadas
+        [Route("api/OfertasPrivadas")]
+        public IHttpActionResult PostOfertaPrivada(ofertaConInv ofertaPrivada)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                foreach (var puesto in ofertaPrivada.oferta.Puestos)
+                {
+                    List<SubRubro> subrubrosPuesto = new List<SubRubro>();
+
+                    foreach (var subRubro in puesto.Subrubros.ToList())
+                    {
+                        var a = db.SubRubros.Find(subRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
+                        subrubrosPuesto.Add(a);//agrego el subrubro al array de subrubros del profesional                                                
+                    }
+
+                    puesto.Subrubros = subrubrosPuesto;
+                }
+                db.Ofertas.Add(ofertaPrivada.oferta); //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
+                db.SaveChanges();
+
+                //fpaz: carga de etapas de una oferta
+                if (ofertaPrivada.oferta.EtapasOferta != null)
+                {
+                    foreach (var etapa in ofertaPrivada.oferta.EtapasOferta)
+                    {
+                        #region fpaz defino los id de etapa anterior y siguiente para cada etapa
+                        if (etapa.Orden == 0)
+                        {
+                            //fpaz: si el orden es 0 es la etapa inicial 
+                            etapa.IdEtapaAnterior = 0;
+                            etapa.IdEstapaSiguiente = (from e in ofertaPrivada.oferta.EtapasOferta
+                                                       where e.Orden == etapa.Orden + 1
+                                                       select e.Id).FirstOrDefault();
+                            ofertaPrivada.oferta.IdEtapaActual = etapa.Id;
+                        }
+                        else
+                        {
+                            if (etapa.Orden == ofertaPrivada.oferta.EtapasOferta.Count)
+                            {
+                                //fpaz: es la ultima etapa
+                                etapa.IdEtapaAnterior = (from e in ofertaPrivada.oferta.EtapasOferta
+                                                         where e.Orden == etapa.Orden - 1
+                                                         select e.Id).FirstOrDefault();
+                                etapa.IdEstapaSiguiente = 0;
+                            }
+                            else
+                            {
+                                //fpaz: es alguna etapa intermedia
+                                etapa.IdEtapaAnterior = (from e in ofertaPrivada.oferta.EtapasOferta
+                                                         where e.Orden == etapa.Orden - 1
+                                                         select e.Id).FirstOrDefault();
+                                etapa.IdEstapaSiguiente = (from e in ofertaPrivada.oferta.EtapasOferta
+                                                           where e.Orden == etapa.Orden + 1
+                                                           select e.Id).FirstOrDefault();
+                            }
+                        }
+                        #endregion
+
+                        #region fpaz defino los puestos para cada etapa
+                        var listPuestosEtapa = new List<PuestoEtapaOferta> { };
+                        foreach (var puesto in ofertaPrivada.oferta.Puestos)
+                        {
+                            var p = new PuestoEtapaOferta
+                            {
+                                Puesto = puesto
+                            };
+
+                            listPuestosEtapa.Add(p);
+                        }
+                        etapa.PuestosEtapaOferta = listPuestosEtapa;
+                        #endregion
+                    }
+
+
+
+                }
+                db.SaveChanges(); //fpaz: guardo las etapas de la oferta completas
+
+                #region genero las invitaciones para los profesionales en caso de ser una oferta privada
+                var notificacionHelper = new NotificacionesHelper();
+
+                var invitaciones = notificacionHelper.GenerarNotificacionesInvitacionesOferta(ofertaPrivada.oferta.Id, ofertaPrivada.profesionales);
+                #endregion
+                return Ok(invitaciones);                
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         // DELETE: api/Ofertas/5
         [ResponseType(typeof(Oferta))]
@@ -404,5 +501,10 @@ namespace VLaboralApi.Controllers
         {
             return db.Ofertas.Count(e => e.Id == id) > 0;
         }
+    }
+
+    public class ofertaConInv {
+        public Oferta oferta { get; set; }
+        public ICollection<Profesional> profesionales { get; set; }
     }
 }

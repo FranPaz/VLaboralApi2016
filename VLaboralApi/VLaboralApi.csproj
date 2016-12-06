@@ -249,6 +249,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="ClasesAuxiliares\NotificacionesHelper.cs" />
+    <Compile Include="ClasesAuxiliares\Utiles.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\CompetenciaIdiomasController.cs" />
@@ -284,9 +285,9 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201610242006213_inicial.cs" />
-    <Compile Include="Migrations\201610242006213_inicial.Designer.cs">
-      <DependentUpon>201610242006213_inicial.cs</DependentUpon>
+    <Compile Include="Migrations\201611302321266_m1.cs" />
+    <Compile Include="Migrations\201611302321266_m1.Designer.cs">
+      <DependentUpon>201611302321266_m1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -390,8 +391,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201610242006213_inicial.resx">
-      <DependentUpon>201610242006213_inicial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201611302321266_m1.resx">
+      <DependentUpon>201611302321266_m1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
