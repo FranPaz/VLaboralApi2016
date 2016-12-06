@@ -92,6 +92,11 @@ namespace VLaboralApi.Controllers
                                          select exp)
                                         .FirstOrDefault();
                experienciaLaboralMod.isVerificada = true;
+
+                //iafar: promedio la valoracion del profesional
+               
+
+
                db.Entry(experienciaLaboralMod).State = EntityState.Modified;
                db.SaveChanges();
 
