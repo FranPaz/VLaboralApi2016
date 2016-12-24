@@ -24,12 +24,12 @@ using VLaboralApi.Services;
 
 namespace VLaboralApi.Controllers
 {
-  
+
 
     public class PostulacionesController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
-       
+
         //// POST: api/Postulaciones/AptoPostulacion
         //[HttpPost]
         //[Route("AptoPostulacion")]
@@ -69,8 +69,8 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-           
-     
+
+
 
         // POST: api/Postulaciones
         [ResponseType(typeof(Postulacion))]
@@ -92,8 +92,8 @@ namespace VLaboralApi.Controllers
                 var puestoEtapaOferta = db.PuestoEtapaOfertas
                     .FirstOrDefault(peo => peo.PuestoId == postulacion.PuestoId
                                     && peo.EtapaOferta.TipoEtapa.EsInicial == true); //me parece mejor esto
-                                                                                     //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
-                                                                                     // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
+                //   && peo.EtapaOferta.IdEtapaAnterior == 0); //que sea la etapa inicial
+                // && peo.EtapaOfertaId.Equals(peo.Puesto.Oferta.IdEtapaActual) //que sea la etapa actual 
                 if (puestoEtapaOferta == null)
                 {
                     return BadRequest();
@@ -109,7 +109,7 @@ namespace VLaboralApi.Controllers
                 db.Postulacions.Add(p);
                 db.SaveChanges();
 
-                var notificacionHelper = new NotificacionesHelper(); 
+                var notificacionHelper = new NotificacionesHelper();
                 var notificacion = notificacionHelper.GenerarNotificacionPostulacion(p.Id);
 
                 return Ok(notificacion);
@@ -119,7 +119,7 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         // PUT: api/Postulaciones/5
@@ -130,7 +130,7 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             var _postulacion = db.Postulacions.FirstOrDefault(p => p.Id == postulacion.Id);
 
 
@@ -139,7 +139,7 @@ namespace VLaboralApi.Controllers
                 db.EtapasOfertas.FirstOrDefault(
                     eo => eo.PuestosEtapaOferta.Any(peo => peo.Id == postulacion.PuestoEtapaOfertaId));
 
-            if (etapaOferta.FechaFin != null){return BadRequest("La postulación que desea modificar pertence a una etapa que ya está cerrada y por lo tanto no puede ser modificada.");}
+            if (etapaOferta.FechaFin != null) { return BadRequest("La postulación que desea modificar pertence a una etapa que ya está cerrada y por lo tanto no puede ser modificada."); }
 
             if (_postulacion == null) return BadRequest("No se ha encontrado la postulación");
             //sluna: Actualizo los atributos de las postulaciones.
@@ -161,10 +161,10 @@ namespace VLaboralApi.Controllers
             //    postulacion.PasaEtapa = postulacionBd.PasaEtapa;
             //}
 
-           
+
         }
-        
-      
+
+
 
 
         protected override void Dispose(bool disposing)
@@ -197,7 +197,7 @@ namespace VLaboralApi.Controllers
         {
             var requisitos = db.Requisitos
                                     .Where(r => r.PuestoId == postulacion.PuestoId && r.AutoVerificar && r.Excluyente)
-                                    //Sluna: traigo solo los requisitos seleccionados para la atuoverificación y marcados como excluyentes
+                //Sluna: traigo solo los requisitos seleccionados para la atuoverificación y marcados como excluyentes
                                     .Include(r => r.ValoresRequisito)
                                     .Include(r => r.TipoRequisito);
 
@@ -210,72 +210,72 @@ namespace VLaboralApi.Controllers
             }
             foreach (var requisito in requisitos)
             {
-                    switch (requisito.TipoRequisito.Nombre)
-                    {
-                        case "Edad":
-                            if (profesional.FechaNac != null)
+                switch (requisito.TipoRequisito.Nombre)
+                {
+                    case "Edad":
+                        if (profesional.FechaNac != null)
+                        {
+                            var edad = DateTime.Today.AddTicks(-profesional.FechaNac.Value.Ticks).Year - 1;
+                            foreach (var valor in requisito.ValoresRequisito)
                             {
-                                var edad = DateTime.Today.AddTicks(-profesional.FechaNac.Value.Ticks).Year - 1;
-                                foreach (var valor in requisito.ValoresRequisito)
-                                {
-                                    if (edad < valor.Desde)
-                                    {
-                                        mensaje =
-                                            "El postulante no cumple con el requisito de edad necesario para el puesto.";
-                                        return false;
-                                    }
-                                    if (edad > valor.Hasta)
-                                    {
-                                        mensaje =
-                                            "El postulante no cumple con el requisito de edad necesario para el puesto.";
-                                        return false;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                mensaje =
-                                      "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
-                                return false;
-                            }
-                            break;
-                        case "Sexo":
-                            if (profesional.Sexo != null)
-                            {
-                                if (requisito.ValoresRequisito.Any(valor => profesional.Sexo != valor.Valor))
+                                if (edad < valor.Desde)
                                 {
                                     mensaje =
-                                        "El postulante no cumple con el requisito de sexo necesario para el puesto.";
+                                        "El postulante no cumple con el requisito de edad necesario para el puesto.";
+                                    return false;
+                                }
+                                if (edad > valor.Hasta)
+                                {
+                                    mensaje =
+                                        "El postulante no cumple con el requisito de edad necesario para el puesto.";
                                     return false;
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            mensaje =
+                                  "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                            return false;
+                        }
+                        break;
+                    case "Sexo":
+                        if (profesional.Sexo != null)
+                        {
+                            if (requisito.ValoresRequisito.Any(valor => profesional.Sexo != valor.Valor))
                             {
                                 mensaje =
-                                      "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                                    "El postulante no cumple con el requisito de sexo necesario para el puesto.";
                                 return false;
                             }
-                            break;
-                        case "Identidad":
+                        }
+                        else
+                        {
+                            mensaje =
+                                  "Ocurrió un error al intentar verificar si el profesional cumple con los requisitos del puesto.";
+                            return false;
+                        }
+                        break;
+                    case "Identidad":
+                        {
+                            //SLuna: esto queda muy fiero
+                            if (!profesional.IdentidadVerificada)
                             {
-                                //SLuna: esto queda muy fiero
-                                if (!profesional.IdentidadVerificada)
-                                {
-                                    mensaje =
-                                        "El postulante no cumple con el requisito de tener la identidad verificada necesaria para el puesto.";
-                                    return false;
-                                }
+                                mensaje =
+                                    "El postulante no cumple con el requisito de tener la identidad verificada necesaria para el puesto.";
+                                return false;
                             }
-                            break;
-                        case "Lugar de Residencia":
-                            //SLuna: no tenemos nada defino para Lugar de Residencia todavia
-                            break;
-                        case "Idioma":
-                            //SLuna: no tenemos nada defino para Idioma todavia
-                            break;
-                    }
+                        }
+                        break;
+                    case "Lugar de Residencia":
+                        //SLuna: no tenemos nada defino para Lugar de Residencia todavia
+                        break;
+                    case "Idioma":
+                        //SLuna: no tenemos nada defino para Idioma todavia
+                        break;
                 }
-                
+            }
+
             return true;
 
 

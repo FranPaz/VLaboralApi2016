@@ -32,17 +32,38 @@ namespace VLaboralApi.Controllers
         {
             try
             {
-                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                    , db.Ofertas
-                          .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                                && o.Publica
-                                 && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    , order => order.OrderBy(c => c.Id));
-                return Ok(data);
+                //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
+                //Sluna: Para que sea una oferta vigente, la fecha actual tiene que estar dentro de las fechas de inicio y fin de convocatoria,
+                //sluna: además, la etapaActual de la oferta tiene que ser la primera, es decir, que la etapaActual tiene que tener idEstapaAnterior = 0
+                var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+
+                //var totalRows = 10;
+                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+                var results = db.Ofertas
+                    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
+                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                    .OrderBy(o => o.Id)
+                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                    .Take(rows)
+                    .ToList();
+                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+
+                var result = new CustomPaginateResult<Oferta>()
+                {
+                    PageSize = rows,
+                    TotalRows = totalRows,
+                    TotalPages = totalPages,
+                    CurrentPage = page,
+                    Results = results
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             { return BadRequest(ex.Message); }
         }
+
 
         // GET: api/OfertasPrivadas?page=4&rows=50
         //[Route("api/OfertasPrivadas")]
