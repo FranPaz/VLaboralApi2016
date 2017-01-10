@@ -22,18 +22,34 @@ namespace VLaboralApi.Controllers
         // GET: api/Profesionals
            [ResponseType(typeof(CustomPaginateResult<Profesional>))]
         public IHttpActionResult GetProfesionals(int page, int rows)
-        {
+        {           
             try
             {
-                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                    , db.Profesionals
-                    , order => order.OrderBy(c => c.Id));
-                return Ok(data);
+                var totalRows = db.Profesionals.Count();
+                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+                var results = db.Profesionals
+                    .Include(sr=>sr.Subrubros.Select(r=>r.Rubro))
+                    
+                    .OrderBy(p => p.Apellido)
+                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                    .Take(rows)
+                    .ToList();
+                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
+
+                var result = new CustomPaginateResult<Profesional>()
+                {
+                    PageSize = rows,
+                    TotalRows = totalRows,
+                    TotalPages = totalPages,
+                    CurrentPage = page,
+                    Results = results
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            { return BadRequest(ex.Message); }
+
         }
 
       

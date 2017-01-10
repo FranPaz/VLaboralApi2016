@@ -9,7 +9,8 @@ namespace VLaboralApi.Services
 {
     public class CustomPaginateResult<T> where T : class
     {
-        private VLaboral_Context db = new VLaboral_Context();
+        //iafar: comento esto hasta que se solucione la busqueda
+        //private VLaboral_Context db = new VLaboral_Context();
 
         public int CurrentPage { get; set; }
 
@@ -53,7 +54,7 @@ namespace VLaboralApi.Services
         public int Page;
         public int Rows;
 
-        public PaginateQueryParameters(int page,int rows)
+        public PaginateQueryParameters(int page, int rows)
         {
             Page = page;
             Rows = rows;

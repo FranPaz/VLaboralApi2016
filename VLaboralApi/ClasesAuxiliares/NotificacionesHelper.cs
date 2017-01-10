@@ -137,7 +137,7 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
-        public List<NotificacionInvitacionOferta> GenerarNotificacionesInvitacionesOferta(int ofertaId, List<int> profesionales) //fpaz: devuelve el listado de notificaciones con invitaciones a ofertas privadas
+        public List<NotificacionInvitacionOferta> GenerarNotificacionesInvitacionesOferta(int ofertaId, ICollection<Profesional> profesionales) //fpaz: devuelve el listado de notificaciones con invitaciones a ofertas privadas
         {
             try
             {
@@ -149,7 +149,7 @@ namespace VLaboralApi.ClasesAuxiliares
                     if (tipoNotificacion != null) {
 
                         List<NotificacionInvitacionOferta> notificacionesGeneradas = new List<NotificacionInvitacionOferta>();
-                        foreach (var profesionalId in profesionales)
+                        foreach (var profesional in profesionales)
                         {
                             var notificacion = new NotificacionInvitacionOferta
                             {
@@ -160,7 +160,7 @@ namespace VLaboralApi.ClasesAuxiliares
                                 Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
                                 TipoNotificacionId = tipoNotificacion.Id,
                                 EmisorId = oferta.EmpresaId,
-                                ReceptorId = profesionalId
+                                ReceptorId = profesional.Id
                             };
                             notificacionesGeneradas.Add(notificacion);
                             db.Notificaciones.Add(notificacion);
