@@ -86,8 +86,25 @@ namespace VLaboralApi.Controllers
                             .Include(n => n.Oferta)
                             .FirstOrDefault(n => n.Id == id);
                         notifInvitacion.FechaLectura = notifInvitacion.FechaLectura ?? DateTime.Now;
-                        db.SaveChanges();
-                        return Ok(notifInvitacion);
+                        db.SaveChanges(); //fpaz: hasta aqui actualizo la fecha de lectura si es necesario
+
+                        //fpaz obtengo los detalles de la oferta privada
+                        var oferta = (from o in db.Ofertas
+                                      where o.Id == notifInvitacion.OfertaId
+                                      select o)
+                         .Include(e => e.Empresa)
+                         .Include(p => p.Puestos)
+                         .Include(p => p.Puestos.Select(r => r.Requisitos))
+                         .Include(p => p.Puestos.Select(r => r.Requisitos.Select(tr => tr.TipoRequisito)))
+                         .Include(p => p.Puestos.Select(sr => sr.Subrubros))
+                         .Include(p => p.Puestos.Select(tc => tc.TipoContrato))
+                         .Include(p => p.Puestos.Select(d => d.Disponibilidad))
+                         .Include(et => et.EtapasOferta)
+                         .Include(et => et.EtapasOferta.Select(te => te.TipoEtapa))
+                         .FirstOrDefault();
+
+                        //return Ok(notifInvitacion);
+                        return Ok(oferta);
                     default:
                         return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
                 };
