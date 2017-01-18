@@ -657,7 +657,7 @@ namespace VLaboralApi.Controllers
             //for each query option if it has values add it to the query
             if (!string.IsNullOrEmpty(queryOptions.SearchText))
             {
-                query = query.Where(p => p.Nombre.Contains(queryOptions.SearchText));
+                query = query.Where(p => p.Nombre.Contains(queryOptions.SearchText) || p.Descripcion.Contains(queryOptions.SearchText));
             }
 
             if (queryOptions.Rubros != null && queryOptions.Rubros.Any())
