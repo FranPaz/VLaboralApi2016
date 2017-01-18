@@ -86,8 +86,25 @@ namespace VLaboralApi.Controllers
                             .Include(n => n.Oferta)
                             .FirstOrDefault(n => n.Id == id);
                         notifInvitacion.FechaLectura = notifInvitacion.FechaLectura ?? DateTime.Now;
-                        db.SaveChanges();
-                        return Ok(notifInvitacion);
+                        db.SaveChanges(); //fpaz: hasta aqui actualizo la fecha de lectura si es necesario
+
+                        //fpaz obtengo los detalles de la oferta privada
+                        var oferta = (from o in db.Ofertas
+                                      where o.Id == notifInvitacion.OfertaId
+                                      select o)
+                         .Include(e => e.Empresa)
+                         .Include(p => p.Puestos)
+                         .Include(p => p.Puestos.Select(r => r.Requisitos))
+                         .Include(p => p.Puestos.Select(r => r.Requisitos.Select(tr => tr.TipoRequisito)))
+                         .Include(p => p.Puestos.Select(sr => sr.Subrubros))
+                         .Include(p => p.Puestos.Select(tc => tc.TipoContrato))
+                         .Include(p => p.Puestos.Select(d => d.Disponibilidad))
+                         .Include(et => et.EtapasOferta)
+                         .Include(et => et.EtapasOferta.Select(te => te.TipoEtapa))
+                         .FirstOrDefault();
+
+                        //return Ok(notifInvitacion);
+                        return Ok(oferta);
                     default:
                         return BadRequest("No se han encontrado notificaciones que respondan a los parámetros ingresados.");
                 };
@@ -97,8 +114,7 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ex.Message); 
             }
         }
-
-       
+        
 
         // GET: api/Notificaciones
         //[Authorize]
@@ -160,7 +176,47 @@ namespace VLaboralApi.Controllers
             return Ok(result);
         }
 
-        
+        public IHttpActionResult GetNotificacionesTipo(int prmIdTipoNotificacion, int page, int rows) //fpaz: trae solo las notificaciones de un tipo en particular
+        {            
+            var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
+            if (tipoReceptor == null) return null;
+
+            var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
+            if (receptorId == null) return null;
+
+            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
+                                && n.FechaPublicacion <= DateTime.Now
+                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+                                && n.TipoNotificacion.TipoReceptor == tipoReceptor
+                                && n.TipoNotificacionId == prmIdTipoNotificacion);
+
+            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
+
+            var results = db.Notificaciones
+                .Where(n => n.ReceptorId == receptorId
+                                && n.FechaPublicacion <= DateTime.Now
+                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+                                && n.TipoNotificacion.TipoReceptor == tipoReceptor
+                                && n.TipoNotificacionId == prmIdTipoNotificacion)
+                                .Include(n => n.TipoNotificacion)
+                                .OrderByDescending(n => n.FechaPublicacion)
+                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
+                .Take(rows)
+                .ToList();
+
+            var result = new CustomPaginateResult<Notificacion>()
+            {
+                PageSize = rows,
+                TotalRows = totalRows,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                Results = results
+            };
+
+            return Ok(result);
+        }
+
+
 
         [ResponseType(typeof(void))]
         public IHttpActionResult PutNotificacion(int id, Notificacion notificacion)

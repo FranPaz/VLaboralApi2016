@@ -276,6 +276,7 @@
     <Compile Include="Controllers\TipoNivelEstudiosController.cs" />
     <Compile Include="Controllers\TipoRequisitoesController.cs" />
     <Compile Include="Controllers\TiposDisponibilidadController.cs" />
+    <Compile Include="Controllers\TiposNotificacionesController.cs" />
     <Compile Include="Controllers\VerificacionExperienciaLaboralsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
