@@ -285,6 +285,10 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201701180119511_inicial.cs" />
+    <Compile Include="Migrations\201701180119511_inicial.Designer.cs">
+      <DependentUpon>201701180119511_inicial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
@@ -295,6 +299,7 @@
     <Compile Include="Models\Habilidad.cs" />
     <Compile Include="Models\Identificacion.cs" />
     <Compile Include="Models\IdiomaConocido.cs" />
+    <Compile Include="Models\Location.cs" />
     <Compile Include="Models\ModelFactory.cs" />
     <Compile Include="Models\Notificacion.cs" />
     <Compile Include="Models\Oferta.cs" />
@@ -312,6 +317,8 @@
     <Compile Include="Models\TipoIdentificacion.cs" />
     <Compile Include="Models\TipoNivelEstudio.cs" />
     <Compile Include="Models\TipoRequisito.cs" />
+    <Compile Include="Models\Ubicacion\Domicilio.cs" />
+    <Compile Include="Models\Ubicacion\Pais.cs" />
     <Compile Include="Models\VerificacionExperienciaLaboral.cs" />
     <Compile Include="Models\VLaboral_Context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -323,6 +330,11 @@
     <Compile Include="Services\CustomPaginateResult.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\Filtros\SearchFilterQueryBindingModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ViewModels\Filtros\OfertasFilter.cs" />
+    <Compile Include="ViewModels\Filtros\ProfesionalesFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -385,6 +397,11 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201701180119511_inicial.resx">
+      <DependentUpon>201701180119511_inicial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

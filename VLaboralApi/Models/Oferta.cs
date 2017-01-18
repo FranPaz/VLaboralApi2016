@@ -29,5 +29,6 @@ namespace VLaboralApi.Models
         public virtual ICollection<EtapaOferta> EtapasOferta { get; set; }
 
 
+       
     }
 }

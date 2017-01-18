@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.Models.Ubicacion;
 using VLaboralApi.Services;
+using VLaboralApi.ViewModels.Filtros;
+using VLaboralApi.ViewModels.Profesionales;
+
 
 namespace VLaboralApi.Controllers
 {
@@ -19,39 +25,27 @@ namespace VLaboralApi.Controllers
     {
         private VLaboral_Context db = new VLaboral_Context();
 
-        // GET: api/Profesionals
-           [ResponseType(typeof(CustomPaginateResult<Profesional>))]
-        public IHttpActionResult GetProfesionals(int page, int rows)
-        {           
-            try
-            {
-                var totalRows = db.Profesionals.Count();
-                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-                var results = db.Profesionals
-                    .Include(sr=>sr.Subrubros.Select(r=>r.Rubro))
-                    
-                    .OrderBy(p => p.Apellido)
-                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                    .Take(rows)
-                    .ToList();
-                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
-
-                var result = new CustomPaginateResult<Profesional>()
-                {
-                    PageSize = rows,
-                    TotalRows = totalRows,
-                    TotalPages = totalPages,
-                    CurrentPage = page,
-                    Results = results
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            { return BadRequest(ex.Message); }
-
+        private IQueryable<Profesional> Profesionales()
+        {
+            return db.Profesionals.Include(sr => sr.Subrubros.Select(r => r.Rubro));
         }
 
+        // GET: api/Profesionals
+        [ResponseType(typeof(CustomPaginateResult<Profesional>))]
+        public IHttpActionResult GetProfesionals(int page, int rows)
+        {
+            try
+            {
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                    , Profesionales()
+                    , order => order.OrderBy(c => c.Id));
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
       
 
         // GET: api/Profesionals/5
@@ -186,6 +180,8 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+            profesional.Domicilio = null; //sluna: null hasta que definamos bien esto.
+            profesional.DomicilioId = null; //sluna: null hasta que definamos bien esto.
 
             db.Profesionals.Add(profesional);
             db.SaveChanges();
@@ -221,6 +217,142 @@ namespace VLaboralApi.Controllers
         private bool ProfesionalExists(int id)
         {
             return db.Profesionals.Count(e => e.Id == id) > 0;
+        }
+
+
+        [HttpPost]
+        [Route("api/Profesionals/QueryOptions")]
+        public async Task<IHttpActionResult> QueryOptions(ProfesionalesOptionsBindingModel options)
+        {
+
+            dynamic filters = new ExpandoObject();
+
+            if (options != null && options.Filters != null)
+            {
+                //the filter values should be unique 'display' strings 
+                if (options.Filters.Contains(ProfesionalesFilterOptions.Rubros))
+                {
+                    filters.Rubros = await db.SubRubros
+                        .Where(s=> s.Profesionales.Any())
+                                                    .Select(a => new ValorFiltroViewModel()
+                                                    {
+                                                        Id = a.Id,
+                                                        Valor = a.Id.ToString(),
+                                                        Descripcion = a.Nombre,
+                                                        Cantidad =  db.Profesionals
+                                                                .Count(p => p.Subrubros.Any(s => s.Id == a.Id))
+                                                    })
+                                                    .ToListAsync();
+                }
+                if (options.Filters.Contains(ProfesionalesFilterOptions.Valoraciones))
+                {
+                    var valoracionProfesional = new List<ValorFiltroViewModel>();
+                    for (var i = 1; i < 6; i++)
+                    {
+                        valoracionProfesional.Add(new ValorFiltroViewModel()
+                                                    {
+                                                        Id = i,
+                                                        Valor = i.ToString(),
+                                                        Descripcion  = i.ToString(),
+                                                        Cantidad = db.Profesionals.Count(p => p.ValoracionPromedio >= i )
+                                                    } );             
+                    }
+                    filters.Valoraciones = valoracionProfesional;
+                }
+                if (options.Filters.Contains(ProfesionalesFilterOptions.Ubicaciones))
+                {
+                    filters.Ubicaciones = db.Ciudades
+                      .Where(c => c.Domicilios
+                          .Any(d => d.Profesionales
+                              .Any()))
+                      .Select(c => new ValorFiltroViewModel()
+                      {
+                          Id = c.Id,
+                          Descripcion = c.Nombre,
+                          Cantidad = db.Profesionals.Count(p => p.Domicilio.CiudadId == c.Id)
+                      }).ToListAsync();
+                }
+
+            }
+
+            var orderByOptions = Enum.GetNames(typeof(ProfesionalesOrderByOptions));
+
+            return Ok(
+                new
+                {
+                    options = new
+                    {
+                        selectableFilters = filters,
+                        allFilterTypes = Enum.GetNames(typeof(ProfesionalesFilterOptions)),
+                        orderByOptions = orderByOptions,
+                    },
+                    query = new
+                    {
+                        orderBy = "",
+                        searchText = "",
+                        rubros = new List<string>()
+                    }
+                });
+        }
+
+        [HttpPost]
+        [Route("api/Profesionals/Search")]
+        public async Task<IHttpActionResult> Search(ProfesionalesQueryBindingModel queryOptions)
+        {
+            if (queryOptions == null)
+            {
+                return BadRequest("no query options provided");
+            }
+
+            //create the initial query...
+            var query = Profesionales();
+
+            //for each query option if it has values add it to the query
+            if (!string.IsNullOrEmpty(queryOptions.SearchText))
+            {
+                query = query.Where(p => p.Apellido.Contains(queryOptions.SearchText));
+            }
+
+            if (queryOptions.Rubros != null && queryOptions.Rubros.Any())
+            {
+                query = query.Where(p => p.Subrubros.Any(s => queryOptions.Rubros.Contains(s.Id)));
+            }
+
+            if (queryOptions.Valoraciones != null && queryOptions.Valoraciones.Any())
+            {
+                queryOptions.Valoraciones.Sort();
+                var valMin = queryOptions.Valoraciones.FirstOrDefault();
+                query = query.Where(p => p.ValoracionPromedio >= valMin);
+            }
+
+            if (queryOptions.Ubicaciones != null && queryOptions.Ubicaciones.Any())
+            {
+                query = query.Where(p => queryOptions.Ubicaciones.Contains((int) p.Domicilio.CiudadId));
+            }
+
+            query = CreateOrderByExpression(query, queryOptions.OrderBy);
+
+
+            var data = Utiles.Paginate(new PaginateQueryParameters(queryOptions.Page, queryOptions.Rows), query);
+            return Ok(data);
+        }
+
+        private IQueryable<Profesional> CreateOrderByExpression(IQueryable<Profesional> query, ProfesionalesOrderByOptions orderByoption)
+        {
+            switch (orderByoption)
+            {
+                case ProfesionalesOrderByOptions.NombreCompleto:
+                    query = query.OrderBy(p => p.Apellido).OrderBy(p => p.Nombre);
+                    break;
+                case ProfesionalesOrderByOptions.Valoracion:
+                    query = query.OrderBy(p => p.IdentidadVerificada);
+                    break;
+                default:
+                    query = query.OrderBy(p => p.Apellido).OrderBy(p => p.Nombre);
+                    break;
+            }
+
+            return query;
         }
     }
 }

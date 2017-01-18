@@ -54,11 +54,9 @@ namespace VLaboralApi.ClasesAuxiliares
         {
             var totalRows = collection.Count();
             var totalPages = (int)Math.Ceiling((double)totalRows / parameters.Rows);
-
-            var query = collection.Take(parameters.Rows);
-
-            var results = orderBy(query)
-                 .Skip(parameters.Page * parameters.Rows)
+            
+            var results = orderBy(collection)
+                 .Skip((parameters.Page -1) * parameters.Rows) //sluna: -1 para manejar base 1
                  .Take(parameters.Rows)
                  .ToList();
 
@@ -69,6 +67,37 @@ namespace VLaboralApi.ClasesAuxiliares
                 TotalPages = totalPages,
                 CurrentPage = parameters.Page,
                 Results = results
+            };
+
+            return result;
+        }
+
+        public static CustomPaginateResult<TEntity> Paginate<TEntity>(PaginateQueryParameters parameters, IQueryable<TEntity> collection)
+         where TEntity : class
+        {
+            if (parameters.Page <= 0)
+            {
+                parameters.Page = 1; 
+            }
+            if (parameters.Rows <= 0)
+            {
+                parameters.Rows = 10; //sluna: Esto debería estar parametrizado y accesible desde la BD
+            }
+
+            var totalRows = collection.Count();
+            var totalPages = (int)Math.Ceiling((double)totalRows / parameters.Rows);
+
+            var query = collection
+                 .Skip((parameters.Page -1) * parameters.Rows) //sluna: -1 para manejar base 1
+                 .Take(parameters.Rows);
+
+            var result = new CustomPaginateResult<TEntity>()
+            {
+                PageSize = parameters.Rows,
+                TotalRows = totalRows,
+                TotalPages = totalPages,
+                CurrentPage = parameters.Page,
+                Results = query.ToList()
             };
 
             return result;

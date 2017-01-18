@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
@@ -13,13 +15,27 @@ using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
+using VLaboralApi.ViewModels.Filtros;
+using VLaboralApi.ViewModels.Ofertas;
+
 
 namespace VLaboralApi.Controllers
 {
     public class OfertasController : ApiController
     {
         private VLaboral_Context db = new VLaboral_Context();
-    
+
+
+        private IQueryable<Oferta> OfertasActivas()
+        {
+            return db.Ofertas
+                .Where(o => o.FechaInicioConvocatoria <= DateTime.Now
+                            && o.FechaFinConvocatoria >= DateTime.Now
+                            && o.Publica
+                            && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+        }
+
+
         // GET: api/Ofertas
         public IQueryable<Oferta> GetOfertas()
         {
@@ -32,38 +48,14 @@ namespace VLaboralApi.Controllers
         {
             try
             {
-                //SLuna: Cuento la cantidad de Ofertas vigentes que hay cargadas.
-                //Sluna: Para que sea una oferta vigente, la fecha actual tiene que estar dentro de las fechas de inicio y fin de convocatoria,
-                //sluna: además, la etapaActual de la oferta tiene que ser la primera, es decir, que la etapaActual tiene que tener idEstapaAnterior = 0
-                var totalRows = db.Ofertas.Count(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
-
-                //var totalRows = 10;
-                var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-                var results = db.Ofertas
-                    .Where(o => o.FechaInicioConvocatoria <= DateTime.Now && o.FechaFinConvocatoria >= DateTime.Now
-                    && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    .OrderBy(o => o.Id)
-                    .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                    .Take(rows)
-                    .ToList();
-                //if (!results.Any()) { return NotFound(); } //SLuna: Si no tienes elementos devuelvo 404
-
-                var result = new CustomPaginateResult<Oferta>()
-                {
-                    PageSize = rows,
-                    TotalRows = totalRows,
-                    TotalPages = totalPages,
-                    CurrentPage = page,
-                    Results = results
-                };
-
-                return Ok(result);
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                    , OfertasActivas()
+                    , order => order.OrderBy(c => c.Id));
+                return Ok(data);
             }
             catch (Exception ex)
             { return BadRequest(ex.Message); }
         }
-
 
         // GET: api/OfertasPrivadas?page=4&rows=50
         //[Route("api/OfertasPrivadas")]
@@ -228,7 +220,10 @@ namespace VLaboralApi.Controllers
 
                 foreach (var puesto in oferta.Puestos)
                 {
-                    List<SubRubro> subrubrosPuesto = new List<SubRubro>();
+                    puesto.Domicilio = null; //sluna: null hasta que definamos bien esto.
+                    puesto.DomicilioId = null; //sluna: null hasta que definamos bien esto.
+
+                    var subrubrosPuesto = new List<SubRubro>();
 
                     foreach (var subRubro in puesto.Subrubros.ToList())
                     {
@@ -321,6 +316,8 @@ namespace VLaboralApi.Controllers
 
                 foreach (var puesto in ofertaPrivada.oferta.Puestos)
                 {
+                    puesto.Domicilio = null; //sluna: null hasta que definamos bien esto.
+                    puesto.DomicilioId = null; //sluna: null hasta que definamos bien esto.
                     List<SubRubro> subrubrosPuesto = new List<SubRubro>();
 
                     foreach (var subRubro in puesto.Subrubros.ToList())
@@ -521,6 +518,197 @@ namespace VLaboralApi.Controllers
         private bool OfertaExists(int id)
         {
             return db.Ofertas.Count(e => e.Id == id) > 0;
+        }
+
+        [HttpPost]
+        [Route("api/Ofertas/QueryOptions")]
+        public async Task<IHttpActionResult> QueryOptions(OfertasOptionsBindingModel options)
+        {
+
+            dynamic filters = new ExpandoObject();
+
+            if (options != null && options.Filters != null)
+            {
+                //the filter values should be unique 'display' strings 
+                if (options.Filters.Contains(OfertasFilterOptions.Rubros))
+                {
+
+                    filters.Rubros = await db.SubRubros
+                            .Where(s => s.Puestos.Any(p => p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                        && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                        && p.Oferta.Publica
+                                        && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
+                            .Select(r => new ValorFiltroViewModel()
+                            {
+                                Id = r.Id,
+                                Valor= r.Id.ToString(),
+                                Descripcion = r.Nombre,
+                                Cantidad = db.Puestos
+                                       .Count(p => p.Subrubros.Any(s => s.Id == r.Id) 
+                                             && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                             && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                             && p.Oferta.Publica
+                                             && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                            }).ToListAsync();
+                }
+                if (options.Filters.Contains(OfertasFilterOptions.DisponibilidadHoraria))
+                
+                {
+                    filters.DisponibilidadHoraria = await db.TipoDisponibilidads
+                        .Where(d => d.Puestos
+                            .Select(p => p.Oferta)
+                            .Any(o => o.FechaInicioConvocatoria <= DateTime.Now
+                                      && o.FechaFinConvocatoria >= DateTime.Now
+                                      && o.Publica
+                                      && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
+                        .Select(d => new ValorFiltroViewModel()
+                        {
+                            Id = d.Id,
+                            Valor = d.Id.ToString(),
+                            Descripcion = d.Nombre,
+                            Cantidad = db.Puestos
+                                        .Count(p => p.TipoDisponibilidadId == d.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                      && p.Oferta.Publica
+                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                        }).ToListAsync();
+
+                }
+                if (options.Filters.Contains(OfertasFilterOptions.TipoContratacion))
+                {
+                    filters.TipoContratacion = await db.TipoContratoes
+                        .Where(d => d.Puestos
+                            .Select(p => p.Oferta)
+                            .Any(o => o.FechaInicioConvocatoria <= DateTime.Now
+                                      && o.FechaFinConvocatoria >= DateTime.Now
+                                      && o.Publica
+                                      && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
+                        .Select(d => new ValorFiltroViewModel()
+                        {
+                            Id = d.Id,
+                            Valor = d.Id.ToString(),
+                            Descripcion = d.Nombre,
+                            Cantidad = db.Puestos
+                                        .Count(p => p.TipoContratoId == d.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                      && p.Oferta.Publica
+                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                        }).ToListAsync();
+
+                }
+                if (options.Filters.Contains(OfertasFilterOptions.Ubicaciones))
+                {
+                    filters.Ubicaciones = db.Ciudades
+                        .Where(c=> c.Domicilios
+                            .Any(d=> d.Puestos
+                                .Any(p =>p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                      && p.Oferta.Publica
+                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)))
+                        .Select(c => new ValorFiltroViewModel()
+                        {
+                            Id = c.Id,
+                            Valor = c.Id.ToString(),
+                            Descripcion = c.Nombre,
+                            Cantidad = db.Puestos.Count(p => p.Domicilio.CiudadId == c.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
+                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                      && p.Oferta.Publica
+                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                        }).ToListAsync();
+                }
+
+            }
+
+            var orderByOptions = Enum.GetNames(typeof(OfertasOrderByOptions));
+
+            return Ok(
+                new
+                {
+                    options = new
+                    {
+                        selectableFilters = filters,
+                        allFilterTypes = Enum.GetNames(typeof(OfertasFilterOptions)),
+                        orderByOptions = orderByOptions,
+                    },
+                    query = new
+                    {
+                        orderBy = "",
+                        searchText = "",
+                        Rubros = new List<string>(),
+                        DisponibilidadHoraria = new List<string>(),
+                        Ubicacion = new List<string>()
+                    }
+                });
+        }
+
+        [HttpPost]
+        [Route("api/Ofertas/Search")]
+        public IHttpActionResult Search(OfertasQueryBindingModel queryOptions)
+        {
+            if (queryOptions == null)
+            {
+                return BadRequest("no query options provided");
+            }
+
+            //create the initial query...
+            var query = OfertasActivas();
+ 
+
+            //for each query option if it has values add it to the query
+            if (!string.IsNullOrEmpty(queryOptions.SearchText))
+            {
+                query = query.Where(p => p.Nombre.Contains(queryOptions.SearchText));
+            }
+
+            if (queryOptions.Rubros != null && queryOptions.Rubros.Any())
+            {
+                query = query.Where(o => o.Puestos.Any(p => p.Subrubros.Any(s => queryOptions.Rubros.Contains(s.Id))));
+            }
+
+            if (queryOptions.DisponibilidadHoraria != null && queryOptions.DisponibilidadHoraria.Any())
+            {
+                query = query.Where(o => o.Puestos.Any(p =>  queryOptions.DisponibilidadHoraria.Contains(p.TipoDisponibilidadId)));
+            }
+
+            if (queryOptions.TipoContratacion != null && queryOptions.TipoContratacion.Any())
+            {
+                query = query.Where(o => o.Puestos.Any(p => queryOptions.TipoContratacion.Contains(p.TipoContratoId)));
+            }
+
+            if (queryOptions.Ubicaciones != null && queryOptions.Ubicaciones.Any())
+            {
+                query = query.Where(o => o.Puestos.Any(p => queryOptions.Ubicaciones.Contains((int) p.Domicilio.CiudadId)));
+            }
+
+            query = CreateOrderByExpression(query, queryOptions.OrderBy);
+
+            // var results = await query.ToListAsync();
+
+            var data = Utiles.Paginate(new PaginateQueryParameters(queryOptions.Page, queryOptions.Rows), query); 
+            return Ok(data);
+
+            //return Ok(new
+            //{
+            //    Books = results
+            //});
+        }
+
+        private IQueryable<Oferta> CreateOrderByExpression(IQueryable<Oferta> query, OfertasOrderByOptions orderByoption)
+        {
+            switch (orderByoption)
+            {
+                case OfertasOrderByOptions.FechaInicioConvocatoria:
+                    query = query.OrderBy(p => p.FechaInicioConvocatoria);
+                    break;
+                case OfertasOrderByOptions.FechaFinConvocatoria:
+                    query = query.OrderByDescending(p => p.FechaFinConvocatoria);
+                    break;
+                default:
+                    query = query.OrderBy(o => o.FechaInicioConvocatoria);
+                    break;
+            }
+
+            return query;
         }
     }
 

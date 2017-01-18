@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using VLaboralApi.Models.Ubicacion;
 
 namespace VLaboralApi.Models
 {
@@ -18,7 +19,10 @@ namespace VLaboralApi.Models
         public string Apellido { get; set; }        
         public string Nacionalidad { get; set; }        
         public DateTime? FechaNac { get; set; }
-        public string Domicilio { get; set; }
+
+        public int? DomicilioId { get; set; }
+        public virtual Domicilio Domicilio { get; set; }
+
         public string ObjetivoProfesional { get; set; }
         public string DescripcionCurricular { get; set; }
         public string Habilidades { get; set; }

@@ -89,6 +89,14 @@ namespace VLaboralApi.Models
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoNotificacion> TipoNotificaciones { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.VerificacionExperienciaLaboral> VerificacionExperienciaLaborals { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Pais> Paises { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Provincia> Provincias { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Ciudad> Ciudades { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Domicilio> Domicilios { get; set; }
     }
 
 

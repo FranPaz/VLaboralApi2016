@@ -40,10 +40,11 @@ namespace VLaboralApi.Hubs
 
         public void EnviarNotificacionInvitacionOfertaPriv(List<NotificacionInvitacionOferta> prmNotificaciones) //fpaz: envia una notificacion de invitacion a oferta privada
         {
-            foreach (var item in prmNotificaciones)
-            {
-                EnviarNotificacion(item);
-            }
+            if (prmNotificaciones != null)
+                foreach (var item in prmNotificaciones)
+                {
+                    EnviarNotificacion(item);
+                }
         }
 
         private void EnviarNotificacion<T>(T prmNotificacion) where T : Notificacion

@@ -94,6 +94,9 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ModelState);
             }
 
+            empresa.Domicilio = null; //sluna: null hasta que definamos bien esto.
+            empresa.DomicilioId = null; //sluna: null hasta que definamos bien esto.
+
             db.Empresas.Add(empresa);
             db.SaveChanges();
 

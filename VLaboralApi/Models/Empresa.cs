@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using VLaboralApi.Models.Ubicacion;
 
 namespace VLaboralApi.Models
 {
@@ -12,7 +13,10 @@ namespace VLaboralApi.Models
         public string NombreFantasia { get; set; }
         public string UrlImagenPerfil { get; set; }
         public string Descripcion { get; set; }
-        public string Direccion { get; set; }
+
+        public int? DomicilioId { get; set; }
+        public virtual Domicilio Domicilio { get; set; }
+
         public string Telefono { get; set; }
         public string SitioWeb { get; set; }
        
