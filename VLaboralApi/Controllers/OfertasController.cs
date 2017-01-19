@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Dynamic;
 using System.Linq;
@@ -29,8 +30,8 @@ namespace VLaboralApi.Controllers
         private IQueryable<Oferta> OfertasActivas()
         {
             return db.Ofertas
-                .Where(o => o.FechaInicioConvocatoria <= DateTime.Now
-                            && o.FechaFinConvocatoria >= DateTime.Now
+                .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                            && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
                             && o.Publica
                             && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
         }
@@ -207,6 +208,7 @@ namespace VLaboralApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+      
         // POST: api/Ofertas
         [ResponseType(typeof(Oferta))]
         public IHttpActionResult PostOferta(Oferta oferta)
@@ -218,81 +220,14 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                foreach (var puesto in oferta.Puestos)
-                {
-                    puesto.Domicilio = null; //sluna: null hasta que definamos bien esto.
-                    puesto.DomicilioId = null; //sluna: null hasta que definamos bien esto.
-
-                    var subrubrosPuesto = new List<SubRubro>();
-
-                    foreach (var subRubro in puesto.Subrubros.ToList())
-                    {
-                        var a = db.SubRubros.Find(subRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
-                        subrubrosPuesto.Add(a);//agrego el subrubro al array de subrubros del profesional                                                
-                    }
-
-                    puesto.Subrubros = subrubrosPuesto;
-                }
-                db.Ofertas.Add(oferta); //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
+                oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(oferta.FechaInicioConvocatoria);
+                oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(oferta.FechaFinConvocatoria);
+                ConfigurarPuestos(oferta);
+                db.Ofertas.Add(oferta);
+                //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
                 db.SaveChanges();
 
-                //fpaz: carga de etapas de una oferta
-                if (oferta.EtapasOferta != null)
-                {
-                    foreach (var etapa in oferta.EtapasOferta)
-                    {
-                        #region fpaz defino los id de etapa anterior y siguiente para cada etapa
-                        if (etapa.Orden == 0)
-                        {
-                            //fpaz: si el orden es 0 es la etapa inicial 
-                            etapa.IdEtapaAnterior = 0;
-                            etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
-                                                       where e.Orden == etapa.Orden + 1
-                                                       select e.Id).FirstOrDefault();
-                            oferta.IdEtapaActual = etapa.Id;
-                        }
-                        else
-                        {
-                            if (etapa.Orden == oferta.EtapasOferta.Count)
-                            {
-                                //fpaz: es la ultima etapa
-                                etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
-                                                         where e.Orden == etapa.Orden - 1
-                                                         select e.Id).FirstOrDefault();
-                                etapa.IdEstapaSiguiente = 0;
-                            }
-                            else
-                            {
-                                //fpaz: es alguna etapa intermedia
-                                etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
-                                                         where e.Orden == etapa.Orden - 1
-                                                         select e.Id).FirstOrDefault();
-                                etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
-                                                           where e.Orden == etapa.Orden + 1
-                                                           select e.Id).FirstOrDefault();
-                            }
-                        }
-                        #endregion
-
-                        #region fpaz defino los puestos para cada etapa
-                        var listPuestosEtapa = new List<PuestoEtapaOferta> { };
-                        foreach (var puesto in oferta.Puestos)
-                        {
-                            var p = new PuestoEtapaOferta
-                            {
-                                Puesto = puesto
-                            };
-
-                            listPuestosEtapa.Add(p);
-                        }
-
-                        etapa.PuestosEtapaOferta = listPuestosEtapa;
-                        #endregion
-                    }
-
-
-
-                }
+                ConfigurarEtapas(oferta);
                 db.SaveChanges(); //fpaz: guardo las etapas de la oferta completas
 
                 return Ok();
@@ -314,79 +249,14 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                foreach (var puesto in ofertaPrivada.oferta.Puestos)
-                {
-                    puesto.Domicilio = null; //sluna: null hasta que definamos bien esto.
-                    puesto.DomicilioId = null; //sluna: null hasta que definamos bien esto.
-                    List<SubRubro> subrubrosPuesto = new List<SubRubro>();
-
-                    foreach (var subRubro in puesto.Subrubros.ToList())
-                    {
-                        var a = db.SubRubros.Find(subRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
-                        subrubrosPuesto.Add(a);//agrego el subrubro al array de subrubros del profesional                                                
-                    }
-
-                    puesto.Subrubros = subrubrosPuesto;
-                }
-                db.Ofertas.Add(ofertaPrivada.oferta); //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
+                ofertaPrivada.oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaInicioConvocatoria);
+                ofertaPrivada.oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaFinConvocatoria);
+                ConfigurarPuestos(ofertaPrivada.oferta);
+                db.Ofertas.Add(ofertaPrivada.oferta);
+                //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
                 db.SaveChanges();
 
-                //fpaz: carga de etapas de una oferta
-                if (ofertaPrivada.oferta.EtapasOferta != null)
-                {
-                    foreach (var etapa in ofertaPrivada.oferta.EtapasOferta)
-                    {
-                        #region fpaz defino los id de etapa anterior y siguiente para cada etapa
-                        if (etapa.Orden == 0)
-                        {
-                            //fpaz: si el orden es 0 es la etapa inicial 
-                            etapa.IdEtapaAnterior = 0;
-                            etapa.IdEstapaSiguiente = (from e in ofertaPrivada.oferta.EtapasOferta
-                                                       where e.Orden == etapa.Orden + 1
-                                                       select e.Id).FirstOrDefault();
-                            ofertaPrivada.oferta.IdEtapaActual = etapa.Id;
-                        }
-                        else
-                        {
-                            if (etapa.Orden == ofertaPrivada.oferta.EtapasOferta.Count)
-                            {
-                                //fpaz: es la ultima etapa
-                                etapa.IdEtapaAnterior = (from e in ofertaPrivada.oferta.EtapasOferta
-                                                         where e.Orden == etapa.Orden - 1
-                                                         select e.Id).FirstOrDefault();
-                                etapa.IdEstapaSiguiente = 0;
-                            }
-                            else
-                            {
-                                //fpaz: es alguna etapa intermedia
-                                etapa.IdEtapaAnterior = (from e in ofertaPrivada.oferta.EtapasOferta
-                                                         where e.Orden == etapa.Orden - 1
-                                                         select e.Id).FirstOrDefault();
-                                etapa.IdEstapaSiguiente = (from e in ofertaPrivada.oferta.EtapasOferta
-                                                           where e.Orden == etapa.Orden + 1
-                                                           select e.Id).FirstOrDefault();
-                            }
-                        }
-                        #endregion
-
-                        #region fpaz defino los puestos para cada etapa
-                        var listPuestosEtapa = new List<PuestoEtapaOferta> { };
-                        foreach (var puesto in ofertaPrivada.oferta.Puestos)
-                        {
-                            var p = new PuestoEtapaOferta
-                            {
-                                Puesto = puesto
-                            };
-
-                            listPuestosEtapa.Add(p);
-                        }
-                        etapa.PuestosEtapaOferta = listPuestosEtapa;
-                        #endregion
-                    }
-
-
-
-                }
+                ConfigurarEtapas(ofertaPrivada.oferta);
                 db.SaveChanges(); //fpaz: guardo las etapas de la oferta completas
 
                 #region genero las invitaciones para los profesionales en caso de ser una oferta privada
@@ -394,6 +264,7 @@ namespace VLaboralApi.Controllers
 
                 var invitaciones = notificacionHelper.GenerarNotificacionesInvitacionesOferta(ofertaPrivada.oferta.Id, ofertaPrivada.profesionales);
                 #endregion
+
                 return Ok(invitaciones);                
             }
             catch (Exception ex)
@@ -402,6 +273,101 @@ namespace VLaboralApi.Controllers
             }
         }
 
+        private List<SubRubro> ObtenerSubRubrosPuesto(IEnumerable<SubRubro> subRubros)
+        {
+            var subrubrosPuesto = new List<SubRubro>();
+            foreach (var subRubro in subRubros.ToList())
+            {
+                var a = db.SubRubros.Find(subRubro.Id);
+                //obtengo el objeto subrubro (esto por que es una relacion M a M)
+
+                subrubrosPuesto.Add(a);
+                //agrego el subrubro al array de subrubros del profesional                                                
+            }
+
+            return subrubrosPuesto;
+            //return subRubros.ToList().Select(subRubro => db.SubRubros.Find(subRubro.Id)).ToList();
+        }
+
+        private void ConfigurarPuestos(Oferta oferta)
+        {
+            foreach (var puesto in oferta.Puestos)
+            {
+                puesto.Domicilio = null; //sluna: null hasta que definamos bien esto.
+                puesto.DomicilioId = null; //sluna: null hasta que definamos bien esto.
+
+                puesto.Subrubros = ObtenerSubRubrosPuesto(puesto.Subrubros);
+            }
+        }
+
+        private static void ConfigurarEtapas(Oferta oferta)
+        {
+            if (oferta.EtapasOferta == null) return;
+
+            //fpaz: carga de etapas de una oferta
+            foreach (var etapa in oferta.EtapasOferta)
+            {
+                OrdenarEtapas(oferta, etapa);
+                ConfigurarPuestosEtapa(oferta, etapa);
+            }
+        }
+
+        private static void OrdenarEtapas(Oferta oferta, EtapaOferta etapa)
+        {
+            #region fpaz defino los id de etapa anterior y siguiente para cada etapa
+
+            if (etapa.Orden == 0)
+            {
+                //fpaz: si el orden es 0 es la etapa inicial 
+                etapa.IdEtapaAnterior = 0;
+                etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
+                                           where e.Orden == etapa.Orden + 1
+                                           select e.Id).FirstOrDefault();
+                oferta.IdEtapaActual = etapa.Id;
+            }
+            else
+            {
+                if (etapa.Orden == oferta.EtapasOferta.Count)
+                {
+                    //fpaz: es la ultima etapa
+                    etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
+                                             where e.Orden == etapa.Orden - 1
+                                             select e.Id).FirstOrDefault();
+                    etapa.IdEstapaSiguiente = 0;
+                }
+                else
+                {
+                    //fpaz: es alguna etapa intermedia
+                    etapa.IdEtapaAnterior = (from e in oferta.EtapasOferta
+                                             where e.Orden == etapa.Orden - 1
+                                             select e.Id).FirstOrDefault();
+                    etapa.IdEstapaSiguiente = (from e in oferta.EtapasOferta
+                                               where e.Orden == etapa.Orden + 1
+                                               select e.Id).FirstOrDefault();
+                }
+            }
+            #endregion
+        }
+
+        private static void ConfigurarPuestosEtapa(Oferta oferta, EtapaOferta etapa)
+        {
+            #region fpaz defino los puestos para cada etapa
+
+            var listPuestosEtapa = new List<PuestoEtapaOferta> {};
+            foreach (var puesto in oferta.Puestos)
+            {
+                var p = new PuestoEtapaOferta
+                {
+                    Puesto = puesto
+                };
+
+                listPuestosEtapa.Add(p);
+            }
+            etapa.PuestosEtapaOferta = listPuestosEtapa;
+
+            #endregion
+        }
+      
         // DELETE: api/Ofertas/5
         [ResponseType(typeof(Oferta))]
         public IHttpActionResult DeleteOferta(int id)
@@ -534,10 +500,11 @@ namespace VLaboralApi.Controllers
                 {
 
                     filters.Rubros = await db.SubRubros
-                            .Where(s => s.Puestos.Any(p => p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                        && p.Oferta.FechaFinConvocatoria >= DateTime.Now
-                                        && p.Oferta.Publica
-                                        && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
+                            .Where(s => s.Puestos.Any(p => 
+                                DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+                                && p.Oferta.Publica
+                                && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
                             .Select(r => new ValorFiltroViewModel()
                             {
                                 Id = r.Id,
@@ -545,8 +512,8 @@ namespace VLaboralApi.Controllers
                                 Descripcion = r.Nombre,
                                 Cantidad = db.Puestos
                                        .Count(p => p.Subrubros.Any(s => s.Id == r.Id) 
-                                             && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                             && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                             && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                             && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) 
                                              && p.Oferta.Publica
                                              && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
                             }).ToListAsync();
@@ -557,8 +524,8 @@ namespace VLaboralApi.Controllers
                     filters.DisponibilidadHoraria = await db.TipoDisponibilidads
                         .Where(d => d.Puestos
                             .Select(p => p.Oferta)
-                            .Any(o => o.FechaInicioConvocatoria <= DateTime.Now
-                                      && o.FechaFinConvocatoria >= DateTime.Now
+                            .Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                      && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) 
                                       && o.Publica
                                       && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
                         .Select(d => new ValorFiltroViewModel()
@@ -567,10 +534,11 @@ namespace VLaboralApi.Controllers
                             Valor = d.Id.ToString(),
                             Descripcion = d.Nombre,
                             Cantidad = db.Puestos
-                                        .Count(p => p.TipoDisponibilidadId == d.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
-                                      && p.Oferta.Publica
-                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                                        .Count(p => p.TipoDisponibilidadId == d.Id
+                                            && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                            && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) 
+                                            && p.Oferta.Publica
+                                            && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
                         }).ToListAsync();
 
                 }
@@ -579,8 +547,8 @@ namespace VLaboralApi.Controllers
                     filters.TipoContratacion = await db.TipoContratoes
                         .Where(d => d.Puestos
                             .Select(p => p.Oferta)
-                            .Any(o => o.FechaInicioConvocatoria <= DateTime.Now
-                                      && o.FechaFinConvocatoria >= DateTime.Now
+                            .Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                      && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) 
                                       && o.Publica
                                       && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
                         .Select(d => new ValorFiltroViewModel()
@@ -589,10 +557,11 @@ namespace VLaboralApi.Controllers
                             Valor = d.Id.ToString(),
                             Descripcion = d.Nombre,
                             Cantidad = db.Puestos
-                                        .Count(p => p.TipoContratoId == d.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
-                                      && p.Oferta.Publica
-                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                                        .Count(p => p.TipoContratoId == d.Id
+                                            && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                            && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) 
+                                            && p.Oferta.Publica
+                                            && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
                         }).ToListAsync();
 
                 }
@@ -601,8 +570,8 @@ namespace VLaboralApi.Controllers
                     filters.Ubicaciones = db.Ciudades
                         .Where(c=> c.Domicilios
                             .Any(d=> d.Puestos
-                                .Any(p =>p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
+                                .Any(p => DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                      && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) 
                                       && p.Oferta.Publica
                                       && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)))
                         .Select(c => new ValorFiltroViewModel()
@@ -610,10 +579,11 @@ namespace VLaboralApi.Controllers
                             Id = c.Id,
                             Valor = c.Id.ToString(),
                             Descripcion = c.Nombre,
-                            Cantidad = db.Puestos.Count(p => p.Domicilio.CiudadId == c.Id && p.Oferta.FechaInicioConvocatoria <= DateTime.Now
-                                      && p.Oferta.FechaFinConvocatoria >= DateTime.Now
-                                      && p.Oferta.Publica
-                                      && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                            Cantidad = db.Puestos.Count(p => p.Domicilio.CiudadId == c.Id
+                                && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+                                && p.Oferta.Publica
+                                && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
                         }).ToListAsync();
                 }
 
