@@ -29,11 +29,45 @@ namespace VLaboralApi.Controllers
 
         private IQueryable<Oferta> OfertasActivas()
         {
-            return db.Ofertas
-                .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
-                            && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
-                            && o.Publica
-                            && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+            if (User.Identity.GetUserId() != null)
+            { 
+                //fpaz: para los usuario logueados
+                var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
+
+                if (tipoReceptor == "profesional")
+                {
+                    //fpaz: si el usuario logueado es un profesional solo muestro las ofertas publicas
+                    return db.Ofertas
+                    .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+                                && o.Publica
+                                && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+                }
+                else
+                {//fpaz: si el usuario logueado es una profesional solo muestro las ofertas publicas y las privadas que haya creado la empresa
+
+                    //fpaz: obtengo el id de la empresa
+                    var empresaId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
+                    if (empresaId == null) return null;
+
+                    return db.Ofertas
+                    .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+                                && o.EmpresaId == empresaId
+                                && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+                }
+            }
+            else
+            {
+                //fpaz: para los invitados
+                return db.Ofertas
+                    .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+                                && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+                                && o.Publica
+                                && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+            }
+            
+            
         }
 
 
@@ -220,8 +254,8 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(oferta.FechaInicioConvocatoria);
-                oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(oferta.FechaFinConvocatoria);
+                //oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(oferta.FechaInicioConvocatoria);
+                //oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(oferta.FechaFinConvocatoria);
                 ConfigurarPuestos(oferta);
                 db.Ofertas.Add(oferta);
                 //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
@@ -249,8 +283,8 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
-                ofertaPrivada.oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaInicioConvocatoria);
-                ofertaPrivada.oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaFinConvocatoria);
+                //ofertaPrivada.oferta.FechaInicioConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaInicioConvocatoria);
+                //ofertaPrivada.oferta.FechaFinConvocatoria = DbFunctions.TruncateTime(ofertaPrivada.oferta.FechaFinConvocatoria);
                 ConfigurarPuestos(ofertaPrivada.oferta);
                 db.Ofertas.Add(ofertaPrivada.oferta);
                 //hasta aqui guardo los datos de la oferta y sus etapas pero sin ids de etapas anteriores o siguientes y sin puestos por cada etapa
