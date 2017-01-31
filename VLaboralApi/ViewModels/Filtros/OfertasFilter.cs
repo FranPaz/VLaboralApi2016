@@ -6,7 +6,7 @@ namespace VLaboralApi.ViewModels.Ofertas
 {
     public enum OfertasFilterOptions
     {
-        Rubros, DisponibilidadHoraria, TipoContratacion, Ubicaciones
+        Rubros, DisponibilidadHoraria, TipoContratacion, Ubicaciones, TiposOferta
     }
 
     public enum OfertasOrderByOptions
@@ -26,6 +26,11 @@ namespace VLaboralApi.ViewModels.Ofertas
         public List<int> DisponibilidadHoraria { get; set; }
         public List<int> TipoContratacion { get; set; }
         public List<int> Ubicaciones { get; set; }
+        public List<TiposOferta> TiposOferta { get; set; }
     }
-    
+
+    public enum TiposOferta
+    {
+        Publica, Privada
+    }
 }

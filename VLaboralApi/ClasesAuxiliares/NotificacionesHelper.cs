@@ -82,7 +82,7 @@ namespace VLaboralApi.ClasesAuxiliares
                         Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
                         Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
                         TipoNotificacionId = tipoNotificacion.Id,
-                        EmisorId = experiencia.ProfesionalId,
+                        EmisorId = (int) experiencia.ProfesionalId,
                         ReceptorId = experiencia.Empresa.Id
                     };
 

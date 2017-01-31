@@ -255,6 +255,7 @@
     <Compile Include="Controllers\CompetenciaIdiomasController.cs" />
     <Compile Include="Controllers\CursosController.cs" />
     <Compile Include="Controllers\EducacionsController.cs" />
+    <Compile Include="Controllers\EmpleadoesController.cs" />
     <Compile Include="Controllers\EmpresasController.cs" />
     <Compile Include="Controllers\EtapaOfertasController.cs" />
     <Compile Include="Controllers\ExperienciaLaboralsController.cs" />
@@ -286,9 +287,14 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
+    <Compile Include="Migrations\201701310055100_inicial.cs" />
+    <Compile Include="Migrations\201701310055100_inicial.Designer.cs">
+      <DependentUpon>201701310055100_inicial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\BlobModels.cs" />
+    <Compile Include="Models\Empleado.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EtapaOferta.cs" />
     <Compile Include="Models\ExperienciaLaboral.cs" />
@@ -393,6 +399,11 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201701310055100_inicial.resx">
+      <DependentUpon>201701310055100_inicial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

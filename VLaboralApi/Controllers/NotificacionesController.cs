@@ -124,7 +124,7 @@ namespace VLaboralApi.Controllers
         {
             //fpaz: comento lo ultimo que hizo santi porque no esta devolviendo resultados que deberia traer
 
-            //var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
+            //var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
             //if (tipoReceptor == null) return null;
 
             //var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
@@ -140,16 +140,16 @@ namespace VLaboralApi.Controllers
             //    , order => order.OrderByDescending(c => c.FechaPublicacion));
             //return Ok(data);
 
-            var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
-            if (tipoReceptor == null) return null;
+            var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
+           // if (tipoReceptor == null) return null;
 
-            var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
+            var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
             var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoReceptor);
+                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString());
 
             var totalPages = (int)Math.Ceiling((double)totalRows / rows);
 
@@ -157,7 +157,7 @@ namespace VLaboralApi.Controllers
                 .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoReceptor)
+                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString())
                                 .Include(n => n.TipoNotificacion)
                                 .OrderByDescending(n => n.FechaPublicacion)
                 .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
@@ -178,16 +178,16 @@ namespace VLaboralApi.Controllers
 
         public IHttpActionResult GetNotificacionesTipo(int prmIdTipoNotificacion, int page, int rows) //fpaz: trae solo las notificaciones de un tipo en particular
         {            
-            var tipoReceptor = Utiles.GetTipoReceptor(User.Identity.GetUserId());
-            if (tipoReceptor == null) return null;
+            var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
+            if (tipoUsuario == null) return null;
 
-            var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
+            var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
             var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoReceptor
+                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString()
                                 && n.TipoNotificacionId == prmIdTipoNotificacion);
 
             var totalPages = (int)Math.Ceiling((double)totalRows / rows);
@@ -196,7 +196,7 @@ namespace VLaboralApi.Controllers
                 .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoReceptor
+                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString()
                                 && n.TipoNotificacionId == prmIdTipoNotificacion)
                                 .Include(n => n.TipoNotificacion)
                                 .OrderByDescending(n => n.FechaPublicacion)

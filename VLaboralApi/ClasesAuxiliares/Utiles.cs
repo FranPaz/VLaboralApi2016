@@ -12,29 +12,35 @@ namespace VLaboralApi.ClasesAuxiliares
 {
     public class Utiles
     {
-        protected internal static int? GetReceptorId(string tipoReceptor, string UserId)
+        protected internal static int? GetReceptorId(TiposUsuario tipoUsuario, string UserId)
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
             
-            switch (tipoReceptor)
+            switch (tipoUsuario)
             {
-                case "profesional":
+                case TiposUsuario.profesional:
                     return
                         Convert.ToInt32(manager.GetClaims(UserId).FirstOrDefault(r => r.Type == "profesionalId").Value);
-                case "empresa":
-                    return Convert.ToInt32(manager.GetClaims(UserId).FirstOrDefault(r => r.Type == "empresaId").Value);
-                case "administracion":
+                case TiposUsuario.empresa:
+                    return 
+                        Convert.ToInt32(manager.GetClaims(UserId).FirstOrDefault(r => r.Type == "empresaId").Value);
+                case TiposUsuario.administracion:
                     return null;
             }
             return null;
         }
 
-        protected internal static string GetTipoReceptor(string UserId)
+
+        public enum TiposUsuario
+        {
+            profesional, empresa, administracion
+        }
+        protected internal static TiposUsuario GetTipoUsuario(string UserId)
         {
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
             var usuarioId = UserId;
             var appUsertype = manager.GetClaims(usuarioId).FirstOrDefault(r => r.Type == "app_usertype");
-            return appUsertype == null ? null : appUsertype.Value;
+            return (TiposUsuario) (appUsertype == null ? null : Enum.Parse(typeof(TiposUsuario), appUsertype.Value));
         }
 
         protected internal static int? GetProfesionalId(string UserId)

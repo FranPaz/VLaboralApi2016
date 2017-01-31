@@ -74,4 +74,6 @@ namespace VLaboralApi.Models
         //sluna: relacion 1 a M con Notificacion (muchos)
         //public virtual ICollection<Notificacion> Notificaciones { get; set; }
     }
+
+   
 }

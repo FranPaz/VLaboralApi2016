@@ -8,8 +8,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.ViewModels.Ofertas;
 
 namespace VLaboralApi.Controllers
 {
@@ -152,27 +154,46 @@ namespace VLaboralApi.Controllers
                 db.ExperienciaLaborals.Add(experienciaLaboral);
                 db.SaveChanges();
 
-                if (experienciaLaboral.EmpresaId != null)
+                var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
+                switch (tipoUsuario)
                 {
-                    experienciaLaboral.Empresa = db.Empresas.Find(experienciaLaboral.EmpresaId);
-                    //*TODO: dar de alta la notificacion de nueva experiencia laboral cargada para la validacion por parte de la empresa
-                    // a partir del usuario que dio de alta la exp
-                    var notificacionHelper = new NotificacionesHelper(); 
+                    case Utiles.TiposUsuario.profesional:
+                        if (experienciaLaboral.EmpresaId != null)
+                        {
+                            experienciaLaboral.Empresa = db.Empresas.Find(experienciaLaboral.EmpresaId);
+                            //*TODO: dar de alta la notificacion de nueva experiencia laboral cargada para la validacion por parte de la empresa
+                            // a partir del usuario que dio de alta la exp
+                            var notificacionHelper = new NotificacionesHelper();
 
-                    var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
-                    notificacion.ExperienciaLaboral = experienciaLaboral;
-                    return Ok(notificacion);
+                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
+                            notificacion.ExperienciaLaboral = experienciaLaboral;
+                            return Ok(notificacion);
+                        }
+                        break;
+                    case Utiles.TiposUsuario.empresa:
+                        if (experienciaLaboral.ProfesionalId != null)
+                        {
+                            experienciaLaboral.Profesional = db.Profesionals.Find(experienciaLaboral.ProfesionalId);
+                            
+                            var notificacionHelper = new NotificacionesHelper();
+                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
+                            notificacion.ExperienciaLaboral = experienciaLaboral;
+                            return Ok(notificacion);
+                        }
+                        break;
+                    case Utiles.TiposUsuario.administracion:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-                else
-                {
-                    return Ok(experienciaLaboral);
-                }
+
+
+                return Ok(experienciaLaboral);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         // DELETE: api/ExperienciaLaborals/5

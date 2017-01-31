@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
@@ -22,12 +21,18 @@ namespace VLaboralApi.Models
         public virtual Empresa Empresa { get; set; }
 
         //fpaz: 1 a m con profesional (uno)
-        public int ProfesionalId { get; set; }
+        public int? ProfesionalId { get; set; }
         public virtual Profesional Profesional { get; set; }
+
+        //fpaz: 1 a m con profesional (uno)
+        public int? EmpleadoId { get; set; }
+        public virtual Empleado Empleado { get; set; }
 
         public string idUsuarioCreacion { get; set; }
 
         //iafar: relacion 1 a 1..0 con Verificacion de Experiencia laboral (1..0)
         public virtual VerificacionExperienciaLaboral VerificacionExperienciaLaboral { get; set; }
     }
+
+    
 }
