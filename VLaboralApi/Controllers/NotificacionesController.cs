@@ -303,6 +303,47 @@ namespace VLaboralApi.Controllers
 
         // POST: api/Notificaciones
         [ResponseType(typeof(Notificacion))]
+        public IHttpActionResult PostNotificacionInvitacionPrivada(int postulacionId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var postulacion = db.Postulacions
+                                    .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta)
+                        .FirstOrDefault(p => p.Id == postulacionId);
+
+
+            if (postulacion == null) return BadRequest(ModelState);
+
+            var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "ETAP");
+
+            if (tipoNotificacion == null) return BadRequest(ModelState);
+            {
+                var notificacion = new NotificacionPostulacion()
+                {
+                    PostulacionId = postulacion.Id,
+                    // EtapaOfertaId = postulacion.PuestoEtapaOferta.EtapaOfertaId,
+                    FechaCreacion = DateTime.Now,
+                    FechaPublicacion = DateTime.Now,
+                    Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
+                    Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
+                    TipoNotificacionId = tipoNotificacion.Id,
+                    ReceptorId = postulacion.ProfesionalId,
+                    EmisorId = postulacion.PuestoEtapaOferta.EtapaOferta.Oferta.EmpresaId
+                };
+
+                db.Notificaciones.Add(notificacion);
+                db.SaveChanges();
+
+                return Ok();
+                //  return CreatedAtRoute("DefaultApi", new { id = notificacion.Id }, notificacion);
+            }
+        }
+
+        // POST: api/Notificaciones
+        [ResponseType(typeof(Notificacion))]
         public IHttpActionResult PostNotificacion(Notificacion notificacion)
         {
             if (!ModelState.IsValid)

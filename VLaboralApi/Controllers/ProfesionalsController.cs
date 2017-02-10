@@ -180,13 +180,19 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            GuardarProfesional(profesional);
+
+            return CreatedAtRoute("DefaultApi", new { id = profesional.Id }, profesional);
+        }
+
+        public void GuardarProfesional(Profesional profesional)
+        {
             profesional.Domicilio = null; //sluna: null hasta que definamos bien esto.
             profesional.DomicilioId = null; //sluna: null hasta que definamos bien esto.
 
             db.Profesionals.Add(profesional);
             db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = profesional.Id }, profesional);
         }
 
         // DELETE: api/Profesionals/5

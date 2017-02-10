@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace VLaboralApi.Models
+namespace VLaboralApi.ViewModels.Empleados
 {
-    public class ExperienciaLaboral
+    public class ExperienciaLaboralEmpleado
     {
         public int Id { get; set; }
         public string Puesto { get; set; }
@@ -18,17 +19,5 @@ namespace VLaboralApi.Models
 
         //fpaz: 1 a muchos con empresa (uno)
         public int? EmpresaId { get; set; }
-        public virtual Empresa Empresa { get; set; }
-
-        //fpaz: 1 a m con profesional (uno)
-        public int? ProfesionalId { get; set; }
-        public virtual Profesional Profesional { get; set; }
-
-        public string idUsuarioCreacion { get; set; }
-
-        //iafar: relacion 1 a 1..0 con Verificacion de Experiencia laboral (1..0)
-        public virtual VerificacionExperienciaLaboral VerificacionExperienciaLaboral { get; set; }
     }
-
-    
 }

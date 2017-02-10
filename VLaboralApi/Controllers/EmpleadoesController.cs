@@ -8,7 +8,10 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
+using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.ViewModels.Empleados;
 
 namespace VLaboralApi.Controllers
 {
@@ -20,6 +23,23 @@ namespace VLaboralApi.Controllers
         public IQueryable<Empleado> GetEmpleadoes()
         {
             return db.Empleadoes;
+        }
+
+        
+        [ResponseType(typeof(Empleado))]
+        public IHttpActionResult GetEmpleado(int tipoIdentificacion, string valor )
+        {
+
+            var empresaId = Utiles.GetEmpresaId(User.Identity.GetUserId());
+            Empleado empleado = null;
+            if (empresaId != null)
+            {
+                empleado = db.Empleadoes
+                    .FirstOrDefault(e => e.EmpresaId == empresaId &
+                                         e.IdentificacionesEmpleado
+                                             .Any(ie => ie.TipoIdentificacionProfesionalId == tipoIdentificacion & ie.Valor == valor));
+            }
+            return Ok(empleado);
         }
 
         // GET: api/Empleadoes/5
@@ -72,18 +92,81 @@ namespace VLaboralApi.Controllers
 
         // POST: api/Empleadoes
         [ResponseType(typeof(Empleado))]
-        public IHttpActionResult PostEmpleado(Empleado empleado)
+        public IHttpActionResult PostEmpleado(EmpleadoVM empleadoVm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Empleadoes.Add(empleado);
+            if (db.Empresas.Find(empleadoVm.EmpresaId) == null) return BadRequest("Verificar EmpresaId");
 
-            db.SaveChanges();
+            var profesional = new Profesional();
+            var empleado = new Empleado();
 
+            if (empleadoVm.ProfesionalId == null)
+            {
+                profesional.Apellido = empleadoVm.Apellido;
+                profesional.Nombre = empleadoVm.Nombre;
+                profesional.FechaNac = empleadoVm.FechaNac;
+                profesional.Nacionalidad = empleadoVm.Nacionalidad;
+                profesional.Domicilio = empleadoVm.Domicilio;
+                profesional.Sexo = empleadoVm.Sexo.ToString();
+                CargarExperienciasLaborales(empleadoVm, profesional);
+                db.Profesionals.Add(profesional);
+                db.SaveChanges();
+
+                empleado = GuardarEmpleado(empleadoVm, profesional);
+            }
+            else
+            {
+                profesional = db.Profesionals.Find(empleadoVm.ProfesionalId);
+
+                if (profesional == null) return BadRequest("Verificar ProfesionalId");
+                
+                empleado = GuardarEmpleado(empleadoVm, profesional);
+                CargarExperienciasLaborales(empleadoVm, profesional);
+                db.SaveChanges();
+            }
             return Ok(empleado);
+           
+        }
+
+        private Empleado GuardarEmpleado(EmpleadoVM empleadoVm, Profesional profesional)
+        {
+            var empleado = new Empleado
+            {
+                Apellido = empleadoVm.Apellido,
+                Nombre = empleadoVm.Nombre,
+                FechaNac = empleadoVm.FechaNac,
+                Nacionalidad = empleadoVm.Nacionalidad,
+                Domicilio = empleadoVm.Domicilio,
+                Sexo = empleadoVm.Sexo,
+                ProfesionalId = profesional.Id,
+                EmpresaId =  empleadoVm.EmpresaId
+            };
+            db.Empleadoes.Add(empleado);
+            db.SaveChanges();
+            return empleado;
+        }
+
+        private void CargarExperienciasLaborales(EmpleadoVM empleadoVm, Profesional profesional)
+        {
+            foreach (var experiencia in empleadoVm.ExperienciasLaborales)
+            {
+                var experienciaLaboral = new ExperienciaLaboral
+                {
+                    Descripcion = experiencia.Descripcion,
+                    EmpresaId = experiencia.EmpresaId,
+                    FechaCreacion = DateTime.Now.Date,
+                    PeriodoDesde = experiencia.PeriodoDesde,
+                    PeriodoHasta = experiencia.PeriodoHasta,
+                    Puesto = experiencia.Puesto,
+                    Ubicacion = experiencia.Ubicacion,
+                    idUsuarioCreacion = User.Identity.GetUserId()
+                };
+                profesional.ExperienciasLaborales.Add(experienciaLaboral);
+            }
         }
 
         // DELETE: api/Empleadoes/5
