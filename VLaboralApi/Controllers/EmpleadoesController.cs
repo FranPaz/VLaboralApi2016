@@ -160,6 +160,7 @@ namespace VLaboralApi.Controllers
             {
                 var experienciaLaboral = new ExperienciaLaboral
                 {
+                    ProfesionalId = profesional.Id,
                     Descripcion = experiencia.Descripcion,
                     EmpresaId = experiencia.EmpresaId,
                     FechaCreacion = DateTime.Now.Date,
