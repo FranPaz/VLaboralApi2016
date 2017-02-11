@@ -46,7 +46,16 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-      
+
+        [ResponseType(typeof(Profesional))]
+        public IHttpActionResult GetProfesional([FromUri] IdentificacionProfesional identificacion)
+        {
+            var profesional = db.Profesionals
+                .FirstOrDefault(e => e.IdentificacionesProfesional.Any(ie => ie.TipoIdentificacionProfesionalId == identificacion.TipoIdentificacionProfesionalId & ie.Valor == identificacion.Valor));
+
+            return Ok(profesional);
+        }
+
 
         // GET: api/Profesionals/5
         [ResponseType(typeof(Profesional))]

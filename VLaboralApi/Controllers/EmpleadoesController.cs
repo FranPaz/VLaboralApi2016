@@ -27,7 +27,7 @@ namespace VLaboralApi.Controllers
 
         
         [ResponseType(typeof(Empleado))]
-        public IHttpActionResult GetEmpleado(int tipoIdentificacion, string valor )
+        public IHttpActionResult GetEmpleado([FromUri] IdentificacionProfesional identificacion)
         {
 
             var empresaId = Utiles.GetEmpresaId(User.Identity.GetUserId());
@@ -37,7 +37,7 @@ namespace VLaboralApi.Controllers
                 empleado = db.Empleadoes
                     .FirstOrDefault(e => e.EmpresaId == empresaId &
                                          e.IdentificacionesEmpleado
-                                             .Any(ie => ie.TipoIdentificacionProfesionalId == tipoIdentificacion & ie.Valor == valor));
+                                             .Any(ie => ie.TipoIdentificacionEmpleadoId == identificacion.TipoIdentificacionProfesionalId & ie.Valor == identificacion.Valor));
             }
             return Ok(empleado);
         }
@@ -106,16 +106,7 @@ namespace VLaboralApi.Controllers
 
             if (empleadoVm.ProfesionalId == null)
             {
-                profesional.Apellido = empleadoVm.Apellido;
-                profesional.Nombre = empleadoVm.Nombre;
-                profesional.FechaNac = empleadoVm.FechaNac;
-                profesional.Nacionalidad = empleadoVm.Nacionalidad;
-                profesional.Domicilio = empleadoVm.Domicilio;
-                profesional.Sexo = empleadoVm.Sexo.ToString();
-                CargarExperienciasLaborales(empleadoVm, profesional);
-                db.Profesionals.Add(profesional);
-                db.SaveChanges();
-
+                GuardarProfesional(empleadoVm, profesional);
                 empleado = GuardarEmpleado(empleadoVm, profesional);
             }
             else
@@ -130,6 +121,19 @@ namespace VLaboralApi.Controllers
             }
             return Ok(empleado);
            
+        }
+
+        private void GuardarProfesional(EmpleadoVM empleadoVm, Profesional profesional)
+        {
+            profesional.Apellido = empleadoVm.Apellido;
+            profesional.Nombre = empleadoVm.Nombre;
+            profesional.FechaNac = empleadoVm.FechaNac;
+            profesional.Nacionalidad = empleadoVm.Nacionalidad;
+            profesional.Domicilio = empleadoVm.Domicilio;
+            profesional.Sexo = empleadoVm.Sexo.ToString();
+            CargarExperienciasLaborales(empleadoVm, profesional);
+            db.Profesionals.Add(profesional);
+            db.SaveChanges();
         }
 
         private Empleado GuardarEmpleado(EmpleadoVM empleadoVm, Profesional profesional)
