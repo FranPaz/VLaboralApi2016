@@ -156,22 +156,23 @@ namespace VLaboralApi.Controllers
 
         private void CargarExperienciasLaborales(EmpleadoVM empleadoVm, Profesional profesional)
         {
-            foreach (var experiencia in empleadoVm.ExperienciasLaborales)
-            {
-                var experienciaLaboral = new ExperienciaLaboral
+            if (empleadoVm.ExperienciasLaborales != null)
+                foreach (var experiencia in empleadoVm.ExperienciasLaborales)
                 {
-                    ProfesionalId = profesional.Id,
-                    Descripcion = experiencia.Descripcion,
-                    EmpresaId = experiencia.EmpresaId,
-                    FechaCreacion = DateTime.Now.Date,
-                    PeriodoDesde = experiencia.PeriodoDesde,
-                    PeriodoHasta = experiencia.PeriodoHasta,
-                    Puesto = experiencia.Puesto,
-                    Ubicacion = experiencia.Ubicacion,
-                    idUsuarioCreacion = User.Identity.GetUserId()
-                };
-                profesional.ExperienciasLaborales.Add(experienciaLaboral);
-            }
+                    var experienciaLaboral = new ExperienciaLaboral
+                    {
+                        ProfesionalId = profesional.Id,
+                        Descripcion = experiencia.Descripcion,
+                        EmpresaId = experiencia.EmpresaId,
+                        FechaCreacion = DateTime.Now.Date,
+                        PeriodoDesde = experiencia.PeriodoDesde,
+                        PeriodoHasta = experiencia.PeriodoHasta,
+                        Puesto = experiencia.Puesto,
+                        Ubicacion = experiencia.Ubicacion,
+                        idUsuarioCreacion = User.Identity.GetUserId()
+                    };
+                    db.ExperienciaLaborals.Add(experienciaLaboral);
+                }
         }
 
         // DELETE: api/Empleadoes/5
