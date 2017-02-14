@@ -26,6 +26,8 @@ namespace VLaboralApi.Models.Ubicacion
         public virtual ICollection<Puesto> Puestos { get; set; }
 
         public virtual ICollection<Profesional> Profesionales { get; set; }
+        
+        public virtual ICollection<Empleado> Empleados { get; set; }
 
         public virtual ICollection<Empresa> Empresas { get; set; }
 

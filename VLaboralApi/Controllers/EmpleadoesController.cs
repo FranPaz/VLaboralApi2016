@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,7 +12,10 @@ using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.Services;
 using VLaboralApi.ViewModels.Empleados;
+using VLaboralApi.ViewModels.Filtros;
+using VLaboralApi.ViewModels.Ofertas;
 
 namespace VLaboralApi.Controllers
 {
@@ -151,6 +155,18 @@ namespace VLaboralApi.Controllers
             };
             db.Empleadoes.Add(empleado);
             db.SaveChanges();
+
+             foreach (var identificacion in empleadoVm.IdentificacionesEmpleado)
+            {
+                var identificacionEmpleado = new IdentificacionEmpleado()
+                {
+                    Valor = identificacion.Valor,
+                    TipoIdentificacionEmpleadoId =  identificacion.TipoIdentificacionEmpleadoId,
+                    EmpleadoId = empleado.Id
+                };
+                db.IdentificacionesEmpleado.Add(identificacionEmpleado);
+            }
+             db.SaveChanges();
             return empleado;
         }
 
@@ -203,6 +219,153 @@ namespace VLaboralApi.Controllers
         private bool EmpleadoExists(int id)
         {
             return db.Empleadoes.Count(e => e.Id == id) > 0;
+        }
+
+        [HttpPost]
+        [Route("api/Empleados/QueryOptions")]
+        public IHttpActionResult QueryOptions(EmpleadosOptionsBindingModel options)
+        {
+            dynamic filters = new ExpandoObject();
+
+            if (options != null && options.Filters != null)
+            {
+                 if (User == null)
+                {
+                   return BadRequest("Debe ser una empresa para poder consultar el listado de empleados.");
+                }
+
+                var empresaId = Utiles.GetEmpresaId(User.Identity.GetUserId());
+           
+                if (options.Filters.Contains(EmpleadosFilterOptions.Sexo))
+                {
+                    filters.Sexo = Enum.GetNames(typeof(Sexo));  
+                }
+                if (options.Filters.Contains(EmpleadosFilterOptions.Estado))
+                {
+                    filters.Estado = Enum.GetNames(typeof(EstadoEmpleado));  
+                }
+                if (options.Filters.Contains(EmpleadosFilterOptions.Ubicaciones))
+                {
+                    filters.Ubicaciones = db.Ciudades.Where(c => c.Domicilios.Any(d => d.Empleados.Any(e => e.EmpresaId == empresaId))).Select(c => new ValorFiltroViewModel()
+                    {
+                        Id = c.Id,
+                        Valor = c.Id.ToString(),
+                        Descripcion = c.Nombre,
+                        Cantidad = db.Empleadoes.Count(e => e.Domicilio.CiudadId == c.Id && e.EmpresaId == empresaId)
+                    }).ToList();
+                }
+            }
+
+
+            return Ok(new
+            {
+                options = new
+                {
+                    selectableFilters = filters,
+                    allFilterTypes = Enum.GetNames(typeof(EmpleadosFilterOptions)),
+                    orderByOptions = Enum.GetNames(typeof(EmpleadosOrderByOptions)),
+                },
+                query = new
+                {
+                    orderBy = "",
+                    searchText = "",
+                    Sexos = new List<string>(),
+                    Estados = new List<string>(),
+                    Ubicaciones = new List<string>(),
+                }
+            });
+        }
+
+        [HttpPost]
+        [Route("api/Empleados/Search")]
+        public IHttpActionResult Search(EmpleadosQueryBindingModel queryOptions)
+        {
+            if (queryOptions == null)
+            {
+                return BadRequest("no query options provided");
+            }
+
+            if (User == null)
+            {
+                return BadRequest("Debe ser una empresa para poder consultar el listado de empleados.");
+            }
+            var empresaId = Utiles.GetEmpresaId(User.Identity.GetUserId());
+
+            //create the initial query...
+            var query = db.Empleadoes.Where(e=> e.EmpresaId == empresaId);
+
+
+            //for each query option if it has values add it to the query
+            if (!string.IsNullOrEmpty(queryOptions.SearchText))
+            {
+                query = query.Where(p => p.Nombre.Contains(queryOptions.SearchText) || p.Apellido.Contains(queryOptions.SearchText) || p.Legajo.Contains(queryOptions.SearchText));
+            }
+
+            if (queryOptions.Ubicaciones != null && queryOptions.Ubicaciones.Any())
+            {
+                query = query.Where(e => queryOptions.Ubicaciones.Contains((int) e.Domicilio.CiudadId));
+            }
+
+            if (queryOptions.Sexos != null && queryOptions.Sexos.Any())
+            {
+                query = query.Where(e => queryOptions.Sexos.Contains(e.Sexo));
+
+            }
+
+            var activos = false;
+            var baja = false;
+            foreach (var estado in queryOptions.Estados)
+            {
+                switch (estado)
+                {
+                    case EstadoEmpleado.Activo:
+                        {
+                            activos = true;
+                            break;
+                        }
+                    case EstadoEmpleado.Baja:
+                        {
+                            baja = true;
+                            break;
+                        }
+                }
+            }
+            if (activos && !baja)
+            {
+                query = query.Where(e => e.FechaFinVigencia == null);
+            }
+            if (baja && !activos)
+            {
+                query = query.Where(e => e.FechaFinVigencia != null);
+            }
+          
+
+
+            query = CreateOrderByExpression(query, queryOptions.OrderBy);
+
+            var data = Utiles.Paginate(new PaginateQueryParameters(queryOptions.Page, queryOptions.Rows), query);
+            return Ok(data);
+        }
+
+        private static IQueryable<Empleado> CreateOrderByExpression(IQueryable<Empleado> query, EmpleadosOrderByOptions orderByoption)
+        {
+            switch (orderByoption)
+            {
+                case EmpleadosOrderByOptions.Nombre:
+                    query = query.OrderBy(p => p.Apellido).ThenBy(p=> p.Nombre);
+                    break;
+                case EmpleadosOrderByOptions.FechaInicioRelacionLaboral:
+                    query = query.OrderBy(p => p.FechaInicioVigencia);
+                    break;
+                case EmpleadosOrderByOptions.Legajo:
+                    query = query.OrderBy(p => p.Legajo);
+                    break;
+                default:
+                    query = query.OrderBy(p => p.Apellido).ThenBy(p => p.Nombre);
+                    break;
+            }
+
+            return query;
         }
     }
 }

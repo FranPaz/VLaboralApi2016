@@ -26,7 +26,7 @@ namespace VLaboralApi.Models
 
         //fpaz: relacion 1 a M con Tipo de identificacion Profesional (uno)
         public int TipoIdentificacionEmpleadoId { get; set; }
-        public virtual TipoIdentificacionEmpleado TipoIdentificacionProfesional { get; set; }
+        public virtual TipoIdentificacionEmpleado TipoIdentificacionEmpleado { get; set; }
 
         //fpaz: relacion 1 a M con Profesional (uno)
         public int EmpleadoId { get; set; }

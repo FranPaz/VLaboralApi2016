@@ -334,6 +334,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\Empleados\ExperienciaLaboralEmpleadoVM.cs" />
     <Compile Include="ViewModels\Empleados\EmpleadoVM.cs" />
+    <Compile Include="ViewModels\Filtros\EmpleadosFIlter.cs" />
     <Compile Include="ViewModels\Filtros\SearchFilterQueryBindingModel.cs">
       <SubType>Code</SubType>
     </Compile>

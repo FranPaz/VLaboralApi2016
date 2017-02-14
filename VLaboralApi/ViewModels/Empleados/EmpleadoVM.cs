@@ -33,7 +33,7 @@ namespace VLaboralApi.ViewModels.Empleados
         public virtual Profesional Profesional { get; set; }
 
         //fpaz: relacion 1 a M con Identificacion (muchos). Tiene el array con todos los tipos de identificaciones del Empleado y sus valores (Dni, Cuil, Pasaporte)        
-        public virtual ICollection<IdentificacionProfesional> IdentificacionesEmpleado { get; set; }
+        public virtual ICollection<IdentificacionEmpleado> IdentificacionesEmpleado { get; set; }
 
         ////fpaz: relacion M a M con Subrubros
         //public virtual ICollection<SubRubro> Subrubros { get; set; }
