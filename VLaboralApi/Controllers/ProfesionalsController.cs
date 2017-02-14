@@ -48,10 +48,10 @@ namespace VLaboralApi.Controllers
         }
 
         [ResponseType(typeof(Profesional))]
-        public IHttpActionResult GetProfesional([FromUri] IdentificacionProfesional identificacion)
+        public IHttpActionResult GetProfesional(int tipoIdentificacion, string valor)
         {
             var profesional = db.Profesionals
-                .FirstOrDefault(e => e.IdentificacionesProfesional.Any(ie => ie.TipoIdentificacionProfesionalId == identificacion.TipoIdentificacionProfesionalId & ie.Valor == identificacion.Valor));
+                .FirstOrDefault(e => e.IdentificacionesProfesional.Any(ie => ie.TipoIdentificacionProfesionalId == tipoIdentificacion & ie.Valor == valor));
 
             return Ok(profesional);
         }

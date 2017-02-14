@@ -31,7 +31,7 @@ namespace VLaboralApi.Controllers
 
         
         [ResponseType(typeof(Empleado))]
-        public IHttpActionResult GetEmpleado([FromUri] IdentificacionProfesional identificacion)
+        public IHttpActionResult GetEmpleado(int tipoIdentificacion, string valor )
         {
 
             var empresaId = Utiles.GetEmpresaId(User.Identity.GetUserId());
@@ -41,7 +41,7 @@ namespace VLaboralApi.Controllers
                 empleado = db.Empleadoes
                     .FirstOrDefault(e => e.EmpresaId == empresaId &
                                          e.IdentificacionesEmpleado
-                                             .Any(ie => ie.TipoIdentificacionEmpleadoId == identificacion.TipoIdentificacionProfesionalId & ie.Valor == identificacion.Valor));
+                                             .Any(ie => ie.TipoIdentificacionEmpleadoId == tipoIdentificacion & ie.Valor == valor));
             }
             return Ok(empleado);
         }
