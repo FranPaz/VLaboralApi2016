@@ -46,6 +46,9 @@ namespace VLaboralApi.Models
         //fpaz: relacion 1 a m con IdiomasConocidos (muchos)
         public virtual ICollection<IdiomaConocido> IdiomasConocidos { get; set; }
 
+        //fpaz: relacion 1 a m con Empleados (muchos)
+        public virtual ICollection<Empleado> Empleados { get; set; }
+
         public override string ToString()
         {
             return Nombre + " " + Apellido;

@@ -21,6 +21,11 @@ namespace VLaboralApi.Models
         }
 
         #region Definicion de Tablas DbSet
+        public System.Data.Entity.DbSet<VLaboralApi.Models.Empleado> Empleadoes { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionEmpleado> TipoIdentificacionEmpleado { get; set; }
+        public System.Data.Entity.DbSet<VLaboralApi.Models.IdentificacionEmpleado> IdentificacionesEmpleado { get; set; }
+
         public System.Data.Entity.DbSet<VLaboralApi.Models.BlobUploadModel> BlobUploadModels { get; set; }
         public System.Data.Entity.DbSet<VLaboralApi.Models.Oferta> Ofertas { get; set; }
 
@@ -98,10 +103,7 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Domicilio> Domicilios { get; set; }
 
-        public System.Data.Entity.DbSet<VLaboralApi.Models.Empleado> Empleadoes { get; set; }
-
-        public System.Data.Entity.DbSet<VLaboralApi.Models.TipoIdentificacionEmpleado> TipoIdentificacionEmpleado { get; set; }
-        public System.Data.Entity.DbSet<VLaboralApi.Models.IdentificacionEmpleado> IdentificacionesEmpleado { get; set; }
+       
     }
 
 

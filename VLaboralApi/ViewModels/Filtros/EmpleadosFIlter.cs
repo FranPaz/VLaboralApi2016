@@ -7,7 +7,7 @@ namespace VLaboralApi.ViewModels.Empleados
 {
     public enum EmpleadosFilterOptions
     {
-        Sexo, Ubicaciones, Estado
+        Sexo, Ubicaciones, Estado, Valoraciones, Rubros
     }
 
     public enum EmpleadosOrderByOptions
@@ -25,6 +25,8 @@ namespace VLaboralApi.ViewModels.Empleados
         public EmpleadosOrderByOptions OrderBy { get; set; }
         public List<Sexo> Sexos { get; set; }
         public List<int> Ubicaciones { get; set; }
+        public List<int> Valoraciones { get; set; }
+        public List<int> Rubros { get; set; }
         public List<EstadoEmpleado> Estados { get; set; }
     }
 

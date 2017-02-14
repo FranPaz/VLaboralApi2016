@@ -254,6 +254,35 @@ namespace VLaboralApi.Controllers
                         Cantidad = db.Empleadoes.Count(e => e.Domicilio.CiudadId == c.Id && e.EmpresaId == empresaId)
                     }).ToList();
                 }
+                if (options.Filters.Contains(EmpleadosFilterOptions.Rubros))
+                {
+                    filters.Rubros = db.SubRubros
+                        .Where(s => s.Profesionales.Any(p=> p.Empleados.Any(e=> e.EmpresaId == empresaId)))
+                                                    .Select(a => new ValorFiltroViewModel()
+                                                    {
+                                                        Id = a.Id,
+                                                        Valor = a.Id.ToString(),
+                                                        Descripcion = a.Nombre,
+                                                        Cantidad = db.Profesionals
+                                                                .Count(p => p.Subrubros.Any(s => s.Id == a.Id))
+                                                    })
+                                                    .ToListAsync();
+                }
+                if (options.Filters.Contains(EmpleadosFilterOptions.Valoraciones))
+                {
+                    var valoracionProfesional = new List<ValorFiltroViewModel>();
+                    for (var i = 1; i < 6; i++)
+                    {
+                        valoracionProfesional.Add(new ValorFiltroViewModel()
+                        {
+                            Id = i,
+                            Valor = i.ToString(),
+                            Descripcion = i.ToString(),
+                            Cantidad = db.Profesionals.Where(p=> p.Empleados.Any(e=> e.EmpresaId == empresaId)).Count(p => p.ValoracionPromedio >= i)
+                        });
+                    }
+                    filters.Valoraciones = valoracionProfesional;
+                }
             }
 
 
@@ -294,7 +323,6 @@ namespace VLaboralApi.Controllers
             //create the initial query...
             var query = db.Empleadoes.Where(e=> e.EmpresaId == empresaId);
 
-
             //for each query option if it has values add it to the query
             if (!string.IsNullOrEmpty(queryOptions.SearchText))
             {
@@ -310,6 +338,18 @@ namespace VLaboralApi.Controllers
             {
                 query = query.Where(e => queryOptions.Sexos.Contains(e.Sexo));
 
+            }
+
+            if (queryOptions.Rubros != null && queryOptions.Rubros.Any())
+            {
+                query = query.Where(e => e.Profesional.Subrubros.Any(s => queryOptions.Rubros.Contains(s.Id)));
+            }
+
+            if (queryOptions.Valoraciones != null && queryOptions.Valoraciones.Any())
+            {
+                queryOptions.Valoraciones.Sort();
+                var valMin = queryOptions.Valoraciones.FirstOrDefault();
+                query = query.Where(e => e.Profesional.ValoracionPromedio >= valMin);
             }
 
             var activos = false;
@@ -338,8 +378,6 @@ namespace VLaboralApi.Controllers
             {
                 query = query.Where(e => e.FechaFinVigencia != null);
             }
-          
-
 
             query = CreateOrderByExpression(query, queryOptions.OrderBy);
 
