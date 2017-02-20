@@ -143,7 +143,7 @@ namespace VLaboralApi.Controllers
                 foreach (var dbIdent in profDb.IdentificacionesProfesional.ToList())
                 {
                     //fpaz: para cada identificacion asociado actualmente al profesional en la bd
-                    if (!profesional.IdentificacionesProfesional.Any(s => s.Id == dbIdent.Id)) //busco si en el array de identificaciones enviados como parametros, alguno de los objetos identificacion coincide con el de la base de datos
+                    if (profesional.IdentificacionesProfesional.All(s => s.Id != dbIdent.Id)) //busco si en el array de identificaciones enviados como parametros, alguno de los objetos identificacion coincide con el de la base de datos
                     {
                         //si no encuentro la identificacion en el array ingresado como parametro, elimino la relacion entre esa identificacion y el profesional
                         db.IdentificacionesProfesional.Remove(dbIdent);
@@ -158,7 +158,9 @@ namespace VLaboralApi.Controllers
                         // Update de la identificacion
                         db.Entry(dbIdent).CurrentValues.SetValues(prmIdent);
                     else
-                        //agrego una nueva identificacion al profesional
+                    //agrego una nueva identificacion al profesional
+                        prmIdent.TipoIdentificacionProfesionalId = prmIdent.TipoIdentificacionProfesional.Id;
+                        prmIdent.TipoIdentificacionProfesional = null;
                         profDb.IdentificacionesProfesional.Add(prmIdent);
                 }
 
