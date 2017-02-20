@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
 using VLaboralApi.ViewModels.Empleados;
 using VLaboralApi.ViewModels.Filtros;
-using VLaboralApi.ViewModels.Ofertas;
 
 namespace VLaboralApi.Controllers
 {
@@ -225,7 +223,7 @@ namespace VLaboralApi.Controllers
         [Route("api/Empleados/QueryOptions")]
         public IHttpActionResult QueryOptions(EmpleadosOptionsBindingModel options)
         {
-            dynamic filters = new ExpandoObject();
+            dynamic filters = new JObject();
 
             if (options != null && options.Filters != null)
             {
@@ -246,17 +244,17 @@ namespace VLaboralApi.Controllers
                 }
                 if (options.Filters.Contains(EmpleadosFilterOptions.Ubicaciones))
                 {
-                    filters.Ubicaciones = db.Ciudades.Where(c => c.Domicilios.Any(d => d.Empleados.Any(e => e.EmpresaId == empresaId))).Select(c => new ValorFiltroViewModel()
+                    filters.Ubicaciones =  JArray.FromObject(db.Ciudades.Where(c => c.Domicilios.Any(d => d.Empleados.Any(e => e.EmpresaId == empresaId))).Select(c => new ValorFiltroViewModel()
                     {
                         Id = c.Id,
                         Valor = c.Id.ToString(),
                         Descripcion = c.Nombre,
                         Cantidad = db.Empleadoes.Count(e => e.Domicilio.CiudadId == c.Id && e.EmpresaId == empresaId)
-                    }).ToList();
+                    }).ToList());
                 }
                 if (options.Filters.Contains(EmpleadosFilterOptions.Rubros))
                 {
-                    filters.Rubros = db.SubRubros
+                    filters.Rubros = JArray.FromObject(db.SubRubros
                         .Where(s => s.Profesionales.Any(p=> p.Empleados.Any(e=> e.EmpresaId == empresaId)))
                                                     .Select(a => new ValorFiltroViewModel()
                                                     {
@@ -266,7 +264,7 @@ namespace VLaboralApi.Controllers
                                                         Cantidad = db.Profesionals
                                                                 .Count(p => p.Subrubros.Any(s => s.Id == a.Id))
                                                     })
-                                                    .ToListAsync();
+                                                    .ToListAsync());
                 }
                 if (options.Filters.Contains(EmpleadosFilterOptions.Valoraciones))
                 {
@@ -281,7 +279,7 @@ namespace VLaboralApi.Controllers
                             Cantidad = db.Profesionals.Where(p=> p.Empleados.Any(e=> e.EmpresaId == empresaId)).Count(p => p.ValoracionPromedio >= i)
                         });
                     }
-                    filters.Valoraciones = valoracionProfesional;
+                    filters.Valoraciones = JArray.FromObject(valoracionProfesional);
                 }
             }
 

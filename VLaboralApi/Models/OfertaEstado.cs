@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace VLaboralApi.Models
+﻿namespace VLaboralApi.Models
 {
     public class OfertaEstado
     {

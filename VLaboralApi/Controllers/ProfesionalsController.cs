@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Dynamic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
-using VLaboralApi.Models.Ubicacion;
 using VLaboralApi.Services;
 using VLaboralApi.ViewModels.Filtros;
 using VLaboralApi.ViewModels.Profesionales;
@@ -237,17 +232,17 @@ namespace VLaboralApi.Controllers
 
         [HttpPost]
         [Route("api/Profesionals/QueryOptions")]
-        public async Task<IHttpActionResult> QueryOptions(ProfesionalesOptionsBindingModel options)
+        public IHttpActionResult QueryOptions(ProfesionalesOptionsBindingModel options)
         {
 
-            dynamic filters = new ExpandoObject();
+          dynamic filters = new JObject();
 
             if (options != null && options.Filters != null)
             {
                 //the filter values should be unique 'display' strings 
                 if (options.Filters.Contains(ProfesionalesFilterOptions.Rubros))
                 {
-                    filters.Rubros = await db.SubRubros
+                    filters.Rubros = JArray.FromObject( db.SubRubros
                         .Where(s=> s.Profesionales.Any())
                                                     .Select(a => new ValorFiltroViewModel()
                                                     {
@@ -257,7 +252,7 @@ namespace VLaboralApi.Controllers
                                                         Cantidad =  db.Profesionals
                                                                 .Count(p => p.Subrubros.Any(s => s.Id == a.Id))
                                                     })
-                                                    .ToListAsync();
+                                                    .ToList());
                 }
                 if (options.Filters.Contains(ProfesionalesFilterOptions.Valoraciones))
                 {
@@ -272,11 +267,11 @@ namespace VLaboralApi.Controllers
                                                         Cantidad = db.Profesionals.Count(p => p.ValoracionPromedio >= i )
                                                     } );             
                     }
-                    filters.Valoraciones = valoracionProfesional;
+                    filters.Valoraciones = JArray.FromObject( valoracionProfesional);
                 }
                 if (options.Filters.Contains(ProfesionalesFilterOptions.Ubicaciones))
                 {
-                    filters.Ubicaciones = db.Ciudades
+                    filters.Ubicaciones = JArray.FromObject( db.Ciudades
                       .Where(c => c.Domicilios
                           .Any(d => d.Profesionales
                               .Any()))
@@ -285,7 +280,7 @@ namespace VLaboralApi.Controllers
                           Id = c.Id,
                           Descripcion = c.Nombre,
                           Cantidad = db.Profesionals.Count(p => p.Domicilio.CiudadId == c.Id)
-                      }).ToListAsync();
+                      }).ToList());
                 }
 
             }
@@ -299,7 +294,7 @@ namespace VLaboralApi.Controllers
                     {
                         selectableFilters = filters,
                         allFilterTypes = Enum.GetNames(typeof(ProfesionalesFilterOptions)),
-                        orderByOptions = orderByOptions,
+                        orderByOptions,
                     },
                     query = new
                     {

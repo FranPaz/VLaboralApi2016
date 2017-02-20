@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
-using Microsoft.AspNet.SignalR.Owin;
-using VLaboralApi.Controllers;
 using VLaboralApi.Models;
 using VLaboralApi.ClasesAuxiliares;
 

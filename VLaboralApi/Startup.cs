@@ -1,9 +1,7 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using System.Net.Http.Formatting;
@@ -17,7 +15,6 @@ using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security;
 using VlaboralApi.Infrastructure;
 using VlaboralApi.Providers;
-using VLaboralApi.Hubs;
 using VLaboralApi.Models;
 
 [assembly: OwinStartup(typeof(VLaboralApi.Startup))] // en este atributo indico la clase que se dispara una vez que arranca el servidor
@@ -34,7 +31,7 @@ namespace VLaboralApi
             ConfigureOAuthTokenGeneration(app);
 
             ConfigureOAuthTokenConsumption(app);
-            app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            app.UseCors(CorsOptions.AllowAll);
 
             //var hubConfiguration = new HubConfiguration
             //{
@@ -84,7 +81,7 @@ namespace VLaboralApi
             }
         }
 
-        private void ConfigureOAuthTokenGeneration(IAppBuilder app)
+        private static void ConfigureOAuthTokenGeneration(IAppBuilder app)
         {
             // Configure the db context and user manager to use a single instance per request
             //app.CreatePerOwinContext(AuthDbContext.Create);
@@ -92,7 +89,7 @@ namespace VLaboralApi
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
             app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
 
-            OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
+            var oAuthServerOptions = new OAuthAuthorizationServerOptions()
             {
                 //For Dev enviroment only (on production should be AllowInsecureHttp = false)
                 AllowInsecureHttp = true,
@@ -104,15 +101,15 @@ namespace VLaboralApi
             };
 
             // OAuth 2.0 Bearer Access Token Generation
-            app.UseOAuthAuthorizationServer(OAuthServerOptions);
+            app.UseOAuthAuthorizationServer(oAuthServerOptions);
         }
 
-        private void ConfigureOAuthTokenConsumption(IAppBuilder app)
+        private static void ConfigureOAuthTokenConsumption(IAppBuilder app)
         {
 
             var issuer = ConfigurationManager.AppSettings["urlApi"]; //fpaz: url del WebApi que se toma desde las configuraciones en el webconfig                             
-            string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
-            byte[] audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
+            var audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
+            var audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
 
             // Api controllers with an [Authorize] attribute will be validated with JWT
             app.UseJwtBearerAuthentication(
@@ -127,12 +124,11 @@ namespace VLaboralApi
                 });
         }
 
-        private void ConfigureWebApi(HttpConfiguration config)
+        private static void ConfigureWebApi(HttpConfiguration config)
         {
             config.MapHttpAttributeRoutes();
 
-            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
-            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         }
     }
 }

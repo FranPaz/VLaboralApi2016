@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.Results;
-using Microsoft.Ajax.Utilities;
+using System.Web.Script.Serialization;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
+using VLaboralApi.Providers;
 using VLaboralApi.Services;
 using VLaboralApi.ViewModels.Filtros;
 using VLaboralApi.ViewModels.Ofertas;
@@ -503,50 +500,71 @@ namespace VLaboralApi.Controllers
         [Route("api/Ofertas/QueryOptions")]
         public IHttpActionResult QueryOptions(OfertasOptionsBindingModel options)
         {
-            dynamic filters = new ExpandoObject();
+            dynamic filters = new JObject();
 
             if (options != null && options.Filters != null)
             {
                 //the filter values should be unique 'display' strings 
                 if (options.Filters.Contains(OfertasFilterOptions.Rubros))
                 {
-                    filters.Rubros = db.SubRubros.Where(s => s.Puestos.Any(p => DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)).Select(r => new ValorFiltroViewModel()
-                    {
-                        Id = r.Id,
-                        Valor = r.Id.ToString(),
-                        Descripcion = r.Nombre,
-                        Cantidad = db.Puestos.Count(p => p.Subrubros.Any(s => s.Id == r.Id) && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    }).ToList();
+                    //filters.Rubros = new List<ValorFiltroViewModel>();
+                    filters.Rubros = JArray.FromObject(
+                         db.SubRubros.Where(
+                             s =>
+                                 s.Puestos.Any(
+                                     p =>
+                                         DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <=
+                                         DbFunctions.TruncateTime(DateTime.Now) &&
+                                         DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >=
+                                         DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica &&
+                                         p.Oferta.IdEtapaActual ==
+                                         p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))
+                             .Select(r => new ValorFiltroViewModel()
+                             {
+                                 Id = r.Id,
+                                 Valor = r.Id.ToString(),
+                                 Descripcion = r.Nombre,
+                                 Cantidad =
+                                     db.Puestos.Count(
+                                         p =>
+                                             p.Subrubros.Any(s => s.Id == r.Id) &&
+                                             DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <=
+                                             DbFunctions.TruncateTime(DateTime.Now) &&
+                                             DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >=
+                                             DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica &&
+                                             p.Oferta.IdEtapaActual ==
+                                             p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
+                             }).ToList());
                 }
                 if (options.Filters.Contains(OfertasFilterOptions.DisponibilidadHoraria))
                 {
-                    filters.DisponibilidadHoraria = db.TipoDisponibilidads.Where(d => d.Puestos.Select(p => p.Oferta).Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && o.Publica && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)).Select(d => new ValorFiltroViewModel()
+                    filters.DisponibilidadHoraria =  JArray.FromObject(db.TipoDisponibilidads.Where(d => d.Puestos.Select(p => p.Oferta).Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && o.Publica && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)).Select(d => new ValorFiltroViewModel()
                     {
                         Id = d.Id,
                         Valor = d.Id.ToString(),
                         Descripcion = d.Nombre,
                         Cantidad = db.Puestos.Count(p => p.TipoDisponibilidadId == d.Id && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    }).ToList();
+                    }).ToList());
                 }
                 if (options.Filters.Contains(OfertasFilterOptions.TipoContratacion))
                 {
-                    filters.TipoContratacion = db.TipoContratoes.Where(d => d.Puestos.Select(p => p.Oferta).Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && o.Publica && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)).Select(d => new ValorFiltroViewModel()
+                    filters.TipoContratacion = JArray.FromObject( db.TipoContratoes.Where(d => d.Puestos.Select(p => p.Oferta).Any(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(o.FechaFinConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && o.Publica && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)).Select(d => new ValorFiltroViewModel()
                     {
                         Id = d.Id,
                         Valor = d.Id.ToString(),
                         Descripcion = d.Nombre,
                         Cantidad = db.Puestos.Count(p => p.TipoContratoId == d.Id && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    }).ToList();
+                    }).ToList());
                 }
                 if (options.Filters.Contains(OfertasFilterOptions.Ubicaciones))
                 {
-                    filters.Ubicaciones = db.Ciudades.Where(c => c.Domicilios.Any(d => d.Puestos.Any(p => DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))).Select(c => new ValorFiltroViewModel()
+                    filters.Ubicaciones =  JArray.FromObject(db.Ciudades.Where(c => c.Domicilios.Any(d => d.Puestos.Any(p => DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id))).Select(c => new ValorFiltroViewModel()
                     {
                         Id = c.Id,
                         Valor = c.Id.ToString(),
                         Descripcion = c.Nombre,
                         Cantidad = db.Puestos.Count(p => p.Domicilio.CiudadId == c.Id && DbFunctions.TruncateTime(p.Oferta.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now) && DbFunctions.TruncateTime(p.Oferta.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now) && p.Oferta.Publica && p.Oferta.IdEtapaActual == p.Oferta.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id)
-                    }).ToList();
+                    }).ToList());
                 }
 
                 //sluna: Ofrezco las opciones de TiposOferta (privadas o publicas) solo si es empresa.
@@ -558,12 +576,11 @@ namespace VLaboralApi.Controllers
                         if (options.Filters.Contains(OfertasFilterOptions.TiposOferta))
                         {
                             //sluna: me hubiese gustado tener los tipos en una clase y no hardcodeado en un boolean.
-                            filters.TiposOferta = Enum.GetNames(typeof(TiposOferta));
+                            filters.TiposOferta =  JArray.FromObject(Enum.GetNames(typeof(TiposOferta)));
                         }
                     }
                 }
             }
-
 
             return Ok(new
             {

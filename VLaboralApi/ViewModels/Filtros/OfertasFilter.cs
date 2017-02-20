@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using VLaboralApi.ViewModels.Filtros;
 
 namespace VLaboralApi.ViewModels.Ofertas

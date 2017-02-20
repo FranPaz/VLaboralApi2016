@@ -1,24 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Script.Serialization;
-using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
-using VlaboralApi.Infrastructure;
-using VLaboralApi.Hubs;
 using VLaboralApi.Models;
-using WebGrease.Css.Extensions;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Services;
 

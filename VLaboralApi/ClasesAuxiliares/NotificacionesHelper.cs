@@ -3,11 +3,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using VlaboralApi.Infrastructure;
 using VLaboralApi.Hubs;
 using VLaboralApi.Models;
-using System.Data;
 using System.Data.Entity;
 
 namespace VLaboralApi.ClasesAuxiliares
