@@ -6,6 +6,7 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
@@ -110,58 +111,23 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(CustomPaginateResult<Oferta>))]
         public IHttpActionResult GetNotificacionesRecibidas(int page, int rows)
         {
-            //fpaz: comento lo ultimo que hizo santi porque no esta devolviendo resultados que deberia traer
-
-            //var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
-            //if (tipoReceptor == null) return null;
-
-            //var receptorId = Utiles.GetReceptorId(tipoReceptor, User.Identity.GetUserId());
-            //if (receptorId == null) return null;
-
-            //var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-            //    ,db.Notificaciones
-            //         .Where(n => n.ReceptorId == receptorId
-            //                    && n.FechaPublicacion <= DateTime.Now
-            //                    && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-            //                    && n.TipoNotificacion.TipoReceptor == tipoReceptor)
-            //         .Include(n => n.TipoNotificacion)
-            //    , order => order.OrderByDescending(c => c.FechaPublicacion));
-            //return Ok(data);
-
             var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
            // if (tipoReceptor == null) return null;
 
             var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
-            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
-                                && n.FechaPublicacion <= DateTime.Now
-                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString());
-
-            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-
-            var results = db.Notificaciones
+            var query = db.Notificaciones
                 .Where(n => n.ReceptorId == receptorId
-                                && n.FechaPublicacion <= DateTime.Now
-                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString())
-                                .Include(n => n.TipoNotificacion)
-                                .OrderByDescending(n => n.FechaPublicacion)
-                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                .Take(rows)
-                .ToList();
+                            && n.FechaPublicacion <= DateTime.Now
+                            && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
+                            && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString())
+                .Include(n => n.TipoNotificacion);
 
-            var result = new CustomPaginateResult<Notificacion>()
-            {
-                PageSize = rows,
-                TotalRows = totalRows,
-                TotalPages = totalPages,
-                CurrentPage = page,
-                Results = results
-            };
-
-            return Ok(result);
+            var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                , query
+                , order => order.OrderByDescending(c => c.FechaPublicacion));
+            return Ok(data);
         }
 
         public IHttpActionResult GetNotificacionesTipo(int prmIdTipoNotificacion, int page, int rows) //fpaz: trae solo las notificaciones de un tipo en particular
@@ -172,36 +138,16 @@ namespace VLaboralApi.Controllers
             var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;
 
-            var totalRows = db.Notificaciones.Count(n => n.ReceptorId == receptorId
-                                && n.FechaPublicacion <= DateTime.Now
-                                && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
-                                && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString()
-                                && n.TipoNotificacionId == prmIdTipoNotificacion);
-
-            var totalPages = (int)Math.Ceiling((double)totalRows / rows);
-
-            var results = db.Notificaciones
+            var query = db.Notificaciones
                 .Where(n => n.ReceptorId == receptorId
                                 && n.FechaPublicacion <= DateTime.Now
                                 && (n.FechaVencimiento >= DateTime.Now || n.FechaVencimiento == null)
                                 && n.TipoNotificacion.TipoReceptor == tipoUsuario.ToString()
                                 && n.TipoNotificacionId == prmIdTipoNotificacion)
-                                .Include(n => n.TipoNotificacion)
-                                .OrderByDescending(n => n.FechaPublicacion)
-                .Skip((page - 1) * rows) //SLuna: -1 Para manejar indice(1) en pagina
-                .Take(rows)
-                .ToList();
+                                .Include(n => n.TipoNotificacion);
 
-            var result = new CustomPaginateResult<Notificacion>()
-            {
-                PageSize = rows,
-                TotalRows = totalRows,
-                TotalPages = totalPages,
-                CurrentPage = page,
-                Results = results
-            };
-
-            return Ok(result);
+            var data = Utiles.Paginate(new PaginateQueryParameters(page, rows), query, order => order.OrderByDescending(c => c.FechaPublicacion));
+            return Ok(data);
         }
 
 

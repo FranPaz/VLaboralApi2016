@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Newtonsoft.Json.Linq;
 using VlaboralApi.Infrastructure;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
@@ -70,7 +71,7 @@ namespace VLaboralApi.ClasesAuxiliares
                 TotalRows = totalRows,
                 TotalPages = totalPages,
                 CurrentPage = parameters.Page,
-                Results = results
+                Results = JArray.FromObject(results)
             };
 
             return result;
@@ -91,7 +92,7 @@ namespace VLaboralApi.ClasesAuxiliares
             var totalRows = collection.Count();
             var totalPages = (int)Math.Ceiling((double)totalRows / parameters.Rows);
 
-            var query = collection
+            var results = collection
                  .Skip((parameters.Page -1) * parameters.Rows) //sluna: -1 para manejar base 1
                  .Take(parameters.Rows);
 
@@ -101,7 +102,7 @@ namespace VLaboralApi.ClasesAuxiliares
                 TotalRows = totalRows,
                 TotalPages = totalPages,
                 CurrentPage = parameters.Page,
-                Results = query.ToList()
+                Results = JArray.FromObject(results.ToList())
             };
 
             return result;

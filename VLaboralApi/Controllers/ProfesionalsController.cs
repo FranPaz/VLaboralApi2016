@@ -309,7 +309,7 @@ namespace VLaboralApi.Controllers
 
         [HttpPost]
         [Route("api/Profesionals/Search")]
-        public async Task<IHttpActionResult> Search(ProfesionalesQueryBindingModel queryOptions)
+        public IHttpActionResult Search(ProfesionalesQueryBindingModel queryOptions)
         {
             if (queryOptions == null)
             {
@@ -350,7 +350,7 @@ namespace VLaboralApi.Controllers
             return Ok(data);
         }
 
-        private IQueryable<Profesional> CreateOrderByExpression(IQueryable<Profesional> query, ProfesionalesOrderByOptions orderByoption)
+        private static IQueryable<Profesional> CreateOrderByExpression(IQueryable<Profesional> query, ProfesionalesOrderByOptions orderByoption)
         {
             switch (orderByoption)
             {
@@ -367,7 +367,7 @@ namespace VLaboralApi.Controllers
                     query = query.OrderByDescending(p => p.ValoracionPromedio);
                     break;
                 default:
-                    query = query.OrderBy(p => p.Apellido).OrderBy(p => p.Nombre);
+                    query = query.OrderBy(p => p.Apellido).ThenBy(p => p.Nombre);
                     break;
             }
 
