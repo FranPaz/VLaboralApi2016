@@ -22,7 +22,7 @@ namespace VLaboralApi.Controllers
 
         private IQueryable<Profesional> Profesionales()
         {
-            return db.Profesionals.Include(sr => sr.Subrubros.Select(r => r.Rubro));
+            return db.Profesionals;//.Include(sr => sr.Subrubros.Select(r => r.Rubro));
         }
 
         // GET: api/Profesionals
@@ -32,7 +32,7 @@ namespace VLaboralApi.Controllers
             try
             {
                 var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                    , Profesionales()
+                    , Profesionales().Include(sr => sr.Subrubros.Select(r => r.Rubro))
                     , order => order.OrderBy(c => c.Id));
                 return Ok(data);
             }
@@ -344,6 +344,7 @@ namespace VLaboralApi.Controllers
 
             query = CreateOrderByExpression(query, queryOptions.OrderBy);
 
+            query.Include(sr => sr.Subrubros.Select(r => r.Rubro));
 
             var data = Utiles.Paginate(new PaginateQueryParameters(queryOptions.Page, queryOptions.Rows), query);
             return Ok(data);
