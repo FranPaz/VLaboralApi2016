@@ -355,10 +355,16 @@ namespace VLaboralApi.Controllers
             switch (orderByoption)
             {
                 case ProfesionalesOrderByOptions.NombreCompleto:
-                    query = query.OrderBy(p => p.Apellido).OrderBy(p => p.Nombre);
+                    query = query.OrderBy(p => p.Apellido).ThenBy(p => p.Nombre);
+                    break;
+                case ProfesionalesOrderByOptions.NombreCompletoDesc:
+                    query = query.OrderByDescending(p => p.Apellido).ThenBy(p => p.Nombre);
                     break;
                 case ProfesionalesOrderByOptions.Valoracion:
-                    query = query.OrderBy(p => p.IdentidadVerificada);
+                    query = query.OrderBy(p => p.ValoracionPromedio);
+                    break;
+                case ProfesionalesOrderByOptions.ValoracionDesc:
+                    query = query.OrderByDescending(p => p.ValoracionPromedio);
                     break;
                 default:
                     query = query.OrderBy(p => p.Apellido).OrderBy(p => p.Nombre);

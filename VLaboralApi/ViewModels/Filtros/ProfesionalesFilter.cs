@@ -12,7 +12,7 @@ namespace VLaboralApi.ViewModels.Profesionales
 
     public enum ProfesionalesOrderByOptions
     {
-        NombreCompleto, Valoracion
+        NombreCompleto, Valoracion, NombreCompletoDesc, ValoracionDesc
     }
 
     public class ProfesionalesOptionsBindingModel
