@@ -29,9 +29,17 @@ namespace VLaboralApi.Controllers
         {
             try
             {
+                //create the initial query...
+                var query = Profesionales();
+
                 var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                    , Profesionales().Include(sr => sr.Subrubros.Select(r => r.Rubro))
+                    , query
                     , order => order.OrderBy(c => c.Id));
+
+                //var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+                //    , Profesionales().Include(sr => sr.Subrubros.Select(r => r.Rubro))
+                //    , order => order.OrderBy(c => c.Id));
+                
                 return Ok(data);
             }
             catch (Exception ex)
