@@ -49,6 +49,7 @@ namespace VLaboralApi.Models
 
     public enum Sexo
     {
-        Masculino, Femenino
+        Masculino =1,
+        Femenino =2
     }
 }
