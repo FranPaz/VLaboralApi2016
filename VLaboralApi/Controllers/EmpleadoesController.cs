@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using VLaboralApi.ClasesAuxiliares;
 using VLaboralApi.Models;
+using VLaboralApi.Models.Ubicacion;
 using VLaboralApi.Services;
 using VLaboralApi.ViewModels.Empleados;
 using VLaboralApi.ViewModels.Filtros;
@@ -101,10 +102,15 @@ namespace VLaboralApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (db.Empresas.Find(empleadoVm.EmpresaId) == null) return BadRequest("Verificar EmpresaId");
+            if (Utiles.GetEmpresaId(User.Identity.GetUserId()) == null)
+            {
+                return BadRequest("Error, el usuario no tiene EmpresaId");
+            }
+
+            //if (db.Empresas.Find(empleadoVm.EmpresaId) == null) return BadRequest("Verificar EmpresaId");
 
             var profesional = new Profesional();
-            var empleado = new Empleado();
+            Empleado empleado;
 
             if (empleadoVm.ProfesionalId == null)
             {
@@ -131,14 +137,24 @@ namespace VLaboralApi.Controllers
             profesional.Nombre = empleadoVm.Nombre;
             profesional.FechaNac = empleadoVm.FechaNac;
             profesional.Nacionalidad = empleadoVm.Nacionalidad;
-            profesional.Domicilio = empleadoVm.Domicilio;
+            profesional.Domicilio = new Domicilio()
+            {
+                PlaceId =  empleadoVm.Domicilio.PlaceId,
+                //Location = empleadoVm.Domicilio.Location,
+                Calle = empleadoVm.Domicilio.Calle,
+                Nro = empleadoVm.Domicilio.Nro,
+                Piso = empleadoVm.Domicilio.Piso,
+                Dpto = empleadoVm.Domicilio.Dpto,
+                CiudadId = empleadoVm.Domicilio.CiudadId,
+                CodigoPostal = empleadoVm.Domicilio.CodigoPostal
+            };
             profesional.Sexo = empleadoVm.Sexo.ToString();
             CargarExperienciasLaborales(empleadoVm, profesional);
             db.Profesionals.Add(profesional);
             db.SaveChanges();
         }
 
-        private Empleado GuardarEmpleado(EmpleadoVM empleadoVm, Profesional profesional)
+        private Empleado GuardarEmpleado(EmpleadoVM empleadoVm, Profesional profesional )
         {
             var empleado = new Empleado
             {
@@ -146,10 +162,23 @@ namespace VLaboralApi.Controllers
                 Nombre = empleadoVm.Nombre,
                 FechaNac = empleadoVm.FechaNac,
                 Nacionalidad = empleadoVm.Nacionalidad,
-                Domicilio = empleadoVm.Domicilio,
+                Domicilio = new Domicilio()
+                 {
+                     PlaceId = empleadoVm.Domicilio.PlaceId,
+                     //Location = empleadoVm.Domicilio.Location,
+                     Calle = empleadoVm.Domicilio.Calle,
+                     Nro = empleadoVm.Domicilio.Nro,
+                     Piso = empleadoVm.Domicilio.Piso,
+                     Dpto = empleadoVm.Domicilio.Dpto,
+                     CiudadId = empleadoVm.Domicilio.CiudadId,
+                     CodigoPostal = empleadoVm.Domicilio.CodigoPostal
+                 },
                 Sexo = empleadoVm.Sexo,
                 ProfesionalId = profesional.Id,
-                EmpresaId =  empleadoVm.EmpresaId
+                EmpresaId =  Utiles.GetEmpresaId(User.Identity.GetUserId()),
+                Legajo =  empleadoVm.Legajo,
+                FechaInicioVigencia = empleadoVm.FechaInicioVigencia,
+                FechaFinVigencia = empleadoVm.FechaFinVigencia
             };
             db.Empleadoes.Add(empleado);
             db.SaveChanges();
@@ -170,23 +199,24 @@ namespace VLaboralApi.Controllers
 
         private void CargarExperienciasLaborales(EmpleadoVM empleadoVm, Profesional profesional)
         {
-            if (empleadoVm.ExperienciasLaborales != null)
-                foreach (var experiencia in empleadoVm.ExperienciasLaborales)
+            if (empleadoVm.ExperienciasLaborales == null) return;
+
+            foreach (var experiencia in empleadoVm.ExperienciasLaborales)
+            {
+                var experienciaLaboral = new ExperienciaLaboral
                 {
-                    var experienciaLaboral = new ExperienciaLaboral
-                    {
-                        ProfesionalId = profesional.Id,
-                        Descripcion = experiencia.Descripcion,
-                        EmpresaId = experiencia.EmpresaId,
-                        FechaCreacion = DateTime.Now.Date,
-                        PeriodoDesde = experiencia.PeriodoDesde,
-                        PeriodoHasta = experiencia.PeriodoHasta,
-                        Puesto = experiencia.Puesto,
-                        Ubicacion = experiencia.Ubicacion,
-                        idUsuarioCreacion = User.Identity.GetUserId()
-                    };
-                    db.ExperienciaLaborals.Add(experienciaLaboral);
-                }
+                    ProfesionalId = profesional.Id,
+                    Descripcion = experiencia.Descripcion,
+                    EmpresaId = Utiles.GetEmpresaId(User.Identity.GetUserId()),
+                    FechaCreacion = DateTime.Now.Date,
+                    PeriodoDesde = experiencia.PeriodoDesde,
+                    PeriodoHasta = experiencia.PeriodoHasta,
+                    Puesto = experiencia.Puesto,
+                    Ubicacion = experiencia.Ubicacion,
+                    idUsuarioCreacion = User.Identity.GetUserId()
+                };
+                db.ExperienciaLaborals.Add(experienciaLaboral);
+            }
         }
 
         // DELETE: api/Empleadoes/5
