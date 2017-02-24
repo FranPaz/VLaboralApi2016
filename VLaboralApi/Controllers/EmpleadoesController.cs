@@ -58,7 +58,7 @@ namespace VLaboralApi.Controllers
             return Ok(empleado);
         }
 
-        // PUT: api/Empleadoes/5
+         // PUT: api/Empleadoes/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmpleado(int id, Empleado empleado)
         {
@@ -162,17 +162,6 @@ namespace VLaboralApi.Controllers
                 Nombre = empleadoVm.Nombre,
                 FechaNac = empleadoVm.FechaNac,
                 Nacionalidad = empleadoVm.Nacionalidad,
-                Domicilio = new Domicilio()
-                 {
-                     PlaceId = empleadoVm.Domicilio.PlaceId,
-                     //Location = empleadoVm.Domicilio.Location,
-                     Calle = empleadoVm.Domicilio.Calle,
-                     Nro = empleadoVm.Domicilio.Nro,
-                     Piso = empleadoVm.Domicilio.Piso,
-                     Dpto = empleadoVm.Domicilio.Dpto,
-                     CiudadId = empleadoVm.Domicilio.CiudadId,
-                     CodigoPostal = empleadoVm.Domicilio.CodigoPostal
-                 },
                 Sexo = empleadoVm.Sexo,
                 ProfesionalId = profesional.Id,
                 EmpresaId =  Utiles.GetEmpresaId(User.Identity.GetUserId()),
@@ -180,6 +169,22 @@ namespace VLaboralApi.Controllers
                 FechaInicioVigencia = empleadoVm.FechaInicioVigencia,
                 FechaFinVigencia = empleadoVm.FechaFinVigencia
             };
+
+            if (empleadoVm.Domicilio != null)
+            {
+                empleado.Domicilio = new Domicilio()
+                {
+                    PlaceId = empleadoVm.Domicilio.PlaceId,
+                    //Location = empleadoVm.Domicilio.Location,
+                    Calle = empleadoVm.Domicilio.Calle,
+                    Nro = empleadoVm.Domicilio.Nro,
+                    Piso = empleadoVm.Domicilio.Piso,
+                    Dpto = empleadoVm.Domicilio.Dpto,
+                    CiudadId = empleadoVm.Domicilio.CiudadId,
+                    CodigoPostal = empleadoVm.Domicilio.CodigoPostal
+                };
+            }
+
             db.Empleadoes.Add(empleado);
             db.SaveChanges();
 

@@ -30,20 +30,7 @@ namespace VLaboralApi.Models.Ubicacion
 
     }
 
-    public class DomicilioEmpleadoVM
-    {
-        public string PlaceId { get; set; }
-       // public Location Location { get; set; }
-
-        public string Calle { get; set; }
-        public string Nro { get; set; }
-        public string Piso { get; set; }
-        public string Dpto { get; set; }
-
-        public string CodigoPostal { get; set; }
-
-        public int? CiudadId { get; set; }
-    }
+   
 
     public class Location
     {

@@ -27,13 +27,7 @@
         public int EmpleadoId { get; set; }
         public virtual Empleado Empleado { get; set; }
     }
-
-    public class IdentificacionEmpleadoVM
-    {
-        public string Valor { get; set; }
-        public int TipoIdentificacionEmpleadoId { get; set; }
-    }
-
+    
     public class IdentificacionEmpresa
     {
         public int Id { get; set; }
