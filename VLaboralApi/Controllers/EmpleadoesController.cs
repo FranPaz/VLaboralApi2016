@@ -163,6 +163,18 @@ namespace VLaboralApi.Controllers
             db.Profesionals.Add(profesional);
             db.SaveChanges();
 
+            foreach (var identificacion in empleadoVm.IdentificacionesEmpleado)
+            {
+                var identificacionProfesional = new IdentificacionProfesional()
+                {
+                    Valor = identificacion.Valor,
+                    TipoIdentificacionProfesionalId = identificacion.TipoIdentificacionEmpleadoId,
+                    ProfesionalId = profesional.Id
+                };
+                db.IdentificacionesProfesional.Add(identificacionProfesional);
+            }
+            db.SaveChanges();
+
            // CargarExperienciasLaborales(empleadoVm, profesional);
         }
 
