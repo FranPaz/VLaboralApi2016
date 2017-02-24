@@ -26,13 +26,13 @@ namespace VLaboralApi.ViewModels.Empleados
         public ICollection<ExperienciaLaboralEmpleadoVM> ExperienciasLaborales { get; set; }
     }
 
-    public abstract class IdentificacionEmpleadoVM
+    public  class IdentificacionEmpleadoVM
     {
         public string Valor { get; set; }
         public int TipoIdentificacionEmpleadoId { get; set; }
     }
 
-    public abstract class DomicilioEmpleadoVM
+    public  class DomicilioEmpleadoVM
     {
         public string PlaceId { get; set; }
         // public Location Location { get; set; }

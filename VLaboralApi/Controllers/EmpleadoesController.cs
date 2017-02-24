@@ -97,37 +97,45 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(Empleado))]
         public IHttpActionResult PostEmpleado(EmpleadoVM empleadoVm)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            if (Utiles.GetEmpresaId(User.Identity.GetUserId()) == null)
+                if (Utiles.GetEmpresaId(User.Identity.GetUserId()) == null)
+                {
+                    return BadRequest("Error, el usuario no tiene EmpresaId");
+                }
+
+                //if (db.Empresas.Find(empleadoVm.EmpresaId) == null) return BadRequest("Verificar EmpresaId");
+
+                var profesional = new Profesional();
+                Empleado empleado;
+
+                if (empleadoVm.ProfesionalId == null)
+                {
+                    GuardarProfesional(empleadoVm, profesional);
+                    empleado = GuardarEmpleado(empleadoVm, profesional);
+                }
+                else
+                {
+                    profesional = db.Profesionals.Find(empleadoVm.ProfesionalId);
+
+                    if (profesional == null) return BadRequest("Verificar ProfesionalId");
+
+                    empleado = GuardarEmpleado(empleadoVm, profesional);
+                    CargarExperienciasLaborales(empleadoVm, profesional);
+                    db.SaveChanges();
+                }
+                return Ok(empleado);
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Error, el usuario no tiene EmpresaId");
+                return BadRequest(ex.Message);
             }
-
-            //if (db.Empresas.Find(empleadoVm.EmpresaId) == null) return BadRequest("Verificar EmpresaId");
-
-            var profesional = new Profesional();
-            Empleado empleado;
-
-            if (empleadoVm.ProfesionalId == null)
-            {
-                GuardarProfesional(empleadoVm, profesional);
-                empleado = GuardarEmpleado(empleadoVm, profesional);
-            }
-            else
-            {
-                profesional = db.Profesionals.Find(empleadoVm.ProfesionalId);
-
-                if (profesional == null) return BadRequest("Verificar ProfesionalId");
-                
-                empleado = GuardarEmpleado(empleadoVm, profesional);
-                CargarExperienciasLaborales(empleadoVm, profesional);
-                db.SaveChanges();
-            }
-            return Ok(empleado);
+          
            
         }
 

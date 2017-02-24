@@ -2,7 +2,7 @@
 
 namespace VLaboralApi.ViewModels.Empleados
 {
-    public abstract class ExperienciaLaboralEmpleadoVM
+    public  class ExperienciaLaboralEmpleadoVM
     {
         public string Puesto { get; set; }
         public string Descripcion { get; set; }
