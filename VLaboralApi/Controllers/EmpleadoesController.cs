@@ -118,6 +118,7 @@ namespace VLaboralApi.Controllers
                 {
                     GuardarProfesional(empleadoVm, profesional);
                     empleado = GuardarEmpleado(empleadoVm, profesional);
+                    CargarExperienciasLaborales(empleadoVm, profesional);
                 }
                 else
                 {
@@ -127,7 +128,6 @@ namespace VLaboralApi.Controllers
 
                     empleado = GuardarEmpleado(empleadoVm, profesional);
                     CargarExperienciasLaborales(empleadoVm, profesional);
-                    db.SaveChanges();
                 }
                 return Ok(empleado);
             }
@@ -145,21 +145,25 @@ namespace VLaboralApi.Controllers
             profesional.Nombre = empleadoVm.Nombre;
             profesional.FechaNac = empleadoVm.FechaNac;
             profesional.Nacionalidad = empleadoVm.Nacionalidad;
-            profesional.Domicilio = new Domicilio()
+            if (empleadoVm.Domicilio != null)
             {
-                PlaceId =  empleadoVm.Domicilio.PlaceId,
-                //Location = empleadoVm.Domicilio.Location,
-                Calle = empleadoVm.Domicilio.Calle,
-                Nro = empleadoVm.Domicilio.Nro,
-                Piso = empleadoVm.Domicilio.Piso,
-                Dpto = empleadoVm.Domicilio.Dpto,
-                CiudadId = empleadoVm.Domicilio.CiudadId,
-                CodigoPostal = empleadoVm.Domicilio.CodigoPostal
-            };
+                profesional.Domicilio = new Domicilio()
+                {
+                    PlaceId = empleadoVm.Domicilio.PlaceId,
+                    //Location = empleadoVm.Domicilio.Location,
+                    Calle = empleadoVm.Domicilio.Calle,
+                    Nro = empleadoVm.Domicilio.Nro,
+                    Piso = empleadoVm.Domicilio.Piso,
+                    Dpto = empleadoVm.Domicilio.Dpto,
+                    CiudadId = empleadoVm.Domicilio.CiudadId,
+                    CodigoPostal = empleadoVm.Domicilio.CodigoPostal
+                };
+            }
             profesional.Sexo = empleadoVm.Sexo.ToString();
-            CargarExperienciasLaborales(empleadoVm, profesional);
             db.Profesionals.Add(profesional);
             db.SaveChanges();
+
+           // CargarExperienciasLaborales(empleadoVm, profesional);
         }
 
         private Empleado GuardarEmpleado(EmpleadoVM empleadoVm, Profesional profesional )
@@ -230,6 +234,7 @@ namespace VLaboralApi.Controllers
                 };
                 db.ExperienciaLaborals.Add(experienciaLaboral);
             }
+            db.SaveChanges();
         }
 
         // DELETE: api/Empleadoes/5
