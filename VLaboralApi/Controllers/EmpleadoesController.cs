@@ -150,14 +150,15 @@ namespace VLaboralApi.Controllers
                 profesional.Domicilio = new Domicilio()
                 {
                     PlaceId = empleadoVm.Domicilio.PlaceId,
-                    //Location = empleadoVm.Domicilio.Location,
                     Calle = empleadoVm.Domicilio.Calle,
                     Nro = empleadoVm.Domicilio.Nro,
                     Piso = empleadoVm.Domicilio.Piso,
                     Dpto = empleadoVm.Domicilio.Dpto,
-                    CiudadId = empleadoVm.Domicilio.CiudadId,
                     CodigoPostal = empleadoVm.Domicilio.CodigoPostal
                 };
+                if (empleadoVm.Domicilio.Location != null) profesional.Domicilio.Location = empleadoVm.Domicilio.Location;
+                if (empleadoVm.Domicilio.CiudadId != null && db.Ciudades.Any(c => c.Id == empleadoVm.Domicilio.CiudadId))
+                    profesional.Domicilio.CiudadId = empleadoVm.Domicilio.CiudadId;
             }
             profesional.Sexo = empleadoVm.Sexo.ToString();
             db.Profesionals.Add(profesional);
@@ -199,14 +200,14 @@ namespace VLaboralApi.Controllers
                 empleado.Domicilio = new Domicilio()
                 {
                     PlaceId = empleadoVm.Domicilio.PlaceId,
-                    //Location = empleadoVm.Domicilio.Location,
                     Calle = empleadoVm.Domicilio.Calle,
                     Nro = empleadoVm.Domicilio.Nro,
                     Piso = empleadoVm.Domicilio.Piso,
                     Dpto = empleadoVm.Domicilio.Dpto,
-                    CiudadId = empleadoVm.Domicilio.CiudadId,
                     CodigoPostal = empleadoVm.Domicilio.CodigoPostal
                 };
+                if (empleadoVm.Domicilio.CiudadId != null && db.Ciudades.Any(c => c.Id == empleadoVm.Domicilio.CiudadId))
+                    empleado.Domicilio.CiudadId = empleadoVm.Domicilio.CiudadId;
             }
 
             db.Empleadoes.Add(empleado);

@@ -4,6 +4,10 @@ namespace VLaboralApi.Models.Ubicacion
 {
     public class Domicilio
     {
+        public Domicilio()
+        {
+            Location = new Location();
+        }
 
         public int Id { get; set; }
 
@@ -34,7 +38,13 @@ namespace VLaboralApi.Models.Ubicacion
 
     public class Location
     {
-        public Location(double? lat, double? lng)
+        public Location()
+        {
+            Lat = null;
+            Lng = null;
+        }
+
+        public Location(double lat, double lng)
         {
             Lat = lat;
             Lng = lng;

@@ -34,8 +34,13 @@ namespace VLaboralApi.ViewModels.Empleados
 
     public  class DomicilioEmpleadoVM
     {
+        public DomicilioEmpleadoVM()
+        {
+            Location = new Location();
+        }
+
         public string PlaceId { get; set; }
-        // public Location Location { get; set; }
+        public Location Location { get; set; }
 
         public string Calle { get; set; }
         public string Nro { get; set; }

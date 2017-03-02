@@ -252,6 +252,7 @@
     <Compile Include="ClasesAuxiliares\Utiles.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\CiudadsController.cs" />
     <Compile Include="Controllers\CompetenciaIdiomasController.cs" />
     <Compile Include="Controllers\CursosController.cs" />
     <Compile Include="Controllers\EducacionsController.cs" />
@@ -266,8 +267,10 @@
     <Compile Include="Controllers\ImagenesController.cs" />
     <Compile Include="Controllers\NotificacionesController.cs" />
     <Compile Include="Controllers\OfertasController.cs" />
+    <Compile Include="Controllers\PaisController.cs" />
     <Compile Include="Controllers\PostulacionesController.cs" />
     <Compile Include="Controllers\ProfesionalsController.cs" />
+    <Compile Include="Controllers\ProvinciasController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\RubrosController.cs" />
     <Compile Include="Controllers\TipoContratosController.cs" />

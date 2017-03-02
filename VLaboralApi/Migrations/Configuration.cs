@@ -351,9 +351,30 @@ namespace VLaboralApi.Migrations
 
             var listaProvincias = new List<Provincia>
             {
-                new Provincia {Nombre = "Santiago del Estero", Codigo = "SDE", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
-                new Provincia {Nombre = "Santiago del Estero", Codigo = "SDE", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
-                new Provincia {Nombre = "Santiago del Estero", Codigo = "SDE", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Salta", Codigo = "AR-A", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Provincia de Buenos Aires", Codigo = "AR-B", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Ciudad Autónoma de Buenos Aires", Codigo = "AR-C", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "San Luis", Codigo = "AR-D", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Entre Ríos", Codigo = "AR-E", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "La Rioja", Codigo = "AR-F", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Santiago del Estero", Codigo = "AR-G", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Chaco", Codigo = "AR-H", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "San Juan", Codigo = "AR-J", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Catamarca", Codigo = "AR-K", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "La Pampa", Codigo = "AR-L", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Mendoza", Codigo = "AR-M", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Misiones", Codigo = "AR-N", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Formosa", Codigo = "AR-P", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Neuquén", Codigo = "AR-Q", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Río Negro", Codigo = "AR-R", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Santa Fe", Codigo = "AR-S", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Tucumán", Codigo = "AR-T", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Chubut", Codigo = "AR-U", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Tierra del Fuego", Codigo = "AR-V", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Corrientes", Codigo = "AR-W", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Córdoba", Codigo = "AR-X", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Jujuy", Codigo = "AR-Y", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
+                new Provincia {Nombre = "Santa Cruz", Codigo = "AR-Z", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Argentina")).Id},
 
                 new Provincia {Nombre = "Minas Gerais", Codigo = "MG", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Brasil")).Id},
                 new Provincia {Nombre = "Paraná", Codigo = "PR", PaisId = context.Paises.FirstOrDefault(t=> t.Nombre.Contains("Brasil")).Id},
@@ -387,7 +408,7 @@ namespace VLaboralApi.Migrations
             {
                 new Domicilio
                 {
-                    Location = new Location(null,null),
+                    Location = new Location(),
                     Calle = "Av Belgrano (s)",
                     Nro = "263",
                     CodigoPostal = "4200",
@@ -395,7 +416,7 @@ namespace VLaboralApi.Migrations
                 },
                  new Domicilio
                 {
-                    Location = new Location(null,null),
+                    Location = new Location(),
                     Calle = "Av Moreno (n)",
                     Nro = "1452",
                     CodigoPostal = "4200",
@@ -403,7 +424,7 @@ namespace VLaboralApi.Migrations
                 },
                  new Domicilio
                 {
-                    Location = new Location(null,null),
+                    Location = new Location(),
                     PlaceId = "EjVHcmVnb3JpYSBNYXRvcnJhcyA1NzIsIFNhbnRpYWdvIGRlbCBFc3Rlcm8sIEFyZ2VudGluYQ",
                     Calle = "Gregoria Matorras",
                     Nro = "572",
@@ -423,7 +444,7 @@ namespace VLaboralApi.Migrations
             context.Domicilios.AddRange(listaDomicilios);
             context.SaveChanges();
 
-            context.Profesionals.FirstOrDefault().DomicilioId = context.Domicilios.FirstOrDefault(d => d.PlaceId == "EjVHcmVnb3JpYSBNYXRvcnJhcyA1NzIsIFNhbnRpYWdvIGRlbCBFc3Rlcm8sIEFyZ2VudGluYQ" && d.Location.Lat != null).Id;
+            context.Profesionals.FirstOrDefault().DomicilioId = context.Domicilios.FirstOrDefault(d => d.PlaceId == "EjVHcmVnb3JpYSBNYXRvcnJhcyA1NzIsIFNhbnRpYWdvIGRlbCBFc3Rlcm8sIEFyZ2VudGluYQ" && d.Location.Lat != null && d.Location.Lng != null).Id;
             context.Empresas.FirstOrDefault().DomicilioId = context.Domicilios.FirstOrDefault(d => d.Calle == "Av Belgrano (s)").Id;
 
 
