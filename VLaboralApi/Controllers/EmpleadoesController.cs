@@ -325,7 +325,7 @@ namespace VLaboralApi.Controllers
                                                         Cantidad = db.Profesionals
                                                                 .Count(p => p.Subrubros.Any(s => s.Id == a.Id))
                                                     })
-                                                    .ToListAsync());
+                                                    .ToList());
                 }
                 if (options.Filters.Contains(EmpleadosFilterOptions.Valoraciones))
                 {
