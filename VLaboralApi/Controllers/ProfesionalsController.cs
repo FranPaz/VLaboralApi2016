@@ -124,7 +124,7 @@ namespace VLaboralApi.Controllers
                 foreach (var dbSubRubro in profDb.Subrubros.ToList())
                 {
                     //fpaz: para cada subrubro asociado actualmente al profesional en la bd
-                    if (!profesional.Subrubros.Any(s => s.Id == dbSubRubro.Id)) //busco si en el array de subrubros enviados como parametros, alguno de los objetos subrubros coincide con el de la base de datos
+                    if (profesional.Subrubros.All(s => s.Id != dbSubRubro.Id)) //busco si en el array de subrubros enviados como parametros, alguno de los objetos subrubros coincide con el de la base de datos
                     {
                         //si no encuentro al subrubro de la bd en el array ingresado como parametro, elimino la relacion entre ese subrubro y el profesional
                         profDb.Subrubros.Remove(dbSubRubro);
@@ -135,7 +135,7 @@ namespace VLaboralApi.Controllers
                 foreach (var prmSubRubro in profesional.Subrubros)
                 {
                     //fpaz: para cada subrubro ingresado como parametro
-                    if (!profDb.Subrubros.Any(s => s.Id == prmSubRubro.Id)) //busco si el subrubro ingresado como parametro en el cliente esta actualmente en el array de subrubros asociados al profesional
+                    if (profDb.Subrubros.All(s => s.Id != prmSubRubro.Id)) //busco si el subrubro ingresado como parametro en el cliente esta actualmente en el array de subrubros asociados al profesional
                     {
                         //si el subrubro no esta relacionado
                         var a = db.SubRubros.Find(prmSubRubro.Id); //obtengo el objeto subrubro (esto por que es una relacion M a M)
@@ -164,10 +164,12 @@ namespace VLaboralApi.Controllers
                         // Update de la identificacion
                         db.Entry(dbIdent).CurrentValues.SetValues(prmIdent);
                     else
-                    //agrego una nueva identificacion al profesional
+                    {
+                        //agrego una nueva identificacion al profesional
                         prmIdent.TipoIdentificacionProfesionalId = prmIdent.TipoIdentificacionProfesional.Id;
                         prmIdent.TipoIdentificacionProfesional = null;
                         profDb.IdentificacionesProfesional.Add(prmIdent);
+                    }
                 }
 
                 #endregion
