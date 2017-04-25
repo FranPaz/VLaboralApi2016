@@ -56,7 +56,7 @@ namespace VLaboralApi.ClasesAuxiliares
             }
         }
 
-        public NotificacionExperiencia GenerarNotificacionExperiencia(int experienciaId) //fpaz: devuelve una otificacion  de nueva Experiencia Cargada
+        public NotificacionExperiencia GenerarNotificacionExperiencia(int experienciaId, Utiles.TiposUsuario tipoUsuario) //fpaz: devuelve una otificacion  de nueva Experiencia Cargada
         {
             try
             {
@@ -67,7 +67,30 @@ namespace VLaboralApi.ClasesAuxiliares
 
                 if (experiencia == null) return null;
 
-                var tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "EXP");
+                TipoNotificacion tipoNotificacion;
+                int? emisor = null;
+                int? receptor = null;
+                switch (tipoUsuario)
+                {
+                    case Utiles.TiposUsuario.profesional:
+                        tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "EXP");
+                        if (experiencia.ProfesionalId != null) emisor = (int) experiencia.ProfesionalId;
+                        if (experiencia.EmpresaId != null) receptor = (int)experiencia.EmpresaId;
+
+                        break;
+                    case Utiles.TiposUsuario.empresa:
+                        tipoNotificacion = db.TipoNotificaciones.FirstOrDefault(tn => tn.Valor == "EXPEMP");
+                        if (experiencia.EmpresaId != null) emisor = (int)experiencia.EmpresaId;
+                        if (experiencia.ProfesionalId != null) receptor = (int)experiencia.ProfesionalId;
+                        break;
+                    case Utiles.TiposUsuario.administracion:
+                        tipoNotificacion = null;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+
 
                 if (tipoNotificacion == null) return null;
                 {
@@ -80,8 +103,8 @@ namespace VLaboralApi.ClasesAuxiliares
                         Mensaje = tipoNotificacion.Mensaje, // "Este mensaje hay que sacarlo de la bd. Por ahora lo hardcodeo aqui",
                         Titulo = tipoNotificacion.Titulo, //"El título lo podemos sacar de la clase directamente o desde la bd. Prefiero desde la bd.",
                         TipoNotificacionId = tipoNotificacion.Id,
-                        EmisorId = (int) experiencia.ProfesionalId,
-                        ReceptorId = experiencia.Empresa.Id
+                        EmisorId = emisor,
+                        ReceptorId = receptor
                     };
 
                     db.Notificaciones.Add(notificacion);
