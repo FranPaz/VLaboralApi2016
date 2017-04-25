@@ -146,7 +146,10 @@ namespace VLaboralApi.Controllers
                     return BadRequest(ModelState);
                 }
 
+                ValidarExperienciaLaboral(experienciaLaboral);
+
                 db.ExperienciaLaborals.Add(experienciaLaboral);
+
                 db.SaveChanges();
 
                 var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
@@ -160,7 +163,7 @@ namespace VLaboralApi.Controllers
                             // a partir del usuario que dio de alta la exp
                             var notificacionHelper = new NotificacionesHelper();
 
-                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
+                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id, tipoUsuario);
                             notificacion.ExperienciaLaboral = experienciaLaboral;
                             return Ok(notificacion);
                         }
@@ -171,7 +174,7 @@ namespace VLaboralApi.Controllers
                             experienciaLaboral.Profesional = db.Profesionals.Find(experienciaLaboral.ProfesionalId);
                             
                             var notificacionHelper = new NotificacionesHelper();
-                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id);
+                            var notificacion = notificacionHelper.GenerarNotificacionExperiencia(experienciaLaboral.Id, tipoUsuario);
                             notificacion.ExperienciaLaboral = experienciaLaboral;
                             return Ok(notificacion);
                         }
@@ -189,6 +192,17 @@ namespace VLaboralApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private void ValidarExperienciaLaboral(ExperienciaLaboral experienciaLaboral)
+        {
+            if (experienciaLaboral.ProfesionalId != null &&
+                !db.Profesionals.Any(p => p.Id == experienciaLaboral.ProfesionalId))
+                throw new Exception("No se encontró el profesional al que hace referencia.");
+
+            if (experienciaLaboral.EmpresaId != null &&
+                !db.Empresas.Any(e => e.Id == experienciaLaboral.EmpresaId))
+                throw new Exception("No se encontró la empresa a la que hace referencia.");
         }
 
         // DELETE: api/ExperienciaLaborals/5

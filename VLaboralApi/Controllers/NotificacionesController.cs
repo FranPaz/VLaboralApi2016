@@ -37,7 +37,7 @@ namespace VLaboralApi.Controllers
         public IHttpActionResult GetNotificacion(int id, string tipoNotificacion) //fpaz: funcion que devuelve la notificacion y sus objetos asociados, y tambien actualiza la fecha de lectura
         {
             try
-            {               
+            {
 
                 switch (tipoNotificacion)
                 {
@@ -48,6 +48,13 @@ namespace VLaboralApi.Controllers
                         notifExp.FechaLectura = notifExp.FechaLectura ?? DateTime.Now;
                         db.SaveChanges();
                         return Ok(notifExp);
+                    case "EXPEMP":
+                        var notifExpEmp = db.Notificaciones.OfType<NotificacionExperiencia>()
+                            .Include(n => n.ExperienciaLaboral.Profesional)
+                            .FirstOrDefault(n => n.Id == id);
+                        notifExpEmp.FechaLectura = notifExpEmp.FechaLectura ?? DateTime.Now;
+                        db.SaveChanges();
+                        return Ok(notifExpEmp);
                     case "EXPVER":
                         var notifExpVer = db.Notificaciones.OfType<NotificacionExperiencia>()
                             .Include(n => n.ExperienciaLaboral.Empresa)
@@ -100,10 +107,10 @@ namespace VLaboralApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); 
+                return BadRequest(ex.Message);
             }
         }
-        
+
 
         // GET: api/Notificaciones
         //[Authorize]
@@ -112,7 +119,7 @@ namespace VLaboralApi.Controllers
         public IHttpActionResult GetNotificacionesRecibidas(int page, int rows)
         {
             var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
-           // if (tipoReceptor == null) return null;
+            // if (tipoReceptor == null) return null;
 
             var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;
@@ -131,9 +138,8 @@ namespace VLaboralApi.Controllers
         }
 
         public IHttpActionResult GetNotificacionesTipo(int prmIdTipoNotificacion, int page, int rows) //fpaz: trae solo las notificaciones de un tipo en particular
-        {            
+        {
             var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
-            if (tipoUsuario == null) return null;
 
             var receptorId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
             if (receptorId == null) return null;

@@ -6,10 +6,10 @@ namespace VLaboralApi.Models
     {
         public int Id { get; set; }
 
-        public int EmisorId { get; set; }
+        public int? EmisorId { get; set; }
         //public virtual IdentityUser Emisor { get; set; }
 
-        public int ReceptorId { get; set; }
+        public int? ReceptorId { get; set; }
         //public virtual IdentityUser Receptor { get; set; }
 
         public string Titulo { get; set; }
