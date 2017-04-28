@@ -40,15 +40,32 @@ namespace VLaboralApi.Controllers
         {
             try
             {
+
+
                 var idProfesional = Utiles.GetProfesionalId(User.Identity.GetUserId());
-                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
-                    , db.Postulacions
-                           .Where(p => p.ProfesionalId == idProfesional)
-                    .Include(p => p.PuestoEtapaOferta.EtapaOferta)
+                if (idProfesional == null) return BadRequest("");
+
+                var postulaciones = db.Postulacions
+                    .Where(p => p.ProfesionalId == idProfesional)
                     .Include(p => p.PuestoEtapaOferta.Puesto)
-                    .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta)
-                    , order => order.OrderBy(c => c.Id));
+                    .Include(p => p.PuestoEtapaOferta.EtapaOferta.Oferta);
+
+                foreach (var p in postulaciones)
+                {
+                    p.PuestoEtapaOferta.EtapaOferta.Oferta.Puestos = null;
+                    p.PuestoEtapaOferta.EtapaOferta.Oferta.EtapasOferta = null;
+                    p.PuestoEtapaOferta.EtapaOferta.PuestosEtapaOferta = null;
+                    p.PuestoEtapaOferta.Puesto.PuestoEtapasOferta = null;
+                    p.PuestoEtapaOferta.Postulaciones = null;
+                }
+
+                var data = Utiles.Paginate(new PaginateQueryParameters(page, rows)
+               ,
+               postulaciones
+               , order => order.OrderBy(c => c.Id));
                 return Ok(data);
+
+
             }
             catch (Exception ex)
             {
@@ -183,7 +200,7 @@ namespace VLaboralApi.Controllers
         {
             var requisitos = db.Requisitos
                                     .Where(r => r.PuestoId == postulacion.PuestoId && r.AutoVerificar && r.Excluyente)
-                //Sluna: traigo solo los requisitos seleccionados para la atuoverificación y marcados como excluyentes
+                                    //Sluna: traigo solo los requisitos seleccionados para la atuoverificación y marcados como excluyentes
                                     .Include(r => r.ValoresRequisito)
                                     .Include(r => r.TipoRequisito);
 
