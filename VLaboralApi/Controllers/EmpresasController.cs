@@ -1,11 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Script.Serialization;
+using Microsoft.AspNet.Identity;
+using Newtonsoft.Json.Linq;
+using VLaboralApi.ClasesAuxiliares;
+using VLaboralApi.Hubs;
 using VLaboralApi.Models;
+using VLaboralApi.Providers;
+using VLaboralApi.Services;
 
 namespace VLaboralApi.Controllers
 {
@@ -51,35 +60,92 @@ namespace VLaboralApi.Controllers
         [ResponseType(typeof(void))]
         public IHttpActionResult PutEmpresa(int id, Empresa empresa)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != empresa.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(empresa).State = EntityState.Modified;
-
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmpresaExists(id))
+                //var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
+                if (id != empresa.Id)
                 {
-                    throw;
+                    return BadRequest();
                 }
-            }
+                //if (tipoUsuario == Utiles.TiposUsuario.empresa)
+                //{
+                    
+                //}
+                //else {
+                //    return BadRequest();
+                
+                //}
+                if (id != empresa.Id)
+                {
+                    return BadRequest();
+                }
+                var empresaBd = db.Empresas
+                    .Where(e => e.Id == id)
+                    .Include(emp => emp.IdentificacionesEmpresa)
+                    .FirstOrDefault();
+                db.Entry(empresaBd).CurrentValues.SetValues(empresa);
 
-            return StatusCode(HttpStatusCode.NoContent);
+                //foreach (var dbIdent in empresaBd.IdentificacionesEmpresa.ToList())
+                //{
+                //    if (empresa.IdentificacionesEmpresa.All(i => i.Id != dbIdent.Id))
+                //    {
+                //        db.IdentificacionesEmpresa.Remove(dbIdent);
+                //    }
+
+                //}
+                //foreach (var prmIdent in empresa.IdentificacionesEmpresa)
+                //{
+                //    var dbIdent = empresaBd.IdentificacionesEmpresa.FirstOrDefault(s => s.Id == prmIdent.Id);
+                //    if (dbIdent != null && dbIdent.Id > 0)
+                //    {
+                //        db.Entry(dbIdent).CurrentValues.SetValues(prmIdent);
+
+                //    }
+                //    else
+                //    {
+                //        prmIdent.TipoIdentificacionEmpresaId = prmIdent.TipoIdentificacionEmpresa.Id;
+                //        prmIdent.TipoIdentificacionEmpresa = null;
+                //        empresaBd.IdentificacionesEmpresa.Add(prmIdent);
+                //    }
+                //}
+                db.SaveChanges();
+
+                return Ok(empresaBd);
+
+                
+                
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            
+            }
+            
+
+            
+
+            //db.Entry(empresa).State = EntityState.Modified;
+
+            //try
+            //{
+            //    db.SaveChanges();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!EmpresaExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+
+            //return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Empresas
@@ -114,6 +180,22 @@ namespace VLaboralApi.Controllers
             db.SaveChanges();
 
             return Ok(empresa);
+        }
+
+        //kike: alta de imagenes de empresa
+        //POST: api/Empresa/Imagenes/5
+        [Route("api/Empresa/Imagenes")]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult postImagenEmpresa(ImagenEmpresa imagenEmpresa)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            db.ImagenEmpresa.Add(imagenEmpresa);
+            db.SaveChanges();
+
+            return Ok();               
         }
 
         protected override void Dispose(bool disposing)

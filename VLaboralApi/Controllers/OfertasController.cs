@@ -25,6 +25,27 @@ namespace VLaboralApi.Controllers
     {
         private VLaboral_Context db = new VLaboral_Context();
 
+        //private IQueryable<Oferta> OfertasEmpresa() {
+        //    if (User != null && User.Identity.GetUserId() != null)
+        //    {
+        //        var tipoUsuario = Utiles.GetTipoUsuario(User.Identity.GetUserId());
+        //        if (tipoUsuario == Utiles.TiposUsuario.empresa)
+        //        {
+        //            var empresaId = Utiles.GetReceptorId(tipoUsuario, User.Identity.GetUserId());
+        //            if (empresaId == null) return null;
+
+        //            return db.Ofertas
+        //            .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
+        //                        && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
+        //                        && o.EmpresaId == empresaId);
+        //        }
+        //    }
+        //    else {
+        //        return db.Ofertas = null;
+        //    }
+        
+        //}
+
 
         private IQueryable<Oferta> OfertasActivas() //sluna: Entendemos como activas, las que se encuentras vigentes segun sus fechas y estan en etapaInicial.
         {
@@ -53,7 +74,8 @@ namespace VLaboralApi.Controllers
                     .Where(o => DbFunctions.TruncateTime(o.FechaInicioConvocatoria) <= DbFunctions.TruncateTime(DateTime.Now)
                                 && DbFunctions.TruncateTime(o.FechaFinConvocatoria) >= DbFunctions.TruncateTime(DateTime.Now)
                                 && o.EmpresaId == empresaId
-                                && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true).Id);
+                        && o.IdEtapaActual == o.EtapasOferta.FirstOrDefault(e => e.TipoEtapa.EsInicial == true || e.TipoEtapa.EsFinal == true).Id);
+                                
                 }
             }
             else
@@ -496,6 +518,7 @@ namespace VLaboralApi.Controllers
             return db.Ofertas.Count(e => e.Id == id) > 0;
         }
 
+
         [HttpPost]
         [Route("api/Ofertas/QueryOptions")]
         public IHttpActionResult QueryOptions(OfertasOptionsBindingModel options)
@@ -603,6 +626,7 @@ namespace VLaboralApi.Controllers
             });
         }
 
+        [Authorize(Roles="Profesional")]
         [HttpPost]
         [Route("api/Ofertas/Search")]
         public IHttpActionResult Search(OfertasQueryBindingModel queryOptions)

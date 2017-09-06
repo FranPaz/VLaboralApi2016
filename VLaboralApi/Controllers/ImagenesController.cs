@@ -20,7 +20,7 @@ namespace VLaboralApi.Controllers
 
         
         // GET: api/Imagenes/5        
-        public async Task<HttpResponseMessage> GetBlobDownload(int blobId) //fpaz: para descargar la imagen
+        public async Task<HttpResponseMessage> GetBlobDownload(string blobId) //fpaz: para descargar la imagen
         {
             // IMPORTANT: This must return HttpResponseMessage instead of IHttpActionResult
 
@@ -71,14 +71,14 @@ namespace VLaboralApi.Controllers
             try
             {
                 // This endpoint only supports multipart form data
-                if (!Request.Content.IsMimeMultipartContent("form-data"))
+                if (!Request.Content.IsMimeMultipartContent())
                 {
                     return StatusCode(HttpStatusCode.UnsupportedMediaType);
                 }
 
                 // Call service to perform upload, then check result to return as content
                 var result = await _service.UploadBlobs(Request.Content);
-                if (result != null && result.Count > 0)
+                if (result != null)
                 {
                     return Ok(result);
                 }

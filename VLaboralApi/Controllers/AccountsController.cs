@@ -306,6 +306,78 @@ namespace VLaboralApi.Controllers
             return Ok();
         }
 
+        #region ForgotPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ForgotPassword")]
+        public async Task<IHttpActionResult>ForgotPassword(ForgotPasswordViewModel model) {
+            if (ModelState.IsValid) {
+                var user = await AppUserManager.FindByEmailAsync(model.Email);
+                if (user == null) {
+                    return BadRequest("Ops! Algo salio mal");
+                }
+                string code = await AppUserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = new Uri(Url.Link("ConfirmPasswordRoute", new { userId = user.Id, code = code }));
+                await AppUserManager.SendEmailAsync(user.Id, "Resetear contraseña", "resetee su contraseña en el siguiente link <a href=\"" + callbackUrl + "\">here</a>");
+                //await AppUserManager.SendEmailAsync(user.Id, code);
+                return Ok();
+            }
+            return BadRequest(ModelState);
+        }
+        #endregion
+
+        #region ResetPassword
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        public async Task<IHttpActionResult> ResetPassword(ResetPasswordViewModel model) {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var user = await AppUserManager.FindByNameAsync(model.Email);
+            if (user == null) {
+                return Ok();            
+            }
+            var result = await AppUserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            return InternalServerError();
+        }
+        #endregion
+
+        #region Password Reset Mail Service
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("ConfirmPassword", Name = "ConfirmPasswordRoute")]
+        public async Task<IHttpActionResult> ConfirmPassword(string userId = "", string code = "")
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(code))
+            {
+                ModelState.AddModelError("", "User Id and Code are required");
+                return BadRequest(ModelState);
+            }
+
+            var result = await this.AppUserManager.FindByIdAsync(userId);
+
+            if (result != null) // agrego la funcion para que la url que se manda la confirmacion del cambio de password redirija a la pagina de confirmacion de password
+            {
+                IHttpActionResult response;
+                //we want a 303 with the ability to set location
+                HttpResponseMessage responseMsg = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
+                //seteo la url a la que voy a redirigir y capturar en el frontend
+                responseMsg.Headers.Location = new Uri(ConfigurationManager.AppSettings["urlResetPass"] + "?userId=" + Uri.EscapeUriString(userId) + "&" + "code=" + Uri.EscapeUriString(code)); //fpaz: url del frontend que se toma desde las configuraciones en el webconfig                                 
+                response = ResponseMessage(responseMsg);
+                return response;
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
 
     }
 }
