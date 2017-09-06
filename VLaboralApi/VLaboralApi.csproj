@@ -290,9 +290,13 @@
     <Compile Include="Infrastructure\ApplicationRoleManager.cs" />
     <Compile Include="Infrastructure\ApplicationUser.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
-    <Compile Include="Migrations\201704250315560_inicial.cs" />
-    <Compile Include="Migrations\201704250315560_inicial.Designer.cs">
-      <DependentUpon>201704250315560_inicial.cs</DependentUpon>
+    <Compile Include="Migrations\201708161145221_inicial.cs" />
+    <Compile Include="Migrations\201708161145221_inicial.Designer.cs">
+      <DependentUpon>201708161145221_inicial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708191442088_inicial2.cs" />
+    <Compile Include="Migrations\201708191442088_inicial2.Designer.cs">
+      <DependentUpon>201708191442088_inicial2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
@@ -368,6 +372,7 @@
     <Content Include="Areas\HelpPage\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
+    <None Include="Properties\PublishProfiles\toroidelaboralapi.pubxml" />
     <None Include="Properties\PublishProfiles\VLaboralApi - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\VLaboralApi - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\VLaboralApi.pubxml" />
@@ -407,8 +412,11 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201704250315560_inicial.resx">
-      <DependentUpon>201704250315560_inicial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708161145221_inicial.resx">
+      <DependentUpon>201708161145221_inicial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708191442088_inicial2.resx">
+      <DependentUpon>201708191442088_inicial2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

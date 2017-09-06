@@ -20,4 +20,24 @@ namespace VLaboralApi.Models
         public string BlobContentType { get; set; }
         public long BlobLength { get; set; }
     }
+
+    public class ImagenEmpresa : BlobUploadModel
+    {
+        public int EmpresaId { get; set; }
+        public virtual Empresa Empresa { get; set; }
+    
+    }
+
+    public class ImagenProfesional : BlobUploadModel 
+    {
+        public int ProfesionalId { get; set; }
+        public virtual Profesional Profesional { get; set; }
+        public virtual string Tipo { get; set; }
+    }
+
+    //public class FileProfesional : BlobUploadModel
+    //{
+    //    public int ProfesionalId { get; set; }
+    //    public virtual Profesional Profesional { get; set; }
+    //}
 }

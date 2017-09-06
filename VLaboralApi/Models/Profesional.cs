@@ -16,9 +16,10 @@ namespace VLaboralApi.Models
         public string Apellido { get; set; }        
         public string Nacionalidad { get; set; }        
         public DateTime? FechaNac { get; set; }
-
+        public string UrlImagenPerfil { get; set; }
         public int? DomicilioId { get; set; }
         public virtual Domicilio Domicilio { get; set; }
+        public string UrlCurriculum { get; set; }
 
         public string ObjetivoProfesional { get; set; }
         public string DescripcionCurricular { get; set; }
@@ -50,5 +51,11 @@ namespace VLaboralApi.Models
         {
             return Nombre + " " + Apellido;
         }
+
+        //kike: imagenes profesional
+        public virtual ICollection<ImagenProfesional> ImagenesProfesional { get; set; }
+
+        //kike: files del profesional
+        //public virtual ICollection<FileProfesional> FileProfesional { get; set; }
     }
 }

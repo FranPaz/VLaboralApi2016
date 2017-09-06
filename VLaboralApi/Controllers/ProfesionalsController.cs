@@ -24,6 +24,7 @@ namespace VLaboralApi.Controllers
         }
 
         // GET: api/Profesionals
+        [Authorize(Roles = "Empresa")]
         [ResponseType(typeof(CustomPaginateResult<Profesional>))]
         public IHttpActionResult GetProfesionals(int page, int rows)
         {
@@ -48,6 +49,7 @@ namespace VLaboralApi.Controllers
             }
         }
 
+        
         [ResponseType(typeof(Profesional))]
         public IHttpActionResult GetProfesional(int tipoIdentificacion, string valor)
         {
@@ -59,6 +61,7 @@ namespace VLaboralApi.Controllers
 
 
         // GET: api/Profesionals/5
+        //[Authorize(Roles = "Profesional, Empresa")]
         [ResponseType(typeof(Profesional))]
         public IHttpActionResult GetProfesional(int id)
         {
@@ -74,6 +77,7 @@ namespace VLaboralApi.Controllers
                     .Include(educ => educ.Educaciones.Select(nivel => nivel.TipoNivelEstudio))
                     .Include(idioma => idioma.IdiomasConocidos.Select(idio => idio.Idioma))
                     .Include(idioma => idioma.IdiomasConocidos.Select(comp => comp.CompetenciaIdioma))
+                    .Include(img => img.ImagenesProfesional)
                     .FirstOrDefault();
 
                 if (profesional == null)
@@ -223,6 +227,20 @@ namespace VLaboralApi.Controllers
             db.SaveChanges();
 
             return Ok(profesional);
+        }
+
+        [Route("api/Profesional/Imagenes")]
+        public IHttpActionResult postImagenProfesional(ImagenProfesional imagenProfesional) {
+            
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);           
+            }
+
+            db.ImagenProfesional.Add(imagenProfesional);
+            db.SaveChanges();
+
+            return CreatedAtRoute("DefaultApi", new { id = imagenProfesional.Id }, imagenProfesional);
+            
         }
 
         protected override void Dispose(bool disposing)

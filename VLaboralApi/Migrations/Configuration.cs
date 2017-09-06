@@ -25,9 +25,9 @@ namespace VLaboralApi.Migrations
         {
             //fpaz:Semillas para el llenado inicial de la bd
 
-            #region Carga de Profesional Y Empresas Por Defecto
+            //#region Carga de Profesional Y Empresas Por Defecto
 
-            //fpaz: doy de alta las instancias de Profesional y de Empresa que van a estar relacionada con los ususarios de la aplicacion por defecto            
+            ////fpaz: doy de alta las instancias de Profesional y de Empresa que van a estar relacionada con los ususarios de la aplicacion por defecto            
             var prof = new Profesional
             {
                 Nombre = "Nombre Profesional Prueba",
@@ -56,7 +56,7 @@ namespace VLaboralApi.Migrations
             }
             #endregion
 
-            # region fpaz: defino los usuarios por defecto para profesional y para empresa
+            //# region fpaz: defino los usuarios por defecto para profesional y para empresa
             var manager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new VLaboral_Context()));
 
             var listUsers = new List<ApplicationUser>{
@@ -104,10 +104,10 @@ namespace VLaboralApi.Migrations
                 }
 
             }
-            #endregion
+            //#endregion
 
 
-            #endregion
+            //#endregion
 
             #region fpaz: Semilla para Tipos de Disponibilidad
             var listTiposList = new List<TipoDisponibilidad>{
@@ -148,7 +148,16 @@ namespace VLaboralApi.Migrations
 
             #region SLuna: Semilla para Rubros y SubRubros
             var listRubros = new List<Rubro>{
-                    new Rubro {Nombre="Informática", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
+                new Rubro {Nombre="Comercio", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
+                        new SubRubro { Nombre = "Ventas", Descripcion =""},
+                        new SubRubro { Nombre = "Administración", Descripcion =""}
+                    }},    
+                    new Rubro {Nombre="Industrial", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
+                        new SubRubro { Nombre = "Operario", Descripcion =""},
+                        new SubRubro { Nombre = "Administración", Descripcion =""}
+                    }},
+                
+                new Rubro {Nombre="Informática", Descripcion="Servicios relaciones con el area de informática", Subrubros = new List<SubRubro>{
                         new SubRubro { Nombre = "Analista Programador", Descripcion =""},
                         new SubRubro { Nombre = "Administrador IT", Descripcion =""}
                     }},
@@ -170,8 +179,10 @@ namespace VLaboralApi.Migrations
                 new Habilidad {Nombre="SQL", Descripcion="Manejo de Lenguaje SQL"},
                 new Habilidad {Nombre="PHP", Descripcion="Manejo de Lenguaje PHP"},
                 new Habilidad {Nombre="HTML5", Descripcion="Manejo de Lenguaje HTML5"},
-                new Habilidad {Nombre="UI/UX web", Descripcion="Conocimiento de diseño web aplicando tecnicas UI/UX"}
+                new Habilidad {Nombre="UI/UX web", Descripcion="Conocimiento de diseño web aplicando tecnicas UI/UX"}                
+
             };
+
             context.Habilidads.AddRange(listHabilidades);
             #endregion
 
@@ -272,42 +283,42 @@ namespace VLaboralApi.Migrations
             context.TiposEtapas.AddRange(listaTipoEtapas);
             #endregion
 
-            #region SLuna: Semilla para Cargar una Ofertas por defecto (Solo Para Desarrollo)
-            var listOfertas = new List<Oferta>
-            {
-                new Oferta
-                {
-                    Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN.",FechaInicioConvocatoria = DateTime.Now.AddDays(-1), FechaFinConvocatoria =  DateTime.Now.AddDays(30) ,Publica = true,Descripcion = "VIGENTE: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
-                },
-                new Oferta
-                {
-                    Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = DateTime.Now.AddDays(7), FechaFinConvocatoria =  DateTime.Now.AddDays(60) ,Publica = false,Descripcion = "PROXIMA: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
-                },
-                 new Oferta
-                {
-                    Nombre = "ESTUDIO CONTABLE.",FechaInicioConvocatoria = DateTime.Now.AddDays(-90), FechaFinConvocatoria =  DateTime.Now.AddDays(-1) ,Publica = false,Descripcion = "VENCIDA: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
-                },
-                //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 2.",FechaInicioConvocatoria = new DateTime(2015,1,1), FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
-                //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1}
-            };
-            context.Ofertas.AddRange(listOfertas);
-            #endregion
+            //#region SLuna: Semilla para Cargar una Ofertas por defecto (Solo Para Desarrollo)
+            //var listOfertas = new List<Oferta>
+            //{
+            //    new Oferta
+            //    {
+            //        Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN.",FechaInicioConvocatoria = DateTime.Now.AddDays(-1), FechaFinConvocatoria =  DateTime.Now.AddDays(30) ,Publica = true,Descripcion = "VIGENTE: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
+            //    },
+            //    new Oferta
+            //    {
+            //        Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = DateTime.Now.AddDays(7), FechaFinConvocatoria =  DateTime.Now.AddDays(60) ,Publica = false,Descripcion = "PROXIMA: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
+            //    },
+            //     new Oferta
+            //    {
+            //        Nombre = "ESTUDIO CONTABLE.",FechaInicioConvocatoria = DateTime.Now.AddDays(-90), FechaFinConvocatoria =  DateTime.Now.AddDays(-1) ,Publica = false,Descripcion = "VENCIDA: Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1
+            //    },
+            //    //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT.",FechaInicioConvocatoria = new DateTime(2016,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 2.",FechaInicioConvocatoria = new DateTime(2015,1,1), FechaFinConvocatoria = new DateTime(2015,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 2.",FechaInicioConvocatoria = new DateTime(2015,1,1),FechaFinConvocatoria = new DateTime(2015,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 3.",FechaInicioConvocatoria = new DateTime(2016,8,1),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DISEÑO GRAFICO Y EDICIÓN DE IMAGEN 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "DESARROLLO DE APLICACIONES ANDROID 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "JAVASCRIPT Y MANEJO DE NODE JS 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = true,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1},
+            //    //new Oferta {Nombre = "MARKETING DIGITAL, SOCIAL MANAGMENT 4.",FechaInicioConvocatoria = new DateTime(2016,4,30),FechaFinConvocatoria = new DateTime(2016,12,31),Publica = false,Descripcion = "Insertar en esta seccion una breve descripción de la oferta laboral disponible, en la que se especifica la area en la que se desempeñara el posible futuro empleado que aplique para la misma...",EmpresaId = 1}
+            //};
+            //context.Ofertas.AddRange(listOfertas);
+            //#endregion
 
             #region sluna: Semilla de TipoNotificacion
             var listaTipoNotificacion = new List<TipoNotificacion>{

@@ -26,5 +26,8 @@ namespace VLaboralApi.Models
         //fpaz: relacion 1 a M con ExperienciaLaboral (muchos)
         public virtual ICollection<ExperienciaLaboral> ExperienciasLaborales { get; set; }
 
+        //kike: relacion 1 a M con ImagenesEmpresa
+        public virtual ICollection<ImagenEmpresa> ImagenesEmpresa { get; set; }        
+
     }
 }

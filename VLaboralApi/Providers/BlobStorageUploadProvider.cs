@@ -4,17 +4,18 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using VLaboralApi.Models;
 using VLaboralApi.Services;
+using System;
 
 namespace VLaboralApi.Providers
 {
     public class BlobStorageUploadProvider : MultipartFileStreamProvider
     {
-        public List<BlobUploadModel> Uploads { get; set; }
+        public BlobUploadModel Upload { get; set; }
 
         public BlobStorageUploadProvider()
             : base(Path.GetTempPath())
         {
-            Uploads = new List<BlobUploadModel>();
+            Upload = new BlobUploadModel();
         }
 
         public override Task ExecutePostProcessingAsync()
@@ -26,8 +27,9 @@ namespace VLaboralApi.Providers
             {
                 // Sometimes the filename has a leading and trailing double-quote character
                 // when uploaded, so we trim it; otherwise, we get an illegal character exception
-                var fileName = Path.GetFileName(fileData.Headers.ContentDisposition.FileName.Trim('"'));
-
+                
+                var fileName = Path.GetFileName(fileData.Headers.ContentDisposition.FileName.Trim('"'));   
+                fileName = Guid.NewGuid().ToString();
                 // Retrieve reference to a blob
                 var blobContainer = BlobHelper.GetBlobContainer();
                 var blob = blobContainer.GetBlockBlobReference(fileName);
@@ -53,7 +55,7 @@ namespace VLaboralApi.Providers
                 };
 
                 // Add uploaded blob to the list
-                Uploads.Add(blobUpload);
+                Upload = blobUpload;
             }
 
             return base.ExecutePostProcessingAsync();

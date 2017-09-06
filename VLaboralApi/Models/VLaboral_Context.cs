@@ -56,14 +56,6 @@ namespace VLaboralApi.Models
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.EtapaOferta> EtapasOfertas { get; set; }
 
-
-        #endregion
-
-        public static VLaboral_Context Create()
-        {
-            return new VLaboral_Context();
-        }
-
         public System.Data.Entity.DbSet<VLaboralApi.Models.TipoNivelEstudio> TipoNivelEstudios { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Estudio> Estudios { get; set; }
@@ -93,6 +85,20 @@ namespace VLaboralApi.Models
         public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Ciudad> Ciudades { get; set; }
 
         public System.Data.Entity.DbSet<VLaboralApi.Models.Ubicacion.Domicilio> Domicilios { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.ImagenEmpresa> ImagenEmpresa { get; set; }
+
+        public System.Data.Entity.DbSet<VLaboralApi.Models.ImagenProfesional> ImagenProfesional { get; set; }
+
+        //public System.Data.Entity.DbSet<VLaboralApi.Models.FileProfesional> FileProfesional { get; set; }
+        #endregion
+
+        public static VLaboral_Context Create()
+        {
+            return new VLaboral_Context();
+        }
+
+      
 
        
     }

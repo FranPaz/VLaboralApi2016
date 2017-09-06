@@ -11,17 +11,17 @@ namespace VLaboralApi.Services
 {
     public interface IBlobService
     {
-        Task<List<BlobUploadModel>> UploadBlobs(HttpContent httpContent);
-        Task<BlobDownloadModel> DownloadBlob(int blobId);
+        Task<BlobUploadModel> UploadBlobs(HttpContent httpContent);
+        Task<BlobDownloadModel> DownloadBlob(string blobId);
     }
 
     public class BlobService : IBlobService
     {
-        public async Task<List<BlobUploadModel>> UploadBlobs(HttpContent httpContent)
+        public async Task<BlobUploadModel> UploadBlobs(HttpContent httpContent)
         {
             var blobUploadProvider = new BlobStorageUploadProvider();
 
-            var list = await httpContent.ReadAsMultipartAsync(blobUploadProvider)
+            var file = await httpContent.ReadAsMultipartAsync(blobUploadProvider)
                 .ContinueWith(task =>
                 {
                     if (task.IsFaulted || task.IsCanceled)
@@ -30,21 +30,29 @@ namespace VLaboralApi.Services
                     }
 
                     var provider = task.Result;
-                    return provider.Uploads.ToList();
+                    return provider.Upload;
                 });
 
             // TODO: Use data in the list to store blob info in your
             // database so that you can always retrieve it later.
 
-            return list;
+            return file;
         }
 
-        public async Task<BlobDownloadModel> DownloadBlob(int blobId)
+        private VLaboral_Context db = new VLaboral_Context();
+        public async Task<BlobDownloadModel> DownloadBlob(string blobId)
         {
             // TODO: You must implement this helper method. It should retrieve blob info
             // from your database, based on the blobId. The record should contain the
             // blobName, which you should return as the result of this helper method.
-            var blobName = "algo"; //GetBlobName(blobId);
+            var blobPrm = db.BlobUploadModels
+                .Where(b => b.FileName == blobId)
+                .FirstOrDefault();
+            if (blobPrm == null) {
+                return null;
+            }
+
+            var blobName = blobPrm.FileName; //GetBlobName(blobId);
 
             if (!String.IsNullOrEmpty(blobName))
             {

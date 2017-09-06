@@ -19,7 +19,7 @@ namespace VLaboralApi.Services
             var myMessage = new SendGridMessage();
 
             myMessage.AddTo(message.Destination);
-            myMessage.From = new System.Net.Mail.MailAddress("francisco_paz3@hotmail.com", "Francisco Paz");
+            myMessage.From = new System.Net.Mail.MailAddress("enriquepaz.inbox@gmail.com", "Enrique");
             myMessage.Subject = message.Subject;
             myMessage.Text = message.Body;
             myMessage.Html = message.Body;
